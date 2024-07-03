@@ -1,6 +1,7 @@
 <template>
   <Suspense>
     <div v-if="isAuthenticated" class="bg-[#F7F7FA] flex justify-center items-center relative z-0 w-screen h-screen text-black">
+      <h1>HOALA</h1>
       <div v-if="this.pedido" class="absolute z-10 w-2/3 h-2/3 bg-white rounded-lg p-4 text-xl flex flex-col gap-2">
         <div class="flex justify-between mb-5">
           <p class="font-bold">Pedido #1</p>
@@ -28,6 +29,7 @@
           <p>1</p>
         </div>
       </div>
+
       <qrcode-stream @detect="onDetect"></qrcode-stream>
       <!-- <button @click="logout" class="bg-[#BE38F3] text-white rounded-lg p-2">Logout</button> -->
     </div>
