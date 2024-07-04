@@ -66,7 +66,7 @@ export default {
       logout() {
         auth0.logout({
           logoutParams: {
-            returnTo: 'https://nqpay.lat/',
+            returnTo: 'https://pay.nqpay.lat/',
           },
         })
       },
