@@ -6,7 +6,7 @@
       <img src="/cart.png" alt="Vue logo" class="h-7" />
     </div>
     <div class="h-5"></div>
-    <h1 class="text-3xl font-bold mt-4">Hora de refrescar tu sed!</h1>
+    <h1 class="text-3xl font-bold mt-4">Hora de refrescar tu sed</h1>
     <div class="h-5"></div>
     <div class="rounded-xl w-full bg-white items-center grid grid-cols-4 p-2">
       <img src="/cerveza.png" alt="Vue logo" class="rounded-lg" />
