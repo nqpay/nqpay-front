@@ -46,7 +46,9 @@
     <div v-else class="flex flex-col items-center justify-center h-full">
       <p class="text-xl">Tu carrito está vacío.</p>
     </div>
-    <div v-if="cartTotal > 0" class="mt-2 w-full bg-[#BE38F3] py-3 text-xl text-center rounded-xl">Total: {{ new Intl.NumberFormat('en-US').format(cartTotal) }}</div>
+    <router-link to="/checkout" v-if="cartTotal > 0" class="mt-2 w-full bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
+      <div>Total: {{ new Intl.NumberFormat('en-US').format(cartTotal) }}</div>
+    </router-link>
   </div>
 </template>
 
