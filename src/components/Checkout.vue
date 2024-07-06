@@ -10,14 +10,13 @@
     <p>Acá vas a encontrar todas las compras que hiciste y tus códigos QR para retirar tus tragos.</p>
     <div class="h-14"></div>
     <div class="flex flex-col gap-4">
-
       <div class="flex items-center gap-4 bg-[#998D9D] text-white rounded-lg p-2">
         <img src="/jet.png" alt="Vue logo" class="h-12 w-12 rounded-lg object-cover" />
         <div class="flex flex-col w-full">
           <p class="font-bold">Orden #25J4SDV8</p>
           <p class="">x2 Gin Tonic con limón</p>
         </div>
-        <div class="flex flex-col justify-start h-full ">
+        <div class="flex flex-col justify-start h-full">
           <p class="text-[#D4CAD8]">04/07/2024</p>
         </div>
       </div>
@@ -27,7 +26,7 @@
           <p class="font-bold">Orden #25J4SDV8</p>
           <p class="">x2 Gin Tonic con limón</p>
         </div>
-        <div class="flex flex-col justify-start h-full ">
+        <div class="flex flex-col justify-start h-full">
           <p class="text-[#D4CAD8]">04/07/2024</p>
         </div>
       </div>
@@ -37,7 +36,7 @@
           <p class="font-bold">Orden #25J4SDV8</p>
           <p class="">x2 Gin Tonic con limón</p>
         </div>
-        <div class="flex flex-col justify-start h-full ">
+        <div class="flex flex-col justify-start h-full">
           <p class="text-[#D4CAD8]">04/07/2024</p>
         </div>
       </div>
@@ -48,13 +47,14 @@
   <!-- </div> -->
   <!-- <div v-if="cartTotal > 0" class="mt-2 w-full bg-[#BE38F3] py-3 text-xl text-center rounded-xl">Total: {{ new Intl.NumberFormat('en-US').format(cartTotal) }}</div> -->
   <!-- </div> -->
+  <NavBar currentView="Checkout" />
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cartStore'
 import { computed } from 'vue'
-
+import NavBar from './NavBar.vue'
 const router = useRouter()
 const cartStore = useCartStore()
 

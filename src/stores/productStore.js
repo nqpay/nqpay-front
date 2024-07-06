@@ -1,15 +1,16 @@
-import { defineStore } from 'pinia'
-
-export const useProductStore = defineStore('productStore', {
-  state: () => ({
-    selectedProduct: null,
-  }),
-  actions: {
-    setSelectedProduct(product) {
-      this.selectedProduct = product
-    },
-    clearSelectedProduct() {
-      this.selectedProduct = null
-    },
-  },
-})
+export const useProductStore = () => {
+  const getSelectedProduct = () => {
+    return JSON.parse(localStorage.getItem('selectedProduct'))
+  }
+  const setSelectedProduct = (product) => {
+    localStorage.setItem('selectedProduct', JSON.stringify(product))
+  }
+  const clearSelectedProduct = () => {
+    localStorage.removeItem('selectedProduct')
+  }
+  return {
+    getSelectedProduct,
+    setSelectedProduct,
+    clearSelectedProduct,
+  }
+}

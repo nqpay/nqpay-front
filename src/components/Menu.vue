@@ -66,9 +66,10 @@ const route = useRoute()
 const router = useRouter()
 const productStore = useProductStore()
 const cartStore = useCartStore()
+console.log('cartStoreeee: ', cartStore.state.numberOfItems)
 
 const eventName = route.params.event
-const numberOfItems = ref(cartStore.numberOfItems)
+const numberOfItems = ref(cartStore.state.numberOfItems)
 
 const favoritos = [
   { name: 'Fernet', image: '/fernet.png', price: '$3.000' },
@@ -84,6 +85,7 @@ const promos = [
 
 function navigateToProduct(item) {
   productStore.setSelectedProduct(item)
+  console.log('seteando producto: ', productStore.getSelectedProduct())
   router.push(`/menu/${eventName}/${item.name.toLowerCase()}`)
 }
 

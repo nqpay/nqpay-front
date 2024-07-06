@@ -56,7 +56,8 @@ const productStore = useProductStore()
 const cartStore = useCartStore()
 const eventName = route.params.event
 const quantity = ref(1)
-const product = productStore.selectedProduct
+const product = productStore.getSelectedProduct()
+console.log(product.name)
 
 function goBack() {
   router.back()
@@ -76,17 +77,8 @@ function plusQuantity() {
 }
 
 function addToCart() {
+  console.log('qvalue: ', quantity.value)
   cartStore.addToCart(product, quantity.value)
   router.back()
 }
 </script>
-
-<style scoped>
-/* Ensuring the image within the product box scales correctly */
-.bg-[#FBF2FF] img {
-  width: 100%;
-  height: auto;
-  max-height: 50vh; /* You can adjust this value based on your needs */
-  object-fit: cover;
-}
-</style>

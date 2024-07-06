@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { createPinia } from 'pinia'
 import { createAuth0 } from '@auth0/auth0-vue'
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
@@ -19,7 +18,6 @@ import Checkout from './components/Checkout.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 const app = createApp(App)
-const pinia = createPinia()
 
 const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
@@ -83,6 +81,5 @@ app.use(
     },
   })
 )
-app.use(pinia)
 app.use(router)
 app.mount('#app')

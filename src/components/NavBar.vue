@@ -19,8 +19,10 @@
       </router-link>
       <router-link to="/checkout" class="flex items-center justify-center">
         <div class="inline-flex flex-col items-center justify-center">
-          <img src="/qr_icon.png" alt="Vue logo" class="h-7 mb-1" />
-          <span class="text-sm text-gray-500">Mis QR</span>
+          <img v-if="currentView != 'Checkout'" src="/qr_icon.png" alt="Vue logo" class="h-7 mb-1" />
+          <img v-else src="/qr_icon_selected.png" alt="Vue logo" class="h-7 mb-1" />
+          <span v-if="currentView != 'Checkout'" class="text-sm text-gray-500">Mis QR</span>
+          <span v-else class="text-sm text-[#6Df338]">Mis QR</span>
         </div>
       </router-link>
       <router-link to="/profile" class="flex items-center justify-center">
