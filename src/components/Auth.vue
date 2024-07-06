@@ -142,7 +142,7 @@ export default {
       signUpViewShow: ref(false),
       emailSent: ref(false),
       actionCodeSettings: {
-        url: 'http://localhost:5173/auth',
+        url: 'https://pay.nqpay.lat/auth',
         handleCodeInApp: true,
       },
       router: useRouter(),
