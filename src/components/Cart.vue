@@ -56,8 +56,10 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cartStore'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
+const auth = getAuth()
 const router = useRouter()
 const cartStore = useCartStore()
 
@@ -79,20 +81,27 @@ function decreaseQuantity(product) {
 function removeFromCart(product) {
   cartStore.removeFromCart(product)
 }
-// TODO: CAMBIAR TODOS LOS LOCALHOST POR ENDPOINT REAL
 const askLink = async () => {
-  const response = await fetch('https://api.nqpay.lat/checkout', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      order: cartItems.value,
-      venue_id: JSON.parse(localStorage.getItem('venue')).SK.slice(2),
-    }),
-  })
-  const data = await response.json()
+  // if not logged in, redirect to login
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      router.push('/auth')
+      return
+    } else {
+      const response = await fetch('https://api.nqpay.lat/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order: cartItems.value,
+          venue_id: JSON.parse(localStorage.getItem('venue')).SK.slice(2),
+        }),
+      })
+      const data = await response.json()
 
-  window.location.href = data
+      window.location.href = data
+    }
+  })
 }
 </script>
