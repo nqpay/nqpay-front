@@ -10,7 +10,7 @@
     <div class="h-14"></div>
     <h1 class="text-3xl font-semibold">Tu Pedido</h1>
     <div class="h-14"></div>
-
+    <!-- <div id="wallet_container"></div> -->
     <div v-if="cartItems.length > 0" class="flex flex-col gap-4 h-4/5 overflow-auto">
       <div v-for="item in cartItems" :key="item.name" class="w-full flex flex-col flex-none">
         <div class="flex items-center gap-4 bg-[#FBF2FF] border rounded-2xl p-2">
@@ -19,7 +19,7 @@
             <div>
               <h1 class="text-black text-xl font-semibold">{{ item.name }}</h1>
               <p class="text-black text-xs">Bebida Alcoholica...</p>
-              <h2 class="text-black text-lg font-semibold">{{ item.price }}</h2>
+              <h2 class="text-black text-lg font-semibold">$ {{ item.price }}</h2>
             </div>
           </div>
           <div class="flex items-center">
@@ -47,9 +47,9 @@
     <div v-else class="flex flex-col items-center justify-center h-full">
       <p class="text-xl">Tu carrito está vacío.</p>
     </div>
-    <router-link to="/checkout" v-if="cartTotal.value > 0" class="mt-2 w-full bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
-      <div>Total: {{ new Intl.NumberFormat('en-US').format(cartTotal.value) }}</div>
-    </router-link>
+    <div @click="askLink()" v-if="cartTotal.value > 0" class="mt-2 w-full bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
+      <p>Total: $ {{ new Intl.NumberFormat('en-US').format(cartTotal.value) }}</p>
+    </div>
   </div>
 </template>
 
@@ -78,5 +78,21 @@ function decreaseQuantity(product) {
 
 function removeFromCart(product) {
   cartStore.removeFromCart(product)
+}
+// TODO: CAMBIAR TODOS LOS LOCALHOST POR ENDPOINT REAL
+const askLink = async () => {
+  const response = await fetch('https://api.nqpay.lat/checkout', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      order: cartItems.value,
+      venue_id: JSON.parse(localStorage.getItem('venue')).SK.slice(2),
+    }),
+  })
+  const data = await response.json()
+
+  window.location.href = data
 }
 </script>

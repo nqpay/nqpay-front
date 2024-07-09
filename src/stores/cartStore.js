@@ -4,7 +4,6 @@ export const useCartStore = () => {
   const state = reactive({
     cartItems: JSON.parse(localStorage.getItem('cart')) || [],
     numberOfItems: JSON.parse(localStorage.getItem('qty')) || 0,
-    cartTotal: 0,
   })
 
   const saveState = () => {
@@ -38,6 +37,7 @@ export const useCartStore = () => {
       state.numberOfItems -= cartItem.quantity
       if (isNaN(state.numberOfItems) || state.numberOfItems < 0) {
         state.numberOfItems = 0
+        state.cartItems = []
       }
       saveState()
     }
@@ -72,8 +72,7 @@ export const useCartStore = () => {
   const cartTotal = computed(() => {
     return state.cartItems.reduce((total, item) => {
       const priceString = item.price
-      let numberString = priceString.replace('$', '').replace('.', '')
-      const priceInt = parseInt(numberString, 10)
+      const priceInt = parseInt(priceString, 10)
       return total + priceInt * item.quantity
     }, 0)
   })

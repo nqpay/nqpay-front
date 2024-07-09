@@ -15,10 +15,10 @@ import Admin from './components/Admin.vue'
 import Profile from './components/Profile.vue'
 import Auth from './components/Auth.vue'
 import Checkout from './components/Checkout.vue'
+import Success from './components/Success.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 const app = createApp(App)
-
 const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
     const removeListener = onAuthStateChanged(
@@ -44,6 +44,7 @@ const router = new createRouter({
     { path: '/cart', component: Cart },
     { path: '/checkout', component: Checkout, meta: { requiresAuth: true } },
     { path: '/profile', component: Profile, meta: { requiresAuth: true } },
+    { path: '/success', component: Success, meta: { requiresAuth: true } },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
