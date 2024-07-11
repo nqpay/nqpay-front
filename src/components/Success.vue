@@ -25,13 +25,14 @@
     </div>
     <div v-else>Cargando datos...</div>
   </div>
+  <NavBar currentView="Checkout" />
 </template>
 
 <script setup>
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import QRCodeVue3 from 'qrcode-vue3'
-
+import NavBar from './NavBar.vue'
 const order = ref(null)
 const router = useRoute()
 
