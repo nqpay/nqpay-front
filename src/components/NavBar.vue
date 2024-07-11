@@ -27,8 +27,10 @@
       </router-link>
       <router-link to="/profile" class="flex items-center justify-center">
         <div class="inline-flex flex-col items-center justify-center">
-          <img src="/profile.png" alt="Vue logo" class="h-7 mb-1" />
-          <span class="text-sm text-gray-500">Perfil</span>
+          <img v-if="currentView == 'Profile'" src="/profile_selected.png" alt="Vue logo" class="h-7 mb-1" />
+          <img v-else src="/profile.png" alt="Vue logo" class="h-7 mb-1" />
+          <span v-if="currentView != 'Profile'" class="text-sm text-gray-500">Perfil</span>
+          <span v-else class="text-sm text-[#6Df338]">Perfil</span>
         </div>
       </router-link>
     </div>

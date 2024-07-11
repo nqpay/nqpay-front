@@ -88,10 +88,12 @@ const askLink = async () => {
       router.push('/auth')
       return
     } else {
+      const idToken = await user.getIdToken()
       const response = await fetch('https://api.nqpay.lat/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
         },
         body: JSON.stringify({
           order: cartItems.value,

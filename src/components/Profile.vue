@@ -5,7 +5,7 @@
       <button class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Solicitar Ayuda</button>
       <button @click="handleSignOut" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Logout</button>
     </div>
-    <NavBar />
+    <NavBar currentView="Profile" />
   </div>
   <Suspense>
     <template #fallback>
