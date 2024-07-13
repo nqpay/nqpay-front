@@ -8,7 +8,7 @@
     <p>Acá vas a encontrar todas las compras que hiciste y tus códigos QR para retirar tus tragos.</p>
     <div class="h-14"></div>
     <div class="flex flex-col gap-4">
-      <div v-on:click="navigateToOrder(order)" v-for="order in orders" :key="order.id" class="flex items-center gap-4 bg-[#998D9D] text-white rounded-lg p-2">
+      <div v-on:click="navigateToOrder(order)" v-for="order in orders" :key="order.id" class="flex items-center gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2">
         <img :src="order.venue_name + '.png'" alt="Vue logo" class="h-12 w-12 rounded-lg object-cover" />
         <div class="flex flex-col w-full">
           <p class="font-bold">Orden</p>
@@ -16,6 +16,10 @@
         </div>
         <div class="flex flex-col justify-start h-full">
           <p class="text-[#D4CAD8]">04/07/2024</p>
+          <div class="bg-opacity-25 justify-center rounded-lg px-2 py-1 items-center flex" :class="order.status == 'PAID' ? 'bg-green-500' : 'bg-red-500'">
+            <p v-if="order.status == 'PAID'">Pagado</p>
+            <p v-else>Entregado</p>
+          </div>
         </div>
       </div>
     </div>

@@ -16,6 +16,8 @@ import Profile from './components/Profile.vue'
 import Auth from './components/Auth.vue'
 import Checkout from './components/Checkout.vue'
 import Success from './components/Success.vue'
+import Scanner from './components/Scanner.vue'
+import Order from './components/Order.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 const app = createApp(App)
@@ -42,6 +44,8 @@ const router = new createRouter({
     { path: '/menu/:event', component: Menu },
     { path: '/menu/:event/:product', component: Product },
     { path: '/cart', component: Cart },
+    { path: '/order/:id', component: Order },
+    { path: '/scanner', component: Scanner }, // TODO: Protect route with Auth0
     { path: '/checkout', component: Checkout, meta: { requiresAuth: true } },
     { path: '/profile', component: Profile, meta: { requiresAuth: true } },
     { path: '/success', component: Success, meta: { requiresAuth: true } },

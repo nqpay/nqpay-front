@@ -1,91 +1,67 @@
 <template>
-  <Suspense>
-    <div v-if="isAuthenticated" class="bg-[#F7F7FA] flex justify-center items-center relative z-0 w-screen h-screen text-black">
-      <div v-if="this.pedido" class="absolute z-10 w-2/3 h-2/3 bg-white rounded-lg p-4 text-xl flex flex-col gap-2">
-        <div class="flex justify-between mb-5">
-          <p class="font-bold">Pedido #1</p>
-          <button @click="this.pedido = false" class="">
-            <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <line x1="0" y1="100" x2="100" y2="0" stroke-width="10" stroke="black" />
-              <line x1="0" y1="0" x2="100" y2="100" stroke-width="10" stroke="black" />
-            </svg>
-          </button>
-        </div>
-        <div class="flex justify-between font-bold">
-          <p>Item</p>
-          <p>Cantidad</p>
-        </div>
-        <div class="flex justify-between">
-          <p>Cerveza Corona</p>
-          <p>1</p>
-        </div>
-        <div class="flex justify-between">
-          <p>Ron con Coca</p>
-          <p>1</p>
-        </div>
-        <div class="flex justify-between">
-          <p>Vodka con Jugo</p>
-          <p>1</p>
-        </div>
-      </div>
-
-      <qrcode-stream @detect="onDetect"></qrcode-stream>
-      <!-- <button @click="logout" class="bg-[#BE38F3] text-white rounded-lg p-2">Logout</button> -->
-    </div>
-    <template #fallback>
-      <h1>Loading</h1>
+  <div class="p-8 flex flex-col bg-[#1C1C1E] w-screen h-screen text-black pt-20">
+    <template v-if="isAuthenticated">
+      <h1 class="text-white font-medium text-xl">Hola {{ user.name }}!</h1>
+      <div class="h-20"></div>
+      <button @click="openScanner" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Escanear nuevo código QR</button>
+      <button @click="logout()" class="bg-[#BE38F3] mt-5 w-full text-white rounded-lg p-3">Cerrar Sesión</button>
     </template>
-  </Suspense>
+    <template v-else>
+      <!-- Skeleton loader -->
+      <div class="animate-pulse">
+        <div class="h-8 bg-gray-300 rounded w-3/4"></div>
+        <div class="h-20"></div>
+        <div class="h-12 bg-gray-300 rounded w-full p-3"></div>
+        <div class="h-12 bg-gray-300 rounded w-full mt-5 p-3"></div>
+      </div>
+    </template>
+  </div>
 </template>
 
 <script>
 import { useAuth0 } from '@auth0/auth0-vue'
-import { QrcodeStream, QrcodeDropZone, QrcodeCapture } from 'vue-qrcode-reader'
 
 export default {
   name: 'Admin',
-  async setup() {
-    const auth0 = useAuth0()
-    if (auth0.isLoading) {
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-    }
-    if (!auth0.isAuthenticated.value && auth0.isLoading) {
-      if (auth0.isLoading) console.log('loading')
-      console.log('must login')
-      auth0.loginWithRedirect()
-    }
-    console.log(auth0.isAuthenticated.value)
-    if (auth0.isAuthenticated.value) {
-      console.log('logged in')
-    }
-    return {
-      isAuthenticated: auth0.isAuthenticated,
-      isLoading: auth0.isLoading,
-      user: auth0.user,
-      logout() {
-        auth0.logout({
-          logoutParams: {
-            returnTo: 'https://pay.nqpay.lat/',
-          },
-        })
-      },
-    }
-  },
   data() {
     return {
-      pedido: false,
+      isAuthenticated: false,
+      user: null,
+      auth0Client: null,
     }
   },
-  methods: {
-    onDetect(result) {
-      this.pedido = true
-      console.log(result)
-    },
+  created() {
+    this.checkAuth()
   },
-  components: {
-    QrcodeStream,
-    QrcodeDropZone,
-    QrcodeCapture,
+  methods: {
+    async checkAuth() {
+      const auth0 = useAuth0()
+
+      // Esperar a que Auth0 termine de cargar
+      while (auth0.isLoading.value) {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      }
+
+      this.isAuthenticated = auth0.isAuthenticated.value
+
+      if (!this.isAuthenticated) {
+        console.log('Usuario no autenticado. Redirigiendo al login...')
+        auth0.loginWithRedirect()
+      } else {
+        this.user = auth0.user.value
+        this.auth0Client = auth0
+      }
+    },
+    openScanner() {
+      this.$router.push('/scanner')
+    },
+    logout() {
+      this.auth0Client.logout({
+        logoutParams: {
+          returnTo: 'https://pay.nqpay.lat/admin',
+        },
+      })
+    },
   },
 }
 </script>
