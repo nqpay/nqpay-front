@@ -142,14 +142,12 @@ export default {
       handleCodeInApp: true,
     }
 
-    const handleAuthentication = async (user) => {
+    const handleAuthentication = async (result) => {
       isLoading.value = true
-      const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime
-      console.log('isNewUser', isNewUser)
-      if (isNewUser) {
+      if (result._tokenResponse && result._tokenResponse.isNewUser) {
         await router.push('/complete-profile')
       } else {
-        const hasCompletedProfile = await checkProfileCompletion(user)
+        const hasCompletedProfile = await checkProfileCompletion(result)
         console.log('hasCompletedProfile', hasCompletedProfile)
         if (hasCompletedProfile) {
           const intendedRoute = localStorage.getItem('intendedRoute')
@@ -174,7 +172,7 @@ export default {
           try {
             const result = await signInWithEmailLink(auth, email, window.location.href)
             localStorage.removeItem('emailForSignInFirebaseAuth')
-            await handleAuthentication(result.user)
+            await handleAuthentication(result)
           } catch (error) {
             console.error('Error al iniciar sesión con enlace de email:', error)
             isLoading.value = false
@@ -202,7 +200,7 @@ export default {
         isLoading.value = true
         const provider = new GoogleAuthProvider()
         const result = await signInWithPopup(getAuth(), provider)
-        await handleAuthentication(result.user)
+        await handleAuthentication(result)
       } catch (error) {
         console.error('Error al iniciar sesión con Google:', error)
         isLoading.value = false
@@ -229,9 +227,9 @@ export default {
     onMounted(async () => {
       await checkAuth()
 
-      unsubscribe = onAuthStateChanged(getAuth(), (user) => {
-        if (user) {
-          handleAuthentication(user)
+      unsubscribe = onAuthStateChanged(getAuth(), (result) => {
+        if (result) {
+          handleAuthentication(result)
         } else {
           isLoggedIn.value = false
           isLoading.value = false
