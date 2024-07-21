@@ -145,11 +145,12 @@ export default {
     const handleAuthentication = async (user) => {
       isLoading.value = true
       const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime
-
+      console.log('isNewUser', isNewUser)
       if (isNewUser) {
         await router.push('/complete-profile')
       } else {
         const hasCompletedProfile = await checkProfileCompletion(user)
+        console.log('hasCompletedProfile', hasCompletedProfile)
         if (hasCompletedProfile) {
           const intendedRoute = localStorage.getItem('intendedRoute')
           if (intendedRoute) {
