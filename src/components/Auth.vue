@@ -1,5 +1,8 @@
 <template>
-  <section class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center">
+  <section v-if="isLoading" class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center">
+    <h1 class="text-white text-2xl">Cargando...</h1>
+  </section>
+  <section v-else class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center">
     <div class="flex flex-col items-center justify-center py-8 w-full px-10">
       <a v-if="!emailSent" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
         <img class="w-16 h-16" src="/logo.png" alt="logo" />
@@ -118,89 +121,138 @@
     </div>
   </section>
 </template>
-
 <script>
-import { onMounted, ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  sendSignInLinkToEmail,
-  signInWithEmailLink,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
-  isSignInWithEmailLink,
-} from 'firebase/auth'
+import { getAuth, sendSignInLinkToEmail, signInWithEmailLink, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, isSignInWithEmailLink } from 'firebase/auth'
+
 export default {
   name: 'Auth',
-  data() {
-    return {
-      email: '',
-      isLoggedIn: ref(false),
-      signUpViewShow: ref(false),
-      emailSent: ref(false),
-      actionCodeSettings: {
-        url: 'https://pay.nqpay.lat/auth',
-        handleCodeInApp: true,
-      },
-      router: useRouter(),
+  setup() {
+    const router = useRouter()
+    const email = ref('')
+    const isLoggedIn = ref(false)
+    const signUpViewShow = ref(false)
+    const emailSent = ref(false)
+    const isLoading = ref(true)
+    let unsubscribe = null
+
+    const actionCodeSettings = {
+      url: 'https://pay.nqpay.lat/auth',
+      handleCodeInApp: true,
     }
-  },
-  methods: {
-    signUpView() {
-      this.signUpViewShow = !this.signUpViewShow
-    },
-    login() {
-      // console.log(this.email)
-      sendSignInLinkToEmail(getAuth(), this.email, this.actionCodeSettings)
-        .then(() => {
-          window.localStorage.setItem('emailForSignInFirebaseAuth', this.email)
-          console.log('email storage: ', window.localStorage.getItem('emailForSignInFirebaseAuth'))
-          this.emailSent = true
-        })
-        .catch((error) => {
-          console.log('err: ', error.message)
-        })
-    },
-    register() {
-      createUserWithEmailAndPassword(getAuth(), this.email, 'miaumiau123')
-        .then((data) => {
-          console.log('successfully registered')
-        })
-        .catch((error) => {
-          console.log(error.message)
-        })
-    },
-    signInWithGoogle() {
-      const provider = new GoogleAuthProvider()
-      signInWithPopup(getAuth(), provider)
-        .then((result) => {})
-        .catch((error) => {
-          console.log(error.message)
-        })
-    },
-  },
-  mounted() {
-    const auth = getAuth()
-    if (isSignInWithEmailLink(auth, location.href)) {
-      signInWithEmailLink(auth, window.localStorage.getItem('emailForSignInFirebaseAuth'), location.href)
-        .then((result) => {
-          this.router.push('/cart')
-        })
-        .catch((error) => {
-          console.log(error.message)
-        })
-    }
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        this.router.push('/')
-        return
+
+    const handleAuthentication = async (user) => {
+      isLoading.value = true
+      const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime
+
+      if (isNewUser) {
+        await router.push('/complete-profile')
       } else {
-        console.log('User is logged out')
-        this.isLoggedIn = false
+        const hasCompletedProfile = await checkProfileCompletion(user)
+        if (hasCompletedProfile) {
+          const intendedRoute = localStorage.getItem('intendedRoute')
+          if (intendedRoute) {
+            await router.push(intendedRoute)
+            localStorage.removeItem('intendedRoute')
+          } else {
+            await router.push('/')
+          }
+        } else {
+          await router.push('/complete-profile')
+        }
+      }
+      isLoading.value = false
+    }
+
+    const checkAuth = async () => {
+      const auth = getAuth()
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        const email = localStorage.getItem('emailForSignInFirebaseAuth')
+        if (email) {
+          try {
+            const result = await signInWithEmailLink(auth, email, window.location.href)
+            localStorage.removeItem('emailForSignInFirebaseAuth')
+            await handleAuthentication(result.user)
+          } catch (error) {
+            console.error('Error al iniciar sesión con enlace de email:', error)
+            isLoading.value = false
+          }
+        } else {
+          isLoading.value = false
+        }
+      } else {
+        isLoading.value = false
+      }
+    }
+
+    const login = async () => {
+      try {
+        await sendSignInLinkToEmail(getAuth(), email.value, actionCodeSettings)
+        localStorage.setItem('emailForSignInFirebaseAuth', email.value)
+        emailSent.value = true
+      } catch (error) {
+        console.error('Error al enviar el enlace de inicio de sesión:', error)
+      }
+    }
+
+    const signInWithGoogle = async () => {
+      try {
+        isLoading.value = true
+        const provider = new GoogleAuthProvider()
+        const result = await signInWithPopup(getAuth(), provider)
+        await handleAuthentication(result.user)
+      } catch (error) {
+        console.error('Error al iniciar sesión con Google:', error)
+        isLoading.value = false
+      }
+    }
+
+    const checkProfileCompletion = async (user) => {
+      const idToken = await user.getIdToken()
+      try {
+        const response = await fetch(`https://api.nqpay.lat/me`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        })
+        const data = await response.json()
+        return data
+      } catch (error) {
+        console.error('Error al verificar el perfil del usuario:', error)
+        return false
+      }
+    }
+
+    onMounted(async () => {
+      await checkAuth()
+
+      unsubscribe = onAuthStateChanged(getAuth(), (user) => {
+        if (user) {
+          handleAuthentication(user)
+        } else {
+          isLoggedIn.value = false
+          isLoading.value = false
+        }
+      })
+    })
+
+    onUnmounted(() => {
+      if (unsubscribe) {
+        unsubscribe()
       }
     })
+
+    return {
+      email,
+      isLoggedIn,
+      signUpViewShow,
+      emailSent,
+      isLoading,
+      login,
+      signInWithGoogle,
+    }
   },
 }
 </script>
