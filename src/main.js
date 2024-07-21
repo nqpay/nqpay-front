@@ -19,6 +19,7 @@ import Success from './components/Success.vue'
 import Scanner from './components/Scanner.vue'
 import Order from './components/Order.vue'
 import CompleteProfile from './components/CompleteProfile.vue'
+import Welcome from './components/Welcome.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 const app = createApp(App)
@@ -51,6 +52,7 @@ const router = new createRouter({
     { path: '/profile', component: Profile, meta: { requiresAuth: true } },
     { path: '/success', component: Success, meta: { requiresAuth: true } },
     { path: '/complete-profile', component: CompleteProfile, meta: { requiresAuth: true } },
+    { path: '/welcome', component: Welcome },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
@@ -62,7 +64,7 @@ router.beforeEach(async (to, from, next) => {
       next()
     } else {
       localStorage.setItem('intendedRoute', to.fullPath)
-      next('/auth')
+      next('/welcome')
     }
   } else {
     next()
