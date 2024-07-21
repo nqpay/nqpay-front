@@ -2,19 +2,74 @@
   <section v-if="isLoading" class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center">
     <h1 class="text-white text-2xl">Cargando...</h1>
   </section>
-  <section v-else class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center">
-    <div class="flex flex-col items-center justify-center py-8 w-full px-10">
+  <section v-else class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center overflow-hidden relative">
+    <div v-if="showTyC" class="absolute bottom-0 left-0 right-0 h-[85%] bg-white rounded-3xl flex flex-col">
+      <div class="flex-grow overflow-y-auto p-8">
+        <h1 class="text-xl font-bold mb-4">Términos y Condiciones</h1>
+        <!-- Contenido de los Términos y Condiciones -->
+        <p>
+          Es requisito necesario para la adquisición de los productos que se ofrecen en este sitio, que lea y acepte los siguientes Términos y Condiciones que a continuación se
+          redactan. El uso de nuestros servicios así como la compra de nuestros productos implicará que usted ha leído y aceptado los Términos y Condiciones de Uso en el presente
+          documento.
+        </p>
+        <p class="font-medium text-lg mt-4">Licencias</p>
+        <p>
+          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+          sujetas a sus propios Términos y Condiciones.
+        </p>
+        <p class="font-medium text-lg mt-4">Propiedad</p>
+        <p>
+          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+          sujetas a sus propios Términos y Condiciones. También puede ser suspendida por más tiempo para una investigación más rigurosa, para evitar transacciones fraudulentas.
+        </p>
+        <p>
+          Es requisito necesario para la adquisición de los productos que se ofrecen en este sitio, que lea y acepte los siguientes Términos y Condiciones que a continuación se
+          redactan. El uso de nuestros servicios así como la compra de nuestros productos implicará que usted ha leído y aceptado los Términos y Condiciones de Uso en el presente
+          documento.
+        </p>
+        <p class="font-medium text-lg mt-4">Licencias</p>
+        <p>
+          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+          sujetas a sus propios Términos y Condiciones.
+        </p>
+        <p class="font-medium text-lg mt-4">Propiedad</p>
+        <p>
+          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+          sujetas a sus propios Términos y Condiciones. También puede ser suspendida por más tiempo para una investigación más rigurosa, para evitar transacciones fraudulentas.
+        </p>
+        <p>
+          Es requisito necesario para la adquisición de los productos que se ofrecen en este sitio, que lea y acepte los siguientes Términos y Condiciones que a continuación se
+          redactan. El uso de nuestros servicios así como la compra de nuestros productos implicará que usted ha leído y aceptado los Términos y Condiciones de Uso en el presente
+          documento.
+        </p>
+        <p class="font-medium text-lg mt-4">Licencias</p>
+        <p>
+          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+          sujetas a sus propios Términos y Condiciones.
+        </p>
+        <p class="font-medium text-lg mt-4">Propiedad</p>
+        <p>
+          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+          sujetas a sus propios Términos y Condiciones. También puede ser suspendida por más tiempo para una investigación más rigurosa, para evitar transacciones fraudulentas.
+        </p>
+      </div>
+      <div class="p-4 bg-white border-t border-gray-200 sticky bottom-0">
+        <button @click="showTyC = false" class="w-full bg-[#BE38F3] text-white px-4 py-2 rounded-lg font-bold text-xl">Cerrar</button>
+      </div>
+    </div>
+    <div v-else class="flex flex-col items-center justify-center py-8 w-full px-10">
       <a v-if="!emailSent" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
         <img class="w-16 h-16" src="/logo.png" alt="logo" />
       </a>
       <div v-if="!emailSent" class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
         <div class="p-6 space-y-2">
-          <h1 v-if="!signUpViewShow" class="pb-4 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Sign in to your account</h1>
-          <h1 v-else class="pb-4 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Sign up to your account</h1>
+          <h1 class="pb-4 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Sign in to your account</h1>
 
           <button
+            :disabled="!tyc_accepted"
             @click="signInWithGoogle"
             class="flex items-center gap-3 justify-center border border-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 text-gray-400"
+            :class="{ 'opacity-50 cursor-not-allowed': !tyc_accepted }"
           >
             <div class="w-5">
               <svg class="eUuXwBkW5W4__eatjSfd RRXFBumaW2SHdseZaWm6 _gmxfZ2BpOHxa6nWwqBB" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -43,7 +98,7 @@
             </div>
             <p>Log in with Google</p>
           </button>
-          <button class="flex items-center gap-3 justify-center border border-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 text-white">
+          <!-- <button class="flex items-center gap-3 justify-center border border-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 text-white">
             <div class="w-5">
               <svg
                 class="eUuXwBkW5W4__eatjSfd RRXFBumaW2SHdseZaWm6 _gmxfZ2BpOHxa6nWwqBB g3OYBOqwXUEW4dRGogkH a0Ed69aMSu0vgf4oysz0"
@@ -64,7 +119,7 @@
             </div>
 
             <p class="text-gray-400">Log in with Apple</p>
-          </button>
+          </button> -->
           <div class="flex items-center gap-6">
             <div class="h-[2px] w-full my-4 bg-gray-600"></div>
             <p class="text-medium text-gray-400">or</p>
@@ -84,29 +139,24 @@
               />
             </div>
 
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <input v-model="tyc_accepted" type="checkbox" class="h-4 w-4 text-[#BE38F3] border-gray-300 rounded" />
+              </div>
+              <div class="ml-2 text-sm">
+                <label for="remember" class="text-gray-900 dark:text-white">
+                  He leído y acepto los <a @click.prevent="showTyC = true" class="font-medium text-[#BE38F3] hover:underline cursor-pointer">términos y condiciones</a>
+                </label>
+              </div>
+            </div>
             <button
-              v-if="!signUpViewShow"
+              :disabled="!tyc_accepted"
               type="submit"
               class="w-full text-white bg-[#BE38F3] focus:ring-4 focus:outline-none focus:ring-[#BE38F3] font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              :class="{ 'opacity-50 cursor-not-allowed': !tyc_accepted }"
             >
               Sign in
             </button>
-            <button
-              v-else
-              @click="register"
-              type="submit"
-              class="w-full text-white bg-[#BE38F3] focus:ring-4 focus:outline-none focus:ring-[#BE38F3] font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-            >
-              Sign up
-            </button>
-            <!-- <p v-if="!signUpViewShow" class="text-sm font-light text-gray-500 dark:text-gray-400">
-              Don’t have an account yet?
-              <a @click="signUpView" class="font-medium hover:underline text-[#BE38F3]">Sign up</a>
-            </p> -->
-            <!-- <p v-else class="text-sm font-light text-gray-500 dark:text-gray-400">
-              Already have an account yet?
-              <a @click="signUpView" class="font-medium hover:underline text-[#BE38F3]">Sign in</a>
-            </p> -->
           </form>
         </div>
       </div>
@@ -129,11 +179,17 @@ import { getAuth, sendSignInLinkToEmail, signInWithEmailLink, onAuthStateChanged
 
 export default {
   name: 'Auth',
+  data() {
+    return {
+      showTyC: false,
+      tyc_accepted: true,
+    }
+  },
+  methods: {},
   setup() {
     const router = useRouter()
     const email = ref('')
     const isLoggedIn = ref(false)
-    const signUpViewShow = ref(false)
     const emailSent = ref(false)
     const isLoading = ref(true)
     let unsubscribe = null
@@ -241,7 +297,6 @@ export default {
     return {
       email,
       isLoggedIn,
-      signUpViewShow,
       emailSent,
       isLoading,
       login,
@@ -250,3 +305,14 @@ export default {
   },
 }
 </script>
+<style scoped>
+/* Asegúrate de que el contenedor principal no tenga scroll */
+section {
+  overflow: hidden;
+}
+
+/* Estilo para el contenedor de Términos y Condiciones */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
+}
+</style>
