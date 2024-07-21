@@ -2,7 +2,7 @@
   <section class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center">
     <div class="flex flex-col items-center justify-center py-8 w-full px-10">
       <div class="p-6 space-y-2">
-        <h1 class="pb-4 text-3xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Pedís, pagás <br />y retirás en la barra</h1>
+        <h1 class="pb-4 text-3xl text-center font-bold leading-tight tracking-tight md:text-2xl text-white">Pedís, pagás <br />y retirás en la barra</h1>
       </div>
 
       <div class="text-white w-full items-center justify-center flex flex-col gap-6">

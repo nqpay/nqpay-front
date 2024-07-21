@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { defineEmits, onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import NavBar from './NavBar.vue'
 import { useRouter } from 'vue-router'
 
