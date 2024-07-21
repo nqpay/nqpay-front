@@ -191,42 +191,46 @@ export default {
       try {
         const provider = new GoogleAuthProvider()
         await signInWithPopup(getAuth(), provider)
-        // No necesitamos hacer nada más aquí, onAuthStateChanged se encargará del resto
       } catch (error) {
         console.error('Error al iniciar sesión con Google:', error)
         isLoading.value = false
       }
     }
 
-    onMounted(() => {
+    const handleEmailLink = async () => {
       const auth = getAuth()
-
       if (isSignInWithEmailLink(auth, window.location.href)) {
         const emailForSignIn = localStorage.getItem('emailForSignInFirebaseAuth')
         if (emailForSignIn) {
-          isLoading.value = true
-          signInWithEmailLink(auth, emailForSignIn, window.location.href)
-            .then(() => {
-              localStorage.removeItem('emailForSignInFirebaseAuth')
-              // onAuthStateChanged manejará la redirección
-            })
-            .catch((error) => {
-              console.error('Error al iniciar sesión con enlace de email:', error)
-              isLoading.value = false
-            })
-        }
-      }
-
-      unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-          isLoading.value = true
-          handleAuthentication(user).finally(() => {
+          try {
+            await signInWithEmailLink(auth, emailForSignIn, window.location.href)
+            localStorage.removeItem('emailForSignInFirebaseAuth')
+            // No necesitamos hacer nada más aquí, onAuthStateChanged se encargará del resto
+          } catch (error) {
+            console.error('Error al iniciar sesión con enlace de email:', error)
             isLoading.value = false
-          })
+          }
         } else {
-          isLoggedIn.value = false
+          console.error('No se encontró el email para el inicio de sesión')
           isLoading.value = false
         }
+      }
+    }
+
+    onMounted(async () => {
+      const auth = getAuth()
+
+      // Manejar el enlace de email primero
+      await handleEmailLink()
+
+      unsubscribe = onAuthStateChanged(auth, async (user) => {
+        isLoading.value = true
+        if (user) {
+          await handleAuthentication(user)
+        } else {
+          isLoggedIn.value = false
+        }
+        isLoading.value = false
       })
     })
 
