@@ -121,6 +121,7 @@
     </div>
   </section>
 </template>
+
 <script>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -142,13 +143,9 @@ export default {
       handleCodeInApp: true,
     }
 
-    const handleAuthentication = async (result) => {
-      isLoading.value = true
-      if (result._tokenResponse && result._tokenResponse.isNewUser) {
-        await router.push('/complete-profile')
-      } else {
-        const hasCompletedProfile = await checkProfileCompletion(result)
-        console.log('hasCompletedProfile', hasCompletedProfile)
+    const handleAuthentication = async (user) => {
+      if (user) {
+        const hasCompletedProfile = await checkProfileCompletion(user)
         if (hasCompletedProfile) {
           const intendedRoute = localStorage.getItem('intendedRoute')
           if (intendedRoute) {
@@ -161,27 +158,21 @@ export default {
           await router.push('/complete-profile')
         }
       }
-      isLoading.value = false
     }
 
-    const checkAuth = async () => {
-      const auth = getAuth()
-      if (isSignInWithEmailLink(auth, window.location.href)) {
-        const email = localStorage.getItem('emailForSignInFirebaseAuth')
-        if (email) {
-          try {
-            const result = await signInWithEmailLink(auth, email, window.location.href)
-            localStorage.removeItem('emailForSignInFirebaseAuth')
-            await handleAuthentication(result)
-          } catch (error) {
-            console.error('Error al iniciar sesión con enlace de email:', error)
-            isLoading.value = false
-          }
-        } else {
-          isLoading.value = false
-        }
-      } else {
-        isLoading.value = false
+    const checkProfileCompletion = async (user) => {
+      const idToken = await user.getIdToken()
+      try {
+        const response = await fetch(`https://api.nqpay.lat/me`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        })
+        return await response.json()
+      } catch (error) {
+        console.error('Error al verificar el perfil del usuario:', error)
+        return false
       }
     }
 
@@ -196,40 +187,42 @@ export default {
     }
 
     const signInWithGoogle = async () => {
+      isLoading.value = true
       try {
-        isLoading.value = true
         const provider = new GoogleAuthProvider()
-        const result = await signInWithPopup(getAuth(), provider)
-        await handleAuthentication(result)
+        await signInWithPopup(getAuth(), provider)
+        // No necesitamos hacer nada más aquí, onAuthStateChanged se encargará del resto
       } catch (error) {
         console.error('Error al iniciar sesión con Google:', error)
         isLoading.value = false
       }
     }
 
-    const checkProfileCompletion = async (user) => {
-      const idToken = await user.getIdToken()
-      try {
-        const response = await fetch(`https://api.nqpay.lat/me`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        })
-        const data = await response.json()
-        return data
-      } catch (error) {
-        console.error('Error al verificar el perfil del usuario:', error)
-        return false
+    onMounted(() => {
+      const auth = getAuth()
+
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        const emailForSignIn = localStorage.getItem('emailForSignInFirebaseAuth')
+        if (emailForSignIn) {
+          isLoading.value = true
+          signInWithEmailLink(auth, emailForSignIn, window.location.href)
+            .then(() => {
+              localStorage.removeItem('emailForSignInFirebaseAuth')
+              // onAuthStateChanged manejará la redirección
+            })
+            .catch((error) => {
+              console.error('Error al iniciar sesión con enlace de email:', error)
+              isLoading.value = false
+            })
+        }
       }
-    }
 
-    onMounted(async () => {
-      await checkAuth()
-
-      unsubscribe = onAuthStateChanged(getAuth(), (result) => {
-        if (result) {
-          handleAuthentication(result)
+      unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          isLoading.value = true
+          handleAuthentication(user).finally(() => {
+            isLoading.value = false
+          })
         } else {
           isLoggedIn.value = false
           isLoading.value = false
@@ -238,9 +231,7 @@ export default {
     })
 
     onUnmounted(() => {
-      if (unsubscribe) {
-        unsubscribe()
-      }
+      if (unsubscribe) unsubscribe()
     })
 
     return {
