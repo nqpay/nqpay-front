@@ -85,7 +85,7 @@ const firebaseConfig = {
 const grafanaConfig = {
   // Mandatory, the URL of the Grafana Cloud collector with embedded application key.
   // Copy from the configuration page of your application in Grafana.
-  url: 'http://faro-collector-us-central-0.grafana.net/collect/7d5ad476183421cad0ac57b7a7d79f48',
+  url: 'https://faro-collector-us-central-0.grafana.net/collect/7d5ad476183421cad0ac57b7a7d79f48',
 
   // Mandatory, the identification label(s) of your application
   app: {
