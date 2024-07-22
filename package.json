@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@auth0/auth0-vue": "^2.3.3",
+    "@grafana/faro-web-sdk": "^1.8.2",
+    "@grafana/faro-web-tracing": "^1.8.2",
     "firebase": "^10.12.3",
     "qrcode-vue3": "^1.6.8",
     "vue": "^3.4.21",

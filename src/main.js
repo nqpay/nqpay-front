@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { createAuth0 } from '@auth0/auth0-vue'
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
+import { initializeFaro } from '@grafana/faro-web-sdk'
 
 import App from './App.vue'
 import './style.css'
@@ -81,6 +82,19 @@ const firebaseConfig = {
   measurementId: 'G-N7W53H1K14',
 }
 
+const grafanaConfig = {
+  // Mandatory, the URL of the Grafana Cloud collector with embedded application key.
+  // Copy from the configuration page of your application in Grafana.
+  url: 'http://faro-collector-us-central-0.grafana.net/collect/7d5ad476183421cad0ac57b7a7d79f48',
+
+  // Mandatory, the identification label(s) of your application
+  app: {
+    name: 'my-app',
+    version: '1.0.0', // Optional, but recommended
+  },
+}
+
+initializeFaro(grafanaConfig)
 initializeApp(firebaseConfig)
 
 app.use(
