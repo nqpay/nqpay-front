@@ -47,7 +47,7 @@ const router = new createRouter({
     { path: '/menu/:event', component: Menu, meta: { requiresAuth: true } },
     { path: '/menu/:event/:product', component: Product, meta: { requiresAuth: true } },
     { path: '/cart', component: Cart, meta: { requiresAuth: true } },
-    { path: '/order/:id', component: Order },
+    { path: '/order/:id', component: Order }, // TODO: Protect route with Auth0
     { path: '/scanner', component: Scanner }, // TODO: Protect route with Auth0
     { path: '/checkout', component: Checkout, meta: { requiresAuth: true } },
     { path: '/profile', component: Profile, meta: { requiresAuth: true } },
