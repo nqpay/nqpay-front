@@ -209,7 +209,14 @@ export default {
       if (user) {
         const hasCompletedProfile = await checkProfileCompletion(user)
         if (hasCompletedProfile) {
-          const intendedRoute = localStorage.getItem('intendedRoute')
+          // TODO: agregar aca la busqueda del query param intendedRoute
+          let intendedRoute = localStorage.getItem('intendedRoute')
+          console.log('Ruta prevista:', intendedRoute)
+          const url = new URL(window.location.href)
+          console.log('URL:', url)
+          const intendedRouteParam = url.searchParams.get('intendedRoute')
+          console.log('Ruta prevista del query param:', intendedRouteParam)
+
           if (intendedRoute) {
             console.log('Redirigiendo a la ruta prevista:', intendedRoute)
             await router.push(intendedRoute)
