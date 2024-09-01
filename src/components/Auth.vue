@@ -214,8 +214,8 @@ export default {
           console.log('Ruta prevista:', intendedRoute)
           const url = new URL(window.location.href)
           console.log('URL:', url)
-          const intendedRouteParam = url.searchParams.get('intendedRoute')
-          console.log('Ruta prevista del query param:', intendedRouteParam)
+          intendedRoute = url.searchParams.get('intendedRoute')
+          console.log('Ruta prevista del query param:', intendedRoute)
 
           if (intendedRoute) {
             console.log('Redirigiendo a la ruta prevista:', intendedRoute)
