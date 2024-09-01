@@ -3,8 +3,8 @@
     <h1 class="text-white text-2xl">Cargando...</h1>
   </section>
   <section v-else class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center overflow-hidden relative">
-    <div v-if="error" class="absolute top-4 left-1/2 transform -translate-x-1/2 w-11/12 max-w-md p-4 mb-4 text-sm text-white bg-red-600 rounded-lg shadow-lg">
-      <p>{{ error }}</p>
+    <div v-if="errorMessage" class="absolute top-4 left-1/2 transform -translate-x-1/2 w-11/12 max-w-md p-4 mb-4 text-sm text-white bg-red-600 rounded-lg shadow-lg">
+      <p>{{ errorMessage }}</p>
     </div>
 
     <div v-if="showTyC" class="absolute bottom-0 left-0 right-0 h-[85%] bg-white rounded-3xl flex flex-col">
@@ -286,7 +286,9 @@ export default {
             // onAuthStateChanged will handle the rest
           } catch (e) {
             // Extraer el código de error y crear un mensaje amigable
+            console.log('Error al iniciar sesión con enlace de email:', e)
             if (e.code) {
+              console.log('Código de error:', e.code)
               switch (e.code) {
                 case 'auth/invalid-action-code':
                   errorMessage.value = 'El enlace de verificación no es válido o ha expirado.'
