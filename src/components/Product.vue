@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <div class="h-8"></div>
+    <div class="h-4"></div>
     <h1 @click="addToCart" class="w-full bg-[#BE38F3] py-3 text-xl text-center rounded-xl cursor-pointer">Agregar al carrito</h1>
   </div>
   <NavBar currentView="Events" />

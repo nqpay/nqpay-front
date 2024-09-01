@@ -47,7 +47,7 @@
     <div v-else class="flex flex-col items-center justify-center h-full">
       <p class="text-xl">Tu carrito está vacío.</p>
     </div>
-    <button :disabled="isLoading" @click="askLink()" v-if="cartTotal.value > 0" class="mt-2 w-full bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
+    <button :disabled="isLoading" @click="askLink()" v-if="cartTotal.value > 0" class="mb-10 w-full bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
       <div v-if="isLoading" class="flex items-center justify-center">
         <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
