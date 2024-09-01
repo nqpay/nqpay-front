@@ -195,7 +195,7 @@ export default {
     let unsubscribe = null
 
     const actionCodeSettings = {
-      url: 'https://pay.nqpay.lat/auth',
+      url: `https://pay.nqpay.lat/auth?email=${encodeURIComponent(email.value)}`,
       handleCodeInApp: true,
     }
 
@@ -234,7 +234,11 @@ export default {
 
     const login = async () => {
       try {
-        await sendSignInLinkToEmail(getAuth(), email.value, actionCodeSettings)
+        const settings = {
+          ...actionCodeSettings,
+          url: `https://pay.nqpay.lat/auth?email=${encodeURIComponent(email.value)}`,
+        }
+        await sendSignInLinkToEmail(getAuth(), email.value, settings)
         localStorage.setItem('emailForSignInFirebaseAuth', email.value)
         emailSent.value = true
       } catch (error) {
@@ -256,12 +260,19 @@ export default {
     const handleEmailLink = async () => {
       const auth = getAuth()
       if (isSignInWithEmailLink(auth, window.location.href)) {
-        const emailForSignIn = localStorage.getItem('emailForSignInFirebaseAuth')
+        let emailForSignIn = localStorage.getItem('emailForSignInFirebaseAuth')
+
+        // If email is not in localStorage, try to get it from URL parameters
+        if (!emailForSignIn) {
+          const urlParams = new URLSearchParams(window.location.search)
+          emailForSignIn = urlParams.get('email')
+        }
+
         if (emailForSignIn) {
           try {
             await signInWithEmailLink(auth, emailForSignIn, window.location.href)
             localStorage.removeItem('emailForSignInFirebaseAuth')
-            // No necesitamos hacer nada más aquí, onAuthStateChanged se encargará del resto
+            // onAuthStateChanged will handle the rest
           } catch (error) {
             console.error('Error al iniciar sesión con enlace de email:', error)
             isLoading.value = false
@@ -269,6 +280,7 @@ export default {
         } else {
           console.error('No se encontró el email para el inicio de sesión')
           isLoading.value = false
+          // Optionally, you can prompt the user to enter their email here
         }
       }
     }
