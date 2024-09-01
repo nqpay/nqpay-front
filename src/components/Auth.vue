@@ -3,6 +3,10 @@
     <h1 class="text-white text-2xl">Cargando...</h1>
   </section>
   <section v-else class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center overflow-hidden relative">
+    <div v-if="error" class="absolute top-4 left-1/2 transform -translate-x-1/2 w-11/12 max-w-md p-4 mb-4 text-sm text-white bg-red-600 rounded-lg shadow-lg">
+      <p>{{ error }}</p>
+    </div>
+
     <div v-if="showTyC" class="absolute bottom-0 left-0 right-0 h-[85%] bg-white rounded-3xl flex flex-col">
       <div class="flex-grow overflow-y-auto p-8">
         <h1 class="text-xl font-bold mb-4">Términos y Condiciones</h1>
@@ -187,6 +191,7 @@ export default {
   },
   methods: {},
   setup() {
+    const errorMessage = ref('')
     const router = useRouter()
     const email = ref('')
     const isLoggedIn = ref(false)
@@ -267,6 +272,7 @@ export default {
       const auth = getAuth()
       if (isSignInWithEmailLink(auth, window.location.href)) {
         let emailForSignIn = localStorage.getItem('emailForSignInFirebaseAuth')
+        localStorage.removeItem('emailForSignInFirebaseAuth')
 
         // If email is not in localStorage, try to get it from URL parameters
         if (!emailForSignIn) {
@@ -277,10 +283,30 @@ export default {
         if (emailForSignIn) {
           try {
             await signInWithEmailLink(auth, emailForSignIn, window.location.href)
-            localStorage.removeItem('emailForSignInFirebaseAuth')
             // onAuthStateChanged will handle the rest
-          } catch (error) {
-            console.error('Error al iniciar sesión con enlace de email:', error)
+          } catch (e) {
+            // Extraer el código de error y crear un mensaje amigable
+            if (e.code) {
+              switch (e.code) {
+                case 'auth/invalid-action-code':
+                  errorMessage.value = 'El enlace de verificación no es válido o ha expirado.'
+                  break
+                case 'auth/expired-action-code':
+                  errorMessage.value = 'El enlace de verificación ha expirado. Por favor, solicita uno nuevo.'
+                  break
+                case 'auth/user-disabled':
+                  errorMessage.value = 'Esta cuenta ha sido deshabilitada.'
+                  break
+                default:
+                  errorMessage.value = 'Ocurrió un error al intentar iniciar sesión. Por favor, inténtalo de nuevo.'
+                  break
+              }
+            } else {
+              errorMessage.value = 'Ocurrió un error desconocido. Por favor, inténtalo de nuevo.'
+            }
+
+            // Imprimir el mensaje de error personalizado
+            console.error('Error al iniciar sesión con enlace de email:', errorMessage.value)
             isLoading.value = false
           }
         } else {
@@ -313,6 +339,7 @@ export default {
     })
 
     return {
+      errorMessage,
       email,
       isLoggedIn,
       emailSent,
