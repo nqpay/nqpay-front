@@ -106,6 +106,19 @@ export default {
   },
   async mounted() {
     this.event = JSON.parse(localStorage.getItem('venue'))
+    if (!this.event) {
+      const response = await fetch(`https://api.nqpay.lat/venues/`)
+      const data = await response.json()
+      console.log('dataaa: ', data)
+      for (const venue of data) {
+        console.log('vanue.name: ', venue.name)
+        console.log('event: ', this.route.params.event)
+        if (venue.name.toLowerCase() === this.route.params.event) {
+          this.event = venue
+          break
+        }
+      }
+    }
     const response = await fetch(`https://api.nqpay.lat/venues/${this.event.SK.slice(2)}/products`)
     const data = await response.json()
     this.products = data

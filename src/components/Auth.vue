@@ -200,19 +200,25 @@ export default {
     }
 
     const handleAuthentication = async (user) => {
+      console.log('Usuario autenticado:', user)
       if (user) {
         const hasCompletedProfile = await checkProfileCompletion(user)
         if (hasCompletedProfile) {
           const intendedRoute = localStorage.getItem('intendedRoute')
           if (intendedRoute) {
+            console.log('Redirigiendo a la ruta prevista:', intendedRoute)
             await router.push(intendedRoute)
             localStorage.removeItem('intendedRoute')
           } else {
+            console.log('Redirigiendo al inicio')
             await router.push('/')
           }
         } else {
+          console.log('Redirigiendo a completar perfil')
           await router.push('/complete-profile')
         }
+      } else {
+        console.log('Usuario no autenticado')
       }
     }
 
