@@ -98,7 +98,14 @@ export default {
             birthdate: this.birthdate,
           }),
         })
-        const intendedRoute = localStorage.getItem('intendedRoute')
+        let intendedRoute = localStorage.getItem('intendedRoute')
+        //extract the intended route from the url params
+        const url = new URL(window.location.href)
+        const intendedRouteParam = url.searchParams.get('intendedRoute')
+        if (intendedRouteParam) {
+          intendedRoute = intendedRouteParam
+        }
+
         if (intendedRoute) {
           this.$router.push(intendedRoute)
         } else {

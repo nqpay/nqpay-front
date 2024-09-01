@@ -200,7 +200,7 @@ export default {
     let unsubscribe = null
 
     const actionCodeSettings = {
-      url: `https://pay.nqpay.lat/auth?email=${encodeURIComponent(email.value)}`,
+      url: `https://pay.nqpay.lat/auth?email=${encodeURIComponent(email.value)}&intendedRoute=${encodeURIComponent(localStorage.getItem('intendedRoute'))}`,
       handleCodeInApp: true,
     }
 
@@ -247,7 +247,7 @@ export default {
       try {
         const settings = {
           ...actionCodeSettings,
-          url: `https://pay.nqpay.lat/auth?email=${encodeURIComponent(email.value)}`,
+          url: `https://pay.nqpay.lat/auth?email=${encodeURIComponent(email.value)}&intendedRoute=${encodeURIComponent(localStorage.getItem('intendedRoute'))}`,
         }
         await sendSignInLinkToEmail(getAuth(), email.value, settings)
         localStorage.setItem('emailForSignInFirebaseAuth', email.value)
