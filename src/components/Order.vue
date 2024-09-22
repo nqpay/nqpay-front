@@ -21,7 +21,7 @@
     </div>
     <!-- Delivery button -->
     <div class="w-full flex fixed bottom-0 left-0 right-0 p-4 mb-20 font-bold text-xl text-black gap-2">
-      <button class="bg-white bg-opacity-10 text-white rounded-lg h-14 w-2/12 items-center">
+      <button @click="goToScanner" class="bg-white bg-opacity-10 text-white rounded-lg h-14 w-2/12 items-center">
         <img src="/arrowleft.svg" class="w-full p-5">
       </button>
       <button v-if="order" class="py-3 px-4 rounded-lg text-center h-14 w-10/12 text-sm"
@@ -37,13 +37,14 @@
 <script>
 import { useAuth0 } from '@auth0/auth0-vue'
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 export default {
   name: 'Order',
   setup() {
     const auth0 = useAuth0()
     const route = useRoute()
+    const router = useRouter()
     const order = ref(null)
     const isDelivering = ref(false)
     const isAuthenticated = ref(false)
@@ -110,8 +111,12 @@ export default {
       }
     }
 
+    const goToScanner = () => {
+      router.push('/scanner')
+    }
+
     onMounted(() => {
-      console.log("FETCH ORDER!!")
+      console.log("Component mounted")
       checkAuth()
       fetchOrder(route.params.id)
     })
@@ -122,6 +127,7 @@ export default {
       currentDate,
       isDelivering,
       markAsDelivered,
+      goToScanner,
     }
   }
 }
