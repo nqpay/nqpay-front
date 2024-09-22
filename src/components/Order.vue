@@ -38,14 +38,9 @@
 
 <script >
 import { useAuth0 } from '@auth0/auth0-vue'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import NavBar from './NavBar.vue'
-import { onMounted } from 'vue'
-
-const order = ref(null)
-const route = useRoute()
-const isDelivering = ref(false)
 
 
 const currentDate = computed(() => {
@@ -64,12 +59,16 @@ export default {
       isAuthenticated: false,
       user: null,
       auth0Client: null,
+      order: ref(null),
+      route: useRoute(),
+      isDelivering: ref(false)
     }
   },
   created() {
     this.checkAuth()
   },
   onMounted() {
+    console.log("FETCH ORDER!!")
     // Fetch order data on component mount
     fetchOrder(route.params.id)
   },
@@ -101,8 +100,8 @@ export default {
         const response = await fetch(`https://api.nqpay.lat/checkout/${orderId}`)
         if (response.ok) {
           const data = await response.json()
-          order.value = data
-          console.log(order.value)
+          this.order.value = data
+          console.log(this.order.value)
         } else {
           console.error('Error al obtener el pedido:', response.statusText)
         }
