@@ -44,11 +44,14 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
+import { useCartStore } from '../stores/cartStore'
 import QRCodeVue3 from 'qrcode-vue3'
 import NavBar from './NavBar.vue'
 const order = ref(null)
 const router = useRoute()
+const cartStore = useCartStore()
 onMounted(async () => {
+  cartStore.clearCart()
   const order_id = router.query.external_reference
   if (order_id) {
     try {

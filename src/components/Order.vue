@@ -21,7 +21,7 @@
   <!-- <NavBar currentView="Checkout" /> -->
   <!-- Botón de entrega -->
   <div class="w-full flex fixed bottom-0 left-0 right-0 p-4 mb-20 font-bold text-xl text-black">
-    <button class="bg-red-300 rounded-lg"><</button>
+    <button class="bg-red-300 rounded-lg h-1 w-1 items-center"><</button>
     <button
       v-if="order"
       class="py-3 px-4 rounded-lg text-center"
