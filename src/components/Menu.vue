@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="h-14"></div>
-    <div class="w-full h-10 bg-[#452353] rounded-xl flex justify-between px-8 items-center">
+    <!-- <div class="w-full h-10 bg-[#452353] rounded-xl flex justify-between px-8 items-center">
       <a>Tragos</a>
       <a class="text-[#4F4356]">|</a>
       <a>Cervezas</a>
@@ -20,7 +20,7 @@
       <a>Vinos</a>
       <a class="text-[#4F4356]">|</a>
       <a>Otros</a>
-    </div>
+    </div> -->
     <div class="h-10"></div>
 
     <!-- <div class="flex flex-no-wrap overflow-x-scroll scrolling-touch items-start mb-8 gap-8">

@@ -7,7 +7,7 @@ import { initializeFaro } from '@grafana/faro-web-sdk'
 
 import App from './App.vue'
 import './style.css'
-import Home from './components/Home.vue'
+import DemoHome from './components/DemoHome.vue'
 import EventsList from './components/EventsList.vue'
 import Menu from './components/Menu.vue'
 import Product from './components/Product.vue'
@@ -40,7 +40,7 @@ const getCurrentUser = () => {
 const router = new createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: Home, meta: { requiresAuth: true } },
+    { path: '/', component: DemoHome, meta: { requiresAuth: true } },
     { path: '/admin', component: Admin },
     { path: '/auth', component: Auth },
     { path: '/events', component: EventsList, meta: { requiresAuth: true } },
