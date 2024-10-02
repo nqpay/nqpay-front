@@ -11,7 +11,7 @@
     <img src="/FondoCardMid.png" alt="Vue logo" class="rounded-lg h-24" />
     <div class="h-10"></div>
     <div class="h-14 rounded-lg  bg-[#BE38F3] flex items-center justify-center">
-      <a href="/events" class="text-xl">Ir al menu de tragos</a>
+      <a href="/menu/NQ Fest" class="text-xl">Ir al menu de tragos</a>
     </div>
   </div>
   <NavBar currentView="Home" />

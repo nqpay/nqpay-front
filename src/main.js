@@ -43,7 +43,7 @@ const router = new createRouter({
     { path: '/', component: DemoHome, meta: { requiresAuth: true } },
     { path: '/admin', component: Admin },
     { path: '/auth', component: Auth },
-    { path: '/events', component: EventsList, meta: { requiresAuth: true } },
+    // { path: '/events', component: EventsList, meta: { requiresAuth: true } },
     { path: '/menu/:event', component: Menu, meta: { requiresAuth: true } },
     { path: '/menu/:event/:product', component: Product, meta: { requiresAuth: true } },
     { path: '/cart', component: Cart, meta: { requiresAuth: true } },
