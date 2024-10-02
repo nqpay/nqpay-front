@@ -205,19 +205,17 @@ export default {
     }
 
     const handleAuthentication = async (user) => {
-      console.log('Usuario autenticado:', user)
       if (user) {
         const hasCompletedProfile = await checkProfileCompletion(user)
         if (hasCompletedProfile) {
           // TODO: agregar aca la busqueda del query param intendedRoute
-          let intendedRoute = localStorage.getItem('intendedRoute')
-          console.log('Ruta prevista:', intendedRoute)
           const url = new URL(window.location.href)
-          console.log('URL:', url)
-          intendedRoute = url.searchParams.get('intendedRoute')
-          console.log('Ruta prevista del query param:', intendedRoute)
+          let intendedRoute = url.searchParams.get('intendedRoute')
+          if (!intendedRoute || intendedRoute == "") {
+            intendedRoute = localStorage.getItem('intendedRoute')
+          }
 
-          if (intendedRoute) {
+          if (intendedRoute && intendedRoute != "") {
             console.log('Redirigiendo a la ruta prevista:', intendedRoute)
             await router.push(intendedRoute)
             localStorage.removeItem('intendedRoute')
