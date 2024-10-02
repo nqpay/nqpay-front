@@ -105,7 +105,10 @@ export default {
     },
   },
   async mounted() {
-    this.event = JSON.parse(localStorage.getItem('venue'))
+    this.event = JSON.parse(localStorage.getItem('venue')) || {
+      'SK' : 'V#2a5e6d27-65a0-4984-a85d-ba1cc713de68',
+      'name': 'NQ Fest'
+    }
     if (!this.event) {
       const response = await fetch(`https://api.nqpay.lat/venues/`)
       const data = await response.json()
