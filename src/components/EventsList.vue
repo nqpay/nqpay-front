@@ -1,3 +1,4 @@
+<!-- Deprecated for Demo -->
 <template>
   <div class="flex flex-col bg-[#1C1C1E] h-screen text-white p-8 pb-20">
     <div class="flex justify-between items-center">
