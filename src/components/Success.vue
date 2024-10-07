@@ -16,9 +16,10 @@
           <div class="self-center">
             <p class="text-2xl font-medium pb-5">Código QR para retiro</p>
             <div class="rounded-2xl p-2 bg-[#D2D2D2]">
+
               <QRCodeVue3
-                v-if="order.id"
-                :value="order.id"
+                v-if="router.query.external_reference"
+                :value="router.query.external_reference"
                 :qrOptions="{ typeNumber: 0, mode: 'Byte', errorCorrectionLevel: 'L' }"
                 :dotsOptions="{ type: 'square', color: '#000' }"
                 :backgroundOptions="{ color: '#D2D2D2' }"
@@ -29,8 +30,8 @@
               />
             </div>
             <p class="pt-5">$ {{ order.total }}</p>
-            <div v-for="item in order.items">
-              <p class="font-bold">x{{ item.quantity }} {{ item.name }}</p>
+            <div v-for="item in order.products">
+              <p class="font-bold">{{ item.quantity }}x {{ item.name }}</p>
             </div>
           </div>
         </div>
@@ -42,6 +43,7 @@
 </template>
 
 <script setup>
+import { getAuth } from 'firebase/auth'
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { useCartStore } from '../stores/cartStore'
@@ -55,7 +57,14 @@ onMounted(async () => {
   const order_id = router.query.external_reference
   if (order_id) {
     try {
-      const response = await fetch(`https://api.nqpay.lat/checkout/${order_id}`)
+      const auth = getAuth()
+      const idToken = await auth.currentUser.getIdToken()
+      const response = await fetch(`https://api.nqpay.lat/orders/${order_id}/products`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      })
       if (response.ok) {
         const data = await response.json()
         order.value = data

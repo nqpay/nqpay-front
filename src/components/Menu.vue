@@ -34,15 +34,16 @@
         </div>
       </div>
     </div> -->
-
+    
     <div class="grid grid-cols-2 gap-2">
       <div v-for="item in products" :key="item.id" @click="navigateToProduct(item)" class="h-full bg-white rounded-2xl flex flex-col flex-none md:w-1/3 md:pb-4 border">
+
         <div class="w-full h-3/4 rounded-t-2xl overflow-hidden">
-          <img :src="imageUrl(`/${item.image}`)" :alt="item.name" class="w-full h-full object-cover" />
+          <img :src="imageUrl(item.image_url)" :alt="item.name" class="w-full h-full object-cover" />
         </div>
-        <div class="flex items-center justify-between">
+        <div class="grid grid-cols-2">
           <h1 class="text-black pt-1 px-2 text-lg font-bold">{{ item.name }}</h1>
-          <h2 class="text-black px-2 mt-1 mr-2 text-sm font-semibold border border-1 border-violet-800 rounded-full">$ {{ item.price }}</h2>
+          <h2 class="text-black px-2 mt-1 mr-2 text-sm font-semibold rounded-full">${{ item.price }}</h2>
         </div>
       </div>
     </div>
@@ -66,6 +67,7 @@
 </template>
 
 <script>
+import { getAuth } from 'firebase/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '../stores/productStore'
 import { useCartStore } from '../stores/cartStore'
@@ -105,6 +107,7 @@ export default {
     },
   },
   async mounted() {
+    const auth = getAuth()
     this.event = JSON.parse(localStorage.getItem('venue')) || {
       'SK' : 'V#2a5e6d27-65a0-4984-a85d-ba1cc713de68',
       'name': 'NQ Fest'
@@ -122,9 +125,17 @@ export default {
         }
       }
     }
-    const response = await fetch(`https://api.nqpay.lat/venues/${this.event.SK.slice(2)}/products`)
+
+    const idToken = await auth.currentUser.getIdToken()
+    // const idToken = await user.getIdToken()
+    const response = await fetch(`https://api.nqpay.lat/venues/NQ%20Fest/products`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    })
     const data = await response.json()
-    this.products = data
+    this.products = data.products
     this.numberOfItems = this.cartStore.state.numberOfItems
   },
 }

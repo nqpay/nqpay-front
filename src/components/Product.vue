@@ -9,10 +9,10 @@
 
     <div class="bg-[#FBF2FF] rounded-2xl flex flex-col">
       <div class="rounded-t-2xl overflow-hidden">
-        <img :src="`/${product.image}`" :alt="product.name" class="w-full object-cover" />
+        <img :src="product.image_url" :alt="product.name" class="w-full object-cover" />
       </div>
       <div class="flex flex-col items-start p-4">
-        <div class="flex items-center justify-between w-full">
+        <div class="grid grid-cols-2 items-center justify-between w-full">
           <h1 class="text-black pt-1 text-3xl font-semibold">{{ product.name }}</h1>
           <h2 class="text-black mt-1 text-3xl font-semibold">$ {{ product.price }}</h2>
         </div>

@@ -14,7 +14,7 @@
     <div v-if="cartItems.length > 0" class="flex flex-col gap-4 h-4/5 overflow-auto">
       <div v-for="item in cartItems" :key="item.name" class="w-full flex flex-col flex-none">
         <div class="flex items-center gap-4 bg-[#FBF2FF] border rounded-2xl p-2">
-          <img :src="item.image" :alt="item.name" class="h-24 w-24 rounded-xl object-cover" />
+          <img :src="item.image_url" :alt="item.name" class="h-24 w-24 rounded-xl object-cover" />
           <div class="flex flex-grow flex-col justify-between">
             <div>
               <h1 class="text-black text-xl font-semibold">{{ item.name }}</h1>
@@ -117,20 +117,19 @@ const askLink = async () => {
     }
 
     const idToken = await user.getIdToken()
-    const response = await fetch('https://api.nqpay.lat/checkout', {
+    const response = await fetch('https://api.nqpay.lat/venue/aaa/order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${idToken}`,
       },
-      body: JSON.stringify({
-        order: cartItems.value,
-        venue_id: JSON.parse(localStorage.getItem('venue')).SK.slice(2),
-      }),
+      body: JSON.stringify(
+        cartItems.value
+      ),
     })
     const data = await response.json()
 
-    window.location.href = data
+    window.location.href = data.Message
   } catch (error) {
     console.error('Error al procesar el pago:', error)
     // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario

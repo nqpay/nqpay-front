@@ -241,7 +241,9 @@ export default {
             Authorization: `Bearer ${idToken}`,
           },
         })
-        return await response.json()
+        const data = await response.json()
+
+        return data.Status
       } catch (error) {
         console.error('Error al verificar el perfil del usuario:', error)
         return false

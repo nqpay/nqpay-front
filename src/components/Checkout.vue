@@ -9,10 +9,10 @@
     <div class="h-14"></div>
     <div class="flex flex-col gap-4">
       <div v-on:click="navigateToOrder(order)" v-for="order in orders" :key="order.id" class="flex items-center gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2">
-        <img :src="order.venue_name + '.png'" alt="Vue logo" class="h-12 w-12 rounded-lg object-cover" />
+        <img :src="order.venue_name + '.png'" alt="venue" class="h-12 w-12 rounded-lg object-cover" />
         <div class="flex flex-col w-full">
-          <p class="font-bold">Orden</p>
-          <p class="">{{ order.items[0].quantity }}x {{ order.items[0].title }}</p>
+          <p class="font-bold">Total de la orden</p>
+          <p class="">${{ order.total }}</p>
         </div>
         <div class="flex flex-col justify-start h-full">
           <p class="text-[#D4CAD8]">04/07/2024</p>
@@ -49,7 +49,7 @@ onMounted(async () => {
   try {
     const auth = getAuth()
     const idToken = await auth.currentUser.getIdToken()
-    const response = await fetch(`https://api.nqpay.lat/orders/`, {
+    const response = await fetch(`https://api.nqpay.lat/orders`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${idToken}`,
@@ -57,8 +57,8 @@ onMounted(async () => {
     })
     if (response.ok) {
       const data = await response.json()
-      console.log(data)
-      orders.value = data
+      orders.value = data.orders
+      console.log("orderrsss: ", orders.value)
     } else {
       console.error('Error al obtener el pedido:', response.statusText)
     }
