@@ -54,7 +54,7 @@ export default {
       }
     },
     onDetect(result) {
-      const id = result[0].rawValue.split('O#')[1]
+      const id = result[0].rawValue
       console.log('Detected ID:', id)
       this.$router.push(`/order/${id}`)
     },
