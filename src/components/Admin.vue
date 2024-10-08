@@ -32,7 +32,7 @@ export default {
   },
   created() {
     this.checkAuth()
-    console.log('user: ', this.user)
+    console.log('user: ', user)
   },
   methods: {
     async checkAuth() {
