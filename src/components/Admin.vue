@@ -32,11 +32,13 @@ export default {
   },
   created() {
     this.checkAuth()
-    console.log('user: ', user)
   },
   methods: {
     async checkAuth() {
       const auth0 = useAuth0()
+      const { getAccessTokenSilently } = useAuth0();
+      const token = await getAccessTokenSilently();
+      console.log('tokeennn: ', token)
 
       // Esperar a que Auth0 termine de cargar
       while (auth0.isLoading.value) {
@@ -49,6 +51,7 @@ export default {
         console.log('Usuario no autenticado. Redirigiendo al login...')
         auth0.loginWithRedirect()
       } else {
+        console.log("userr: ", auth0.user.value)
         this.user = auth0.user.value
         this.auth0Client = auth0
       }

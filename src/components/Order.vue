@@ -91,10 +91,13 @@ export default {
 
       isDelivering.value = true
       try {
+        const { getAccessTokenSilently } = useAuth0();
+        const token = await getAccessTokenSilently();
         const response = await fetch(`https://api.nqpay.lat/orders/${route.params.id}/deliver`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
         })
 
