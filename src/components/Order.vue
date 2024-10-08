@@ -59,11 +59,12 @@ export default {
 
     const fetchOrder = async (orderId) => {
       try {
-        const response = await fetch(`https://api.nqpay.lat/checkout/${orderId}`)
+        const response = await fetch(`https://api.nqpay.lat/orders/${orderId}/products`)
         if (response.ok) {
           const data = await response.json()
+          console.log('data: ', data)
           order.value = data
-          console.log(order.value)
+          console.log('o.value: ', order.value)
         } else {
           console.error('Error al obtener el pedido:', response.statusText)
         }
