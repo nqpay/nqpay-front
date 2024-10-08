@@ -11,7 +11,7 @@
 
         <!-- Item list -->
         <div class="bg-white bg-opacity-10 rounded-lg p-4 flex-grow">
-          <div v-for="item in order.items" :key="item.name" class="flex justify-between mb-2 font-bold text-xl px-4">
+          <div v-for="item in order.products" :key="item.name" class="flex justify-between mb-2 font-bold text-xl px-4">
             <span>{{ item.name }}</span>
             <span>{{ item.quantity }}</span>
           </div>
