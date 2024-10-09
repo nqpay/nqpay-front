@@ -103,6 +103,7 @@ app.use(
     clientId: 'mWH9lOF0Jaonbh60Mt7TTSQpafGeBP14',
     authorizationParams: {
       redirect_uri: 'http://localhost:5173/admin',
+      audience: 'https://api.nqpay.lat'
     },
   })
 )

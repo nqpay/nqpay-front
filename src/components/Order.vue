@@ -42,12 +42,11 @@ import { useRoute, useRouter } from 'vue-router'
 export default {
   name: 'Order',
   setup() {
-    const auth0 = useAuth0()
+    const { isAuthenticated, isLoading, loginWithRedirect, getAccessTokenSilently } = useAuth0()
     const route = useRoute()
     const router = useRouter()
     const order = ref(null)
     const isDelivering = ref(false)
-    const isAuthenticated = ref(false)
 
     const currentDate = computed(() => {
       return new Date().toLocaleDateString('es-ES', {
@@ -91,7 +90,6 @@ export default {
 
       isDelivering.value = true
       try {
-        const { getAccessTokenSilently } = useAuth0();
         const token = await getAccessTokenSilently();
         const response = await fetch(`https://api.nqpay.lat/orders/${route.params.id}/deliver`, {
           method: 'POST',
