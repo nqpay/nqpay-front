@@ -102,7 +102,7 @@ app.use(
     domain: 'dev-d0y1bpajet18zump.us.auth0.com',
     clientId: 'mWH9lOF0Jaonbh60Mt7TTSQpafGeBP14',
     authorizationParams: {
-      redirect_uri: 'http://localhost:5173/admin',
+      redirect_uri: 'https://api.nqpay.lat/admin',
       audience: 'https://api.nqpay.lat'
     },
   })
