@@ -4,8 +4,8 @@
       <div class="h-14 w-1/2 mb-10 bg-opacity-5 bg-white rounded-lg"></div>
       <div class="flex justify-between">
         <p class="text-2xl font-bold">Tu Pedido</p>
-        <div class="bg-opacity-25 rounded-lg px-2 py-1 items-center flex" :class="order.status == 'PAID' ? 'bg-green-500' : 'bg-red-500'">
-          <p v-if="order.status == 'PAID'">Pagado</p>
+        <div class="bg-opacity-25 rounded-lg px-2 py-1 items-center flex" :class="order.order_status == 'PAID' ? 'bg-green-500' : 'bg-red-500'">
+          <p v-if="order.order_status == 'PAID'">Pagado</p>
           <p v-else>Entregado</p>
         </div>
       </div>

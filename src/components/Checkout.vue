@@ -16,8 +16,8 @@
         </div>
         <div class="flex flex-col justify-start h-full">
           <p class="text-[#D4CAD8]">04/07/2024</p>
-          <div class="bg-opacity-25 justify-center rounded-lg px-2 py-1 items-center flex" :class="order.status == 'PAID' ? 'bg-green-500' : 'bg-red-500'">
-            <p v-if="order.status == 'PAID'">Pagado</p>
+          <div class="bg-opacity-25 justify-center rounded-lg px-2 py-1 items-center flex" :class="order.order_status == 'PAID' ? 'bg-green-500' : 'bg-red-500'">
+            <p v-if="order.order_status == 'PAID'">Pagado</p>
             <p v-else>Entregado</p>
           </div>
         </div>

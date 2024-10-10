@@ -25,9 +25,9 @@
         <img src="/arrowleft.svg" class="w-full p-5">
       </button>
       <button v-if="order" class="py-3 px-4 rounded-lg text-center h-14 w-10/12 text-sm"
-        :class="order.status === 'DELIVERED' ? 'bg-red-500 w-3/4 text-white' : 'bg-green-500'" @click="markAsDelivered"
-        :disabled="isDelivering || order.status === 'DELIVERED'">
-        {{ isDelivering ? 'Marcando como entregado...' : order.status === 'DELIVERED' ? 'Pedido entregado' : 'Marcar pedido como entregado' }}
+        :class="order.order_status === 'DELIVERED' ? 'bg-red-500 w-3/4 text-white' : 'bg-green-500'" @click="markAsDelivered"
+        :disabled="isDelivering || order.order_status === 'DELIVERED'">
+        {{ isDelivering ? 'Marcando como entregado...' : order.order_status === 'DELIVERED' ? 'Pedido entregado' : 'Marcar pedido como entregado' }}
       </button>
     </div>
   </div>
