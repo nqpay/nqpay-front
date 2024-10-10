@@ -51,7 +51,6 @@ export default {
 
         if (isAuthenticated.value) {
           const token = await auth0.getAccessTokenSilently()
-          console.log('Token obtenido:', token)
           user.value = auth0.user.value
         }
       } catch (error) {

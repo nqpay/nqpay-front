@@ -117,7 +117,7 @@ const askLink = async () => {
     }
 
     const idToken = await user.getIdToken()
-    const response = await fetch('https://api.nqpay.lat/venue/aaa/order', {
+    const response = await fetch('https://api.nqpay.lat/venue/NQ%20Fest/order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
