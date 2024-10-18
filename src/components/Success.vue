@@ -9,7 +9,7 @@
           <p v-else>Entregado</p>
         </div>
       </div>
-      <p class="mt-2" v-if="order.status == 'PAID'">Acercate a la barra a retirar tu pedido</p>
+      <p class="mt-2" v-if="order.order_status == 'PAID'">Acercate a la barra a retirar tu pedido</p>
       <p class="mt-2" v-else>Este pedido ya ha sido entregado</p>
       <div class="justify-center pb-40 flex h-full flex-col">
         <div class="flex w-full flex-col">
