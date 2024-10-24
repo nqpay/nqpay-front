@@ -1,6 +1,7 @@
 <template>
   <section v-if="isLoading" class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center">
-    <h1 class="text-white text-2xl">Cargando...</h1>
+    <!-- <h1 class="text-white text-2xl">Cargando...</h1> -->
+     <img src="/loading_cup.gif" class="w-48"/>
   </section>
   <section v-else class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center overflow-hidden relative">
     <div v-if="errorMessage" class="absolute top-4 left-1/2 transform -translate-x-1/2 w-11/12 max-w-md p-4 mb-4 text-sm text-white bg-red-600 rounded-lg shadow-lg">

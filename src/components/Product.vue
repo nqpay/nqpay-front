@@ -2,7 +2,7 @@
   <div class="h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20">
     <div class="flex justify-between items-center">
       <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" />
-      <a class="text-xl font-semibold">{{ eventName.charAt(0).toUpperCase() + eventName.slice(1) }}</a>
+      <!-- <a class="text-xl font-semibold">{{ eventName.charAt(0).toUpperCase() + eventName.slice(1) }}</a> -->
       <img src="/cart.png" alt="Vue logo" class="h-7" @click="goToCart" />
     </div>
     <div class="h-8"></div>
@@ -13,9 +13,10 @@
       </div>
       <div class="flex flex-col items-start p-4">
         <div class="grid grid-cols-2 items-center justify-between w-full">
-          <h1 class="text-black pt-1 text-3xl font-semibold">{{ product.name }}</h1>
-          <h2 class="text-black mt-1 text-3xl font-semibold">$ {{ product.price }}</h2>
+          <h1 class="text-black pt-1 text-2xl font-semibold">{{ product.name }}</h1>
+          <h2 class="text-black mt-1 text-2xl font-semibold text-right">$ {{ product.price }}</h2>
         </div>
+        <p v-if="product.description" class="text-gray-500">{{product.description}}</p>
         <div class="w-full mt-4 mb-4">
           <div class="h-0.5 bg-gray-300"></div>
         </div>

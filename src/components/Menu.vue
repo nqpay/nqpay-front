@@ -3,15 +3,15 @@
     <!-- Header -->
     <div class="flex justify-between items-center">
       <img @click="goBack" src="/back.png" alt="Back" class="h-7" />
-      <a class="text-xl font-semibold">{{ event.name }}</a>
+      <!-- <a class="text-xl font-semibold">{{ event.name }}</a> -->
       <div class="relative" @click="goToCart">
         <img src="/cart.png" alt="Cart" class="h-7" />
         <template v-if="numberOfItems > 0">
-          <div class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">{{ numberOfItems }}</div>
+          <div class="absolute top-0 right-0 bg-[#6DF338] text-[#1C1C1E] rounded-full w-5 h-5 flex items-center justify-center text-xs">{{ numberOfItems }}</div>
         </template>
       </div>
     </div>
-    <div class="h-24"></div>
+    <div class="pb-14"></div>
     
     <!-- Product Grid -->
     <div class="grid grid-cols-2 gap-4">

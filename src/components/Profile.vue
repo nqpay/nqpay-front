@@ -1,9 +1,11 @@
 <template>
   <div class="bg-[#1C1C1E] h-screen w-screen flex flex-col px-10">
-    <div class="mt-auto mb-20 flex flex-col gap-4">
-      <!-- <button class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Terminos y Condiciones</button> -->
+    <div class="mt-20 flex flex-col gap-4">
+      <h1 class="text-white font-semibold text-2xl">Hola Juana!</h1>
+      <div class="h-10"></div>
+      <button class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Terminos y Condiciones</button>
       <!-- <button class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Solicitar Ayuda</button> -->
-      <button @click="handleSignOut" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Logout</button>
+      <button @click="handleSignOut" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Cerrar Sesión</button>
     </div>
     <NavBar currentView="Profile" />
   </div>

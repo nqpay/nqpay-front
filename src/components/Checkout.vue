@@ -8,16 +8,16 @@
     <p>Acá vas a encontrar todas las compras que hiciste y tus códigos QR para retirar tus tragos.</p>
     <div class="h-14"></div>
     <div class="flex flex-col gap-4">
-      <div v-on:click="navigateToOrder(order)" v-for="order in orders" :key="order.id" class="flex items-center gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2">
+      <div v-on:click="navigateToOrder(order)" v-for="order in orders" :key="order.id" class="flex items-center justify-between gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2 px-2">
         <!-- <img :src="order.name + '.png'" alt="venue" class="h-12 w-12 rounded-lg object-cover" /> -->
-        <div class="flex flex-col w-full">
+        <div class="flex flex-col ">
           <p class="font-bold">Total de la orden</p>
           <p class="">${{ order.total }}</p>
         </div>
-        <div class="flex flex-col justify-start h-full">
-          <p class="text-[#D4CAD8]">04/07/2024</p>
-          <div class="bg-opacity-25 justify-center rounded-lg px-2 py-1 items-center flex" :class="order.order_status == 'PAID' ? 'bg-green-500' : 'bg-red-500'">
-            <p v-if="order.order_status == 'PAID'">Pagado</p>
+        <div class="flex flex-col h-full justify-center">
+          <!-- <p class="text-[#D4CAD8]">04/07/2024</p> -->
+          <div class="justify-center rounded-lg px-2 py-1 items-center flex" :class="order.status == 'PAID' ? 'bg-[#8419C5]' : 'bg-green-500'">
+            <p v-if="order.status == 'PAID'">Ir a Retirar</p>
             <p v-else>Entregado</p>
           </div>
         </div>

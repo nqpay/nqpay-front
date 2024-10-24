@@ -1,7 +1,8 @@
 <template>
   <div class="h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20">
     <div v-if="order" class="h-full">
-      <div class="h-14 w-1/2 mb-10 bg-opacity-5 bg-white rounded-lg"></div>
+      <!-- <div class="h-14 w-1/2 mb-10 bg-opacity-5 bg-white rounded-lg"></div> -->
+       <div class="h-10"></div>
       <div class="flex justify-between">
         <p class="text-2xl font-bold">Tu Pedido</p>
         <div class="bg-opacity-25 rounded-lg px-2 py-1 items-center flex" :class="order.order_status == 'PAID' ? 'bg-green-500' : 'bg-red-500'">
