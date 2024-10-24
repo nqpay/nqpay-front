@@ -47,7 +47,7 @@
     <div v-else class="flex flex-col items-center justify-center h-full">
       <p class="text-xl">Tu carrito está vacío.</p>
     </div>
-    <div class="flex w-full  text-xl justify-between pb-10">
+    <div v-show="cartItems.length > 0" class="flex w-full  text-xl justify-between pb-10">
       <p class="text-gray-300">Total:</p>
       <p class="font-semibold">
         $ {{ new Intl.NumberFormat('en-US').format(cartTotal.value) }}

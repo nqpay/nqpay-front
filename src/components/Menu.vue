@@ -1,9 +1,8 @@
 <template>
-  <div class="h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20">
+  <div class="h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20 relative">
     <!-- Header -->
     <div class="flex justify-between items-center">
       <img @click="goBack" src="/back.png" alt="Back" class="h-7" />
-      <!-- <a class="text-xl font-semibold">{{ event.name }}</a> -->
       <div class="relative" @click="goToCart">
         <img src="/cart.png" alt="Cart" class="h-7" />
         <template v-if="numberOfItems > 0">
@@ -35,6 +34,13 @@
           </div>
         </div>
       </template>
+    </div>
+
+    <!-- Floating Cart Button -->
+    <div v-if="numberOfItems > 0" 
+         @click="goToCart"
+         class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-[#6DF338] text-[#1C1C1E] px-6 py-3 rounded-full font-bold shadow-lg cursor-pointer hover:bg-[#5BD328] transition-colors duration-200">
+      Ir al carrito ({{ numberOfItems }})
     </div>
   </div>
 
