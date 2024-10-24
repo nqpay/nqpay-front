@@ -243,7 +243,7 @@ export default {
           },
         })
         const data = await response.json()
-
+        localStorage.setItem('name', data.Name)
         return data.Status
       } catch (error) {
         console.error('Error al verificar el perfil del usuario:', error)
