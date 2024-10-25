@@ -7,7 +7,7 @@
     </div>
     <div class="h-8"></div>
 
-    <div class="bg-[#FBF2FF] rounded-2xl flex flex-col">
+    <div class="bg-[#FBF2FF] rounded-2xl flex flex-col mx-4">
       <div class="rounded-t-2xl overflow-hidden">
         <img :src="product.image_url" :alt="product.name" class="w-full object-cover" />
       </div>
@@ -38,8 +38,8 @@
       </div>
     </div>
 
-    <div class="h-4"></div>
-    <h1 @click="addToCart" class="w-full bg-[#BE38F3] py-3 text-xl text-center rounded-xl cursor-pointer">Agregar al carrito</h1>
+    <div class="h-4 mx-4"></div>
+    <h1 @click="addToCart" class="mx-4 bg-[#BE38F3] py-3 text-xl text-center rounded-xl cursor-pointer">Agregar al carrito</h1>
   </div>
   <NavBar currentView="Events" />
 </template>
