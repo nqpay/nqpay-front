@@ -7,6 +7,7 @@
     <h1 class="text-3xl font-semibold">Historial de Pedidos</h1>
     <p>Acá vas a encontrar todas las compras que hiciste y tus códigos QR para retirar tus tragos.</p>
     <div class="h-14"></div>
+    <p v-show="orders.length == 0" class="text-center text-gray-400">No hay ordenes creadas.</p>
     <div class="flex flex-col gap-4">
       <div v-on:click="navigateToOrder(order)" v-for="order in orders" :key="order.id" class="flex items-center justify-between gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2 px-2">
         <!-- <img :src="order.name + '.png'" alt="venue" class="h-12 w-12 rounded-lg object-cover" /> -->

@@ -5,7 +5,7 @@
        <div class="h-10"></div>
       <div class="flex justify-between">
         <p class="text-2xl font-bold">Tu Pedido</p>
-        <div class="bg-opacity-25 rounded-lg px-2 py-1 items-center flex" :class="order.order_status == 'PAID' ? 'bg-green-500' : 'bg-red-500'">
+        <div class="bg-opacity-25 rounded-lg px-2 py-1 items-center flex" :class="order.order_status == 'PAID' ? 'bg-[#8419C5]' : 'bg-green-500'">
           <p v-if="order.order_status == 'PAID'">Pagado</p>
           <p v-else>Entregado</p>
         </div>
