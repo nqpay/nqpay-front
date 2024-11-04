@@ -3,6 +3,7 @@
     <!-- Header -->
     <div class="flex justify-between items-center">
       <img @click="goBack" src="/back.png" alt="Back" class="h-7" />
+      <p>Menú de tragos</p>
       <div class="relative" @click="goToCart">
         <img src="/cart.png" alt="Cart" class="h-7" />
         <template v-if="numberOfItems > 0">
@@ -35,12 +36,10 @@
         </div>
       </template>
     </div>
-
-    <!-- Floating Cart Button -->
     <div v-if="numberOfItems > 0" 
-         @click="goToCart"
-         class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-[#6DF338] text-[#1C1C1E] px-6 py-3 rounded-full font-bold shadow-lg cursor-pointer hover:bg-[#5BD328] transition-colors duration-200">
-      Ir al carrito ({{ numberOfItems }})
+        @click="goToCart"
+        class="fixed bottom-20 left-8 right-8 mb-10 bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
+        Ir al carrito
     </div>
   </div>
 

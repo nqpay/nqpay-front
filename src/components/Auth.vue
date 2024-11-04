@@ -167,8 +167,8 @@
       </div>
       <div v-else class="text-white w-full items-center justify-center flex flex-col gap-6">
         <img class="w-full px-10 object-cover mb-5" src="/email_sent.png" alt="email" />
-        <h1 class="font-bold text-2xl">Login link is on the way!</h1>
-        <p class="text-center">For security reasons, we’ve sent you an email that contains a link to log in nqpay.</p>
+        <h1 class="font-bold text-2xl">Yendooo!</h1>
+        <p class="text-center">Por cuestiones de seguridad, te enviamos un link de acceso a tu e-mail.<br/>Por favor revisá tu casilla para continuar.</p>
         <a href="mailto:">
           <button @click="" class="bg-[#BE38F3] focus:ring-4 focus:outline-none focus:ring-[#BE38F3] font-bold rounded-lg text-sm px-5 py-2 text-center">Open Mail</button>
         </a>

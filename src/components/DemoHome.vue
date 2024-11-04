@@ -6,7 +6,7 @@
       <!-- <img src="/cart.png" alt="Vue logo" class="h-7" /> -->
     </div>
     <div class="h-5"></div>
-    <h1 class="text-3xl font-semibold mt-4">Hora de refrescar tu sed</h1>
+    <h1 class="text-3xl font-semibold mt-4">Vamos a escabiarrr</h1>
     <div class="h-5"></div>
     <img src="/FondoCardMid.png" alt="Vue logo" class="rounded-lg w-full" />
     <div class="h-10"></div>

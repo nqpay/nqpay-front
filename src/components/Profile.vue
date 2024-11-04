@@ -8,7 +8,8 @@
     </div>
     
     <div v-else class="mt-20 flex flex-col gap-4">
-      <h1 class="text-white font-semibold text-2xl">Hola {{ name }}!</h1>
+      <h1 class="text-white font-semibold text-2xl">Hola {{ name }} 👋🏻</h1>
+      <p class="text-white font-regular">Gracias por formar parte de NQ</p>
       <div class="h-10"></div>
       <button class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Términos y Condiciones</button>
       <button @click="handleSignOut" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Cerrar Sesión</button>
