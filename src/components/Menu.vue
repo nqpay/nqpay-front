@@ -1,41 +1,47 @@
 <template>
-  <div class="h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20 relative">
-    <!-- Header -->
-    <div class="flex justify-between items-center">
-      <img @click="goBack" src="/back.png" alt="Back" class="h-7" />
-      <p>Menú de tragos</p>
-      <div class="relative" @click="goToCart">
-        <img src="/cart.png" alt="Cart" class="h-7" />
-        <template v-if="numberOfItems > 0">
-          <div class="absolute top-0 right-0 bg-[#6DF338] text-[#1C1C1E] rounded-full w-5 h-5 flex items-center justify-center text-xs">{{ numberOfItems }}</div>
+  <div class="min-h-screen flex flex-col bg-[#1C1C1E] text-white relative">
+    <!-- Header (fixed at top) -->
+    <div class="sticky top-0 bg-[#1C1C1E] p-8 z-10">
+      <div class="flex justify-between items-center">
+        <img @click="goBack" src="/back.png" alt="Back" class="h-7" />
+        <p>Menú de tragos</p>
+        <div class="relative" @click="goToCart">
+          <img src="/cart.png" alt="Cart" class="h-7" />
+          <template v-if="numberOfItems > 0">
+            <div class="absolute top-0 right-0 bg-[#6DF338] text-[#1C1C1E] rounded-full w-5 h-5 flex items-center justify-center text-xs">{{ numberOfItems }}</div>
+          </template>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Contenido principal scrolleable -->
+    <div class="flex-1 p-8 pt-0">
+      <!-- Product Grid -->
+      <div class="grid grid-cols-2 gap-4 pb-20">
+        <template v-if="isLoading">
+          <div v-for="i in 6" :key="i" class="bg-gray-800 rounded-2xl animate-pulse">
+            <div class="w-full pb-[100%] rounded-t-2xl bg-gray-700"></div>
+            <div class="p-2">
+              <div class="w-3/4 h-4 bg-gray-700 rounded"></div>
+              <div class="w-1/4 h-4 bg-gray-700 rounded mt-2"></div>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div v-for="item in products" :key="item.id" @click="navigateToProduct(item)" class="bg-white rounded-2xl flex flex-col overflow-hidden">
+            <div class="w-full pb-[100%] relative">
+              <img :src="imageUrl(item.image_url)" :alt="item.name" class="absolute top-0 left-0 w-full h-full object-cover" />
+            </div>
+            <div class="p-2">
+              <h1 class="text-black text-sm font-bold truncate">{{ item.name }}</h1>
+              <h2 class="text-black text-sm font-semibold mt-1">${{ item.price }}</h2>
+            </div>
+          </div>
         </template>
       </div>
     </div>
-    <div class="pb-14"></div>
-    
-    <!-- Product Grid -->
-    <div class="grid grid-cols-2 gap-4">
-      <template v-if="isLoading">
-        <div v-for="i in 6" :key="i" class="bg-gray-800 rounded-2xl animate-pulse">
-          <div class="w-full pb-[100%] rounded-t-2xl bg-gray-700"></div>
-          <div class="p-2">
-            <div class="w-3/4 h-4 bg-gray-700 rounded"></div>
-            <div class="w-1/4 h-4 bg-gray-700 rounded mt-2"></div>
-          </div>
-        </div>
-      </template>
-      <template v-else>
-        <div v-for="item in products" :key="item.id" @click="navigateToProduct(item)" class="bg-white rounded-2xl flex flex-col overflow-hidden">
-          <div class="w-full pb-[100%] relative">
-            <img :src="imageUrl(item.image_url)" :alt="item.name" class="absolute top-0 left-0 w-full h-full object-cover" />
-          </div>
-          <div class="p-2">
-            <h1 class="text-black text-sm font-bold truncate">{{ item.name }}</h1>
-            <h2 class="text-black text-sm font-semibold mt-1">${{ item.price }}</h2>
-          </div>
-        </div>
-      </template>
-    </div>
+
+    <!-- Botón de carrito (fixed at bottom) -->
     <div v-if="numberOfItems > 0" 
         @click="goToCart"
         class="fixed bottom-20 left-8 right-8 mb-10 bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
