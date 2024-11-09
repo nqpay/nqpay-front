@@ -1,56 +1,60 @@
 <template>
-  <div class="h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20">
-    <div class="flex justify-between items-center">
-      <div></div>
-    </div>
-    <div class="h-14"></div>
-    <h1 class="text-3xl font-semibold">Historial de Pedidos</h1>
-    <p>Acá vas a encontrar todas las compras que hiciste y tus códigos QR para retirar tus tragos.</p>
-    <div class="h-14"></div>
-
-    <!-- Loading state -->
-    <div v-if="isLoading" class="flex flex-col gap-4">
-      <div v-for="n in 3" :key="n" class="flex items-center justify-between gap-4 bg-white bg-opacity-15 rounded-lg p-2 px-2">
-        <div class="flex flex-col gap-2 flex-1">
-          <div class="h-5 w-32 bg-white bg-opacity-10 rounded animate-pulse"></div>
-          <div class="h-5 w-20 bg-white bg-opacity-10 rounded animate-pulse"></div>
-        </div>
-        <div class="flex flex-col h-full justify-center">
-          <div class="h-8 w-24 bg-white bg-opacity-10 rounded-lg animate-pulse"></div>
+  <div class="fixed inset-0 flex flex-col bg-[#1C1C1E] text-white px-8 overflow-hidden"> 
+    <div class="bg-[#1C1C1E] h-screen flex flex-col">
+     <div class="flex justify-between items-center py-8 text-white">
+      <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" />
+      <a class="text-xl font-semibold">Historial de Pedidos</a>
+      <div class="h-7 w-7"></div>
+      </div>
+      <p class=" text-white font-regular pb-10">Acá vas a encontrar todas las compras que hiciste y tus códigos QR para retirar tus tragos.</p>
+      <!-- <div  class="mt-20 flex flex-col gap-4">
+        <h1 class="text-white font-semibold text-2xl">Historial de Pedidos</h1>
+        <div class="h-10"></div>
+      </div> -->
+      <!-- Loading state -->
+      <div v-if="isLoading" class="flex flex-col gap-4">
+        <div v-for="n in 3" :key="n" class="flex items-center justify-between gap-4 bg-white bg-opacity-15 rounded-lg p-2 px-2">
+          <div class="flex flex-col gap-2 flex-1">
+            <div class="h-5 w-32 bg-white bg-opacity-10 rounded animate-pulse"></div>
+            <div class="h-5 w-20 bg-white bg-opacity-10 rounded animate-pulse"></div>
+          </div>
+          <div class="flex flex-col h-full justify-center">
+            <div class="h-8 w-24 bg-white bg-opacity-10 rounded-lg animate-pulse"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- No orders message -->
-    <p v-else-if="orders.length === 0" class="text-center text-gray-400">
-      No hay ordenes creadas.
-    </p>
+      <!-- No orders message -->
+      <p v-else-if="orders.length === 0" class="text-center text-gray-400">
+        No hay ordenes creadas.
+      </p>
 
-    <!-- Orders list -->
-    <div v-else class="flex flex-col gap-4">
-      <div 
-        v-for="order in orders" 
-        :key="order.id" 
-        @click="navigateToOrder(order)"
-        class="flex items-center justify-between gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2 px-2"
-      >
-        <div class="flex flex-col">
-          <p class="font-bold">Total de la orden</p>
-          <p class="">${{ order.total }}</p>
-        </div>
-        <div class="flex flex-col h-full justify-center">
-          <div 
-            class="justify-center rounded-lg px-2 py-1 items-center flex" 
-            :class="order.status == 'PAID' ? 'bg-[#8419C5]' : 'bg-green-500'"
-          >
-            <p v-if="order.status == 'PAID'">Ir a Retirar</p>
-            <p v-else>Entregado</p>
+      <!-- Orders list -->
+      <div v-else class="flex flex-col gap-4">
+        <div 
+          v-for="order in orders" 
+          :key="order.id" 
+          @click="navigateToOrder(order)"
+          class="flex items-center justify-between gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2 px-2"
+        >
+          <div class="flex flex-col">
+            <p class="font-bold">Total de la orden</p>
+            <p class="">${{ order.total }}</p>
+          </div>
+          <div class="flex flex-col h-full justify-center">
+            <div 
+              class="justify-center rounded-lg px-2 py-1 items-center flex" 
+              :class="order.status == 'PAID' ? 'bg-[#8419C5]' : 'bg-green-500'"
+            >
+              <p v-if="order.status == 'PAID'">Ir a Retirar</p>
+              <p v-else>Entregado</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <NavBar currentView="Checkout" />
   </div>
-  <NavBar currentView="Checkout" />
 </template>
 
 <script setup>
@@ -70,6 +74,10 @@ const navigateToOrder = (order) => {
       external_reference: order.id,
     },
   })
+}
+
+function goBack() {
+  router.push('/')
 }
 
 onMounted(async () => {

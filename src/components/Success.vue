@@ -1,8 +1,12 @@
 <template>
   <div class="h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20">
-    <div v-if="order" class="h-full">
-      <!-- <div class="h-14 w-1/2 mb-10 bg-opacity-5 bg-white rounded-lg"></div> -->
-       <div class="h-10"></div>
+    <div class="flex justify-between items-center text-white">
+      <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" />
+      <a class="text-xl font-semibold"></a>
+      <div class="h-7 w-7"></div>
+    </div>
+    <div v-if="!isLoading" class="h-full">
+      <div class="h-10"></div>
       <div class="flex justify-between">
         <p class="text-2xl font-bold">Tu Pedido</p>
         <div class="rounded-lg px-2 py-1 items-center flex" :class="order.order_status == 'PAID' ? 'bg-[#8419C5]' : 'bg-green-500'">
@@ -17,10 +21,9 @@
           <div class="self-center">
             <p class="text-2xl font-medium pb-5">Código QR para retiro</p>
             <div class="rounded-2xl p-2 bg-[#D2D2D2]">
-
               <QRCodeVue3
-                v-if="router.query.external_reference"
-                :value="router.query.external_reference"
+                v-if="route.query.external_reference"
+                :value="route.query.external_reference"
                 :qrOptions="{ typeNumber: 0, mode: 'Byte', errorCorrectionLevel: 'L' }"
                 :dotsOptions="{ type: 'square', color: '#000' }"
                 :backgroundOptions="{ color: '#D2D2D2' }"
@@ -38,24 +41,49 @@
         </div>
       </div>
     </div>
-    <div v-else>Cargando datos...</div>
+    <div v-else class="h-full">
+      <!-- Skeleton Loading -->
+      <div class="h-10"></div>
+      <div class="flex justify-between">
+        <div class="h-8 w-32 bg-gray-600 rounded animate-pulse"></div>
+        <div class="h-8 w-24 bg-gray-600 rounded animate-pulse"></div>
+      </div>
+      <div class="mt-2 h-6 w-64 bg-gray-600 rounded animate-pulse"></div>
+      <div class="justify-center pb-40 flex h-full flex-col">
+        <div class="flex w-full flex-col items-center">
+          <div class="h-8 w-48 bg-gray-600 rounded animate-pulse mb-5"></div>
+          <div class="h-64 w-64 bg-gray-600 rounded-2xl animate-pulse"></div>
+          <div class="h-6 w-24 bg-gray-600 rounded animate-pulse mt-5"></div>
+          <!-- Product items skeleton -->
+          <div class="w-48 space-y-3 mt-3">
+            <div class="h-6 w-full bg-gray-600 rounded animate-pulse"></div>
+            <div class="h-6 w-full bg-gray-600 rounded animate-pulse"></div>
+            <div class="h-6 w-full bg-gray-600 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <NavBar currentView="Checkout" />
   </div>
-  <NavBar currentView="Checkout" />
 </template>
 
 <script setup>
+import { useRoute, useRouter } from 'vue-router'
 import { getAuth } from 'firebase/auth'
-import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { useCartStore } from '../stores/cartStore'
 import QRCodeVue3 from 'qrcode-vue3'
 import NavBar from './NavBar.vue'
+
+const isLoading = ref(true)
 const order = ref(null)
-const router = useRoute()
+const router = useRouter()
+const route = useRoute()
 const cartStore = useCartStore()
+
 onMounted(async () => {
   cartStore.clearCart()
-  const order_id = router.query.external_reference
+  const order_id = route.query.external_reference
   if (order_id) {
     try {
       const auth = getAuth()
@@ -69,6 +97,7 @@ onMounted(async () => {
       if (response.ok) {
         const data = await response.json()
         order.value = data
+        isLoading.value = false
       } else {
         console.error('Error al obtener el pedido:', response.statusText)
       }
@@ -77,4 +106,8 @@ onMounted(async () => {
     }
   }
 })
+
+function goBack() {
+  router.back()
+}
 </script>

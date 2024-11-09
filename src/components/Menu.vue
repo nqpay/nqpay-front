@@ -4,9 +4,9 @@
     <div class="sticky top-0 bg-[#1C1C1E] p-8 z-10">
       <div class="flex justify-between items-center">
         <img @click="goBack" src="/back.png" alt="Back" class="h-7" />
-        <p>Menú de tragos</p>
+        <a class="text-xl font-semibold">Mi carrito</a>
         <div class="relative" @click="goToCart">
-          <img src="/cart.png" alt="Cart" class="h-7" />
+          <img src="/cart.png" alt="Cart" class="h-7 w-8" />
           <template v-if="numberOfItems > 0">
             <div class="absolute top-0 right-0 bg-[#6DF338] text-[#1C1C1E] rounded-full w-5 h-5 flex items-center justify-center text-xs">{{ numberOfItems }}</div>
           </template>
@@ -17,7 +17,7 @@
     <!-- Contenido principal scrolleable -->
     <div class="flex-1 p-8 pt-0">
       <!-- Product Grid -->
-      <div class="grid grid-cols-2 gap-4 pb-20">
+      <div class="grid grid-cols-2 gap-4" :class="numberOfItems > 0 ? 'pb-28' : 'pb-20'">
         <template v-if="isLoading">
           <div v-for="i in 6" :key="i" class="bg-gray-800 rounded-2xl animate-pulse">
             <div class="w-full pb-[100%] rounded-t-2xl bg-gray-700"></div>
@@ -44,7 +44,7 @@
     <!-- Botón de carrito (fixed at bottom) -->
     <div v-if="numberOfItems > 0" 
         @click="goToCart"
-        class="fixed bottom-20 left-8 right-8 mb-10 bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
+        class="fixed bottom-10 left-8 right-8 mb-10 bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
         Ir al carrito
     </div>
   </div>
@@ -81,7 +81,7 @@ export default {
     }
 
     const goBack = () => {
-      router.back()
+      router.push('/')
     }
 
     const goToCart = () => {
@@ -109,10 +109,9 @@ export default {
         }
       }
 
-      const idToken = await auth.currentUser.getIdToken()
       try {
-        products.value = JSON.parse(localStorage.getItem('products'))
         if (!products.value) {
+          const idToken = await auth.currentUser.getIdToken()
           const response = await fetch(`https://api.nqpay.lat/venues/NQ%20Fest/products`, {
             method: 'GET',
             headers: {

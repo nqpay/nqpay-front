@@ -1,13 +1,13 @@
 <template>
-  <section class="bg-[#1C1C1E] w-screen h-screen flex items-center justify-center overflow-hidden fixed">
-    <div v-show="imageLoaded"  class="flex flex-col items-center justify-center w-full px-10">
+  <section class="bg-[#1C1C1E] w-screen h-screen flex items-center  overflow-hidden fixed">
+    <div v-show="imageLoaded"  class="flex flex-col  w-full px-10">
       <div class="p-6 space-y-2">
         <h1 class="pb-4 text-3xl text-center font-bold leading-tight tracking-tight md:text-2xl text-white">
           Pedís, pagás <br />y retirás en la barra
         </h1>
       </div>
 
-      <div class="text-white w-full items-center justify-center flex flex-col gap-6">
+      <div class="text-white w-full flex flex-col gap-6">
         <div class="w-full px-20 relative">
           <img 
             class="w-full object-cover mb-4" 
@@ -29,6 +29,7 @@
             </svg>
           </div>
         </router-link>
+        <div class="pb-20"></div>
       </div>
     </div>
   </section>

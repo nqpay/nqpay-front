@@ -56,6 +56,27 @@ const router = new createRouter({
     { path: '/welcome', component: Welcome },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    // Si el usuario usa los botones de navegación del navegador
+    if (savedPosition) {
+      return savedPosition
+    }
+    
+    // Si hay un hash en la URL (para anclas)
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+      }
+    }
+    
+    // En cualquier otro caso (navegación normal entre rutas)
+    return {
+      top: 0,
+      left: 0,
+      behavior: 'instant' // 'instant' para que sea inmediato, 'smooth' si quieres que sea suave
+    }
+  }
 })
 
 router.beforeEach(async (to, from, next) => {
