@@ -110,6 +110,7 @@ export default {
       }
 
       try {
+        products.value = JSON.parse(localStorage.getItem('products'))
         if (!products.value) {
           const idToken = await auth.currentUser.getIdToken()
           const response = await fetch(`https://api.nqpay.lat/venues/NQ%20Fest/products`, {
