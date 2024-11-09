@@ -82,7 +82,9 @@ const route = useRoute()
 const cartStore = useCartStore()
 
 onMounted(async () => {
-  cartStore.clearCart()
+  if (route.query.preference_id != null & route.query.payment_id != null) {
+    cartStore.clearCart()
+  }
   const order_id = route.query.external_reference
   if (order_id) {
     try {
@@ -108,6 +110,6 @@ onMounted(async () => {
 })
 
 function goBack() {
-  router.back()
+  router.push('/checkout')
 }
 </script>
