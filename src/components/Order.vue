@@ -136,9 +136,8 @@ export default {
           },
         })
 
-        if (response.ok) {
-          const result = await response.json()
-          console.log('result: ', result.Status)
+        const result = await response.json()
+        if (response.ok & result.Status == 201) {
           order.value = {
             ...order.value,
             order_status: 'DELIVERED'
