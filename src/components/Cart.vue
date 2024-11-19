@@ -6,10 +6,10 @@
       <a class="text-xl font-semibold">Mi carrito</a>
       <div class="h-7 w-8"></div>
     </div>
-
+    <p class="px-4">Al finalizar tu compra encontrarás un QR que te permitirá retirar el pedido en su totalidad.</p>
     <!-- <h1 class="px-4 text-2xl font-semibold">Tu Pedido</h1> -->
     <div class="h-5"></div>
-
+    
     <!-- Scrollable content -->
     <div v-if="cartItems.length > 0" class="flex-1 overflow-hidden pb-40">
       <div class="h-full overflow-auto">
@@ -53,7 +53,7 @@
     <div v-else class="flex-1 flex flex-col items-center justify-center">
       <p class="text-xl">Tu carrito está vacío.</p>
     </div>
-
+    
     <!-- Fixed bottom section -->
     <div class="absolute bottom-0 left-0 right-0 bg-[#1C1C1E] px-4">
       <div v-show="cartItems.length > 0" class="flex w-full text-xl justify-between pt-4 pb-4">

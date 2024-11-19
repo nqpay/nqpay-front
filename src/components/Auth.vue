@@ -1,5 +1,5 @@
 <template>
-  <section v-if="isLoading" class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center">
+  <section v-if="isLoading" class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center overflow-hidden">
     <!-- <h1 class="text-white text-2xl">Cargando...</h1> -->
      <img src="/loading_cup.gif" class="w-48"/>
   </section>
@@ -7,68 +7,81 @@
     <div v-if="errorMessage" class="absolute top-4 left-1/2 transform -translate-x-1/2 w-11/12 max-w-md p-4 mb-4 text-sm text-white bg-red-600 rounded-lg shadow-lg">
       <p>{{ errorMessage }}</p>
     </div>
+    
+    <img v-if="showTyC" class="h-20 fixed top-10 left-10" src="/logo.png" alt="logo" />
 
-    <div v-if="showTyC" class="absolute bottom-0 left-0 right-0 h-[85%] bg-white rounded-3xl flex flex-col">
-      <div class="flex-grow overflow-y-auto p-8">
-        <h1 class="text-xl font-bold mb-4">Términos y Condiciones</h1>
-        <!-- Contenido de los Términos y Condiciones -->
-        <p>
-          Es requisito necesario para la adquisición de los productos que se ofrecen en este sitio, que lea y acepte los siguientes Términos y Condiciones que a continuación se
-          redactan. El uso de nuestros servicios así como la compra de nuestros productos implicará que usted ha leído y aceptado los Términos y Condiciones de Uso en el presente
-          documento.
-        </p>
-        <p class="font-medium text-lg mt-4">Licencias</p>
-        <p>
-          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
-          sujetas a sus propios Términos y Condiciones.
-        </p>
-        <p class="font-medium text-lg mt-4">Propiedad</p>
-        <p>
-          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
-          sujetas a sus propios Términos y Condiciones. También puede ser suspendida por más tiempo para una investigación más rigurosa, para evitar transacciones fraudulentas.
-        </p>
-        <p>
-          Es requisito necesario para la adquisición de los productos que se ofrecen en este sitio, que lea y acepte los siguientes Términos y Condiciones que a continuación se
-          redactan. El uso de nuestros servicios así como la compra de nuestros productos implicará que usted ha leído y aceptado los Términos y Condiciones de Uso en el presente
-          documento.
-        </p>
-        <p class="font-medium text-lg mt-4">Licencias</p>
-        <p>
-          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
-          sujetas a sus propios Términos y Condiciones.
-        </p>
-        <p class="font-medium text-lg mt-4">Propiedad</p>
-        <p>
-          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
-          sujetas a sus propios Términos y Condiciones. También puede ser suspendida por más tiempo para una investigación más rigurosa, para evitar transacciones fraudulentas.
-        </p>
-        <p>
-          Es requisito necesario para la adquisición de los productos que se ofrecen en este sitio, que lea y acepte los siguientes Términos y Condiciones que a continuación se
-          redactan. El uso de nuestros servicios así como la compra de nuestros productos implicará que usted ha leído y aceptado los Términos y Condiciones de Uso en el presente
-          documento.
-        </p>
-        <p class="font-medium text-lg mt-4">Licencias</p>
-        <p>
-          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
-          sujetas a sus propios Términos y Condiciones.
-        </p>
-        <p class="font-medium text-lg mt-4">Propiedad</p>
-        <p>
-          Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
-          sujetas a sus propios Términos y Condiciones. También puede ser suspendida por más tiempo para una investigación más rigurosa, para evitar transacciones fraudulentas.
-        </p>
+    <transition 
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="translate-y-full opacity-0"
+      enter-to-class="translate-y-0 opacity-100"
+      leave-active-class="transition-all duration-300 ease-in"
+      leave-from-class="translate-y-0 opacity-100"
+      leave-to-class="translate-y-full opacity-0"
+    >
+      <div v-show="showTyC" class="absolute bottom-0 left-0 right-0 h-[85%] bg-white rounded-t-3xl flex flex-col">
+        <div class="flex-grow overflow-y-auto p-8">
+          <h1 class="text-xl font-bold mb-4">Términos y Condiciones</h1>
+          <!-- Contenido de los Términos y Condiciones -->
+          <p>
+            Es requisito necesario para la adquisición de los productos que se ofrecen en este sitio, que lea y acepte los siguientes Términos y Condiciones que a continuación se
+            redactan. El uso de nuestros servicios así como la compra de nuestros productos implicará que usted ha leído y aceptado los Términos y Condiciones de Uso en el presente
+            documento.
+          </p>
+          <p class="font-medium text-lg mt-4">Licencias</p>
+          <p>
+            Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+            sujetas a sus propios Términos y Condiciones.
+          </p>
+          <p class="font-medium text-lg mt-4">Propiedad</p>
+          <p>
+            Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+            sujetas a sus propios Términos y Condiciones. También puede ser suspendida por más tiempo para una investigación más rigurosa, para evitar transacciones fraudulentas.
+          </p>
+          <p>
+            Es requisito necesario para la adquisición de los productos que se ofrecen en este sitio, que lea y acepte los siguientes Términos y Condiciones que a continuación se
+            redactan. El uso de nuestros servicios así como la compra de nuestros productos implicará que usted ha leído y aceptado los Términos y Condiciones de Uso en el presente
+            documento.
+          </p>
+          <p class="font-medium text-lg mt-4">Licencias</p>
+          <p>
+            Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+            sujetas a sus propios Términos y Condiciones.
+          </p>
+          <p class="font-medium text-lg mt-4">Propiedad</p>
+          <p>
+            Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+            sujetas a sus propios Términos y Condiciones. También puede ser suspendida por más tiempo para una investigación más rigurosa, para evitar transacciones fraudulentas.
+          </p>
+          <p>
+            Es requisito necesario para la adquisición de los productos que se ofrecen en este sitio, que lea y acepte los siguientes Términos y Condiciones que a continuación se
+            redactan. El uso de nuestros servicios así como la compra de nuestros productos implicará que usted ha leído y aceptado los Términos y Condiciones de Uso en el presente
+            documento.
+          </p>
+          <p class="font-medium text-lg mt-4">Licencias</p>
+          <p>
+            Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+            sujetas a sus propios Términos y Condiciones.
+          </p>
+          <p class="font-medium text-lg mt-4">Propiedad</p>
+          <p>
+            Todas los productos que son ofrecidos por nuestro sitio web pudieran ser creadas, cobradas, enviadas o presentadas por una página web tercera y en tal caso estarían
+            sujetas a sus propios Términos y Condiciones. También puede ser suspendida por más tiempo para una investigación más rigurosa, para evitar transacciones fraudulentas.
+          </p>
+        </div>
+        <div
+          v-on:click="showTyC = false"
+          class="fixed bottom-2 left-8 right-8 bg-[#BE38F3] py-3 text-white font-semibold text-xl text-center rounded-xl">
+          Volver
+        </div>
       </div>
-      <div class="p-4 bg-white border-t border-gray-200 sticky bottom-0">
-        <button @click="showTyC = false" class="w-full bg-[#BE38F3] text-white px-4 py-2 rounded-lg font-bold text-xl">Cerrar</button>
-      </div>
-    </div>
-    <div v-else class="flex flex-col items-center justify-center py-8 w-full px-10">
+    </transition>
+    <div class="flex flex-col items-center justify-center py-8 w-full px-10">
       <a v-if="!emailSent" class="flex items-center mb-6 text-2xl font-semibold text-white">
-        <img class="w-16 h-16" src="/logo.png" alt="logo" />
+        <img class="h-20" src="/logo.png" alt="logo" />
       </a>
       <div v-if="!emailSent" class="w-full rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-gray-800 border-gray-700">
         <div class="p-6 space-y-2">
-          <h1 class="pb-4 text-xl font-bold leading-tight tracking-tight md:text-2xl text-white">Sign in to your account</h1>
+          <h1 class="pb-4 text-xl font-bold leading-tight tracking-tight md:text-2xl text-white">Accedé a tu cuenta</h1>
 
           <button
             :disabled="!tyc_accepted"
@@ -101,7 +114,7 @@
                 </defs>
               </svg>
             </div>
-            <p>Log in with Google</p>
+            <p>Continuar con Google</p>
           </button>
           <!-- <button class="flex items-center gap-3 justify-center border border-gray-600 rounded-lg focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 text-white">
             <div class="w-5">
@@ -127,19 +140,19 @@
           </button> -->
           <div class="flex items-center gap-6">
             <div class="h-[2px] w-full my-4 bg-gray-600"></div>
-            <p class="text-medium text-gray-400">or</p>
+            <p class="text-medium text-gray-400">sino</p>
             <div class="h-[2px] w-full my-4 bg-[#374151]"></div>
           </div>
           <form class="space-y-4 md:space-y-6" v-on:submit.prevent="login">
             <div>
-              <label for="email" class="block mb-2 text-sm font-medium text-white">Email</label>
+              <!-- <label for="email" class="block mb-2 text-sm font-medium text-white">Correo electrónico</label> -->
               <input
                 v-model="this.email"
                 type="email"
                 name="email"
                 id="email"
                 class="border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ingresa tu mail"
+                placeholder="Ingresá tu correo electrónico"
                 required=""
               />
             </div>
@@ -150,7 +163,7 @@
               </div>
               <div class="ml-2 text-sm">
                 <label for="remember" class="text-white">
-                  He leído y acepto los <a @click.prevent="showTyC = true" class="font-medium text-[#BE38F3] hover:underline cursor-pointer">términos y condiciones</a>
+                  He leído y acepto los <a @click.prevent="showTyC = true" class="font-medium text-[#6DF338] hover:underline cursor-pointer">términos y condiciones</a>
                 </label>
               </div>
             </div>
@@ -160,18 +173,18 @@
               class="w-full text-white bg-[#BE38F3] focus:ring-4 focus:outline-none focus:ring-[#BE38F3] font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               :class="{ 'opacity-50 cursor-not-allowed': !tyc_accepted }"
             >
-              Sign in
+              Iniciar sesión
             </button>
           </form>
         </div>
       </div>
       <div v-else class="text-white w-full items-center justify-center flex flex-col gap-6">
         <img class="w-full px-10 object-cover mb-5" src="/email_sent.png" alt="email" />
-        <h1 class="font-bold text-2xl">Yendooo!</h1>
+        <h1 class="font-bold text-2xl">Revisá tu e-mail</h1>
         <p class="text-center">Por cuestiones de seguridad, te enviamos un link de acceso a tu e-mail.<br/>Por favor revisá tu casilla para continuar.</p>
-        <a href="mailto:">
+        <!-- <a href="mailto:">
           <button @click="" class="bg-[#BE38F3] focus:ring-4 focus:outline-none focus:ring-[#BE38F3] font-bold rounded-lg text-sm px-5 py-2 text-center">Open Mail</button>
-        </a>
+        </a> -->
       </div>
     </div>
   </section>

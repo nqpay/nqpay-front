@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#1C1C1E] h-screen w-screen flex flex-col px-10">
+  <div class="bg-[#1C1C1E] h-screen w-screen flex flex-col px-10 overflow-hidden">
     <div v-if="isLoading" class="mt-20 flex flex-col gap-4 animate-pulse">
       <div class="h-8 bg-gray-600 rounded w-1/3"></div>
       <div class="h-10"></div>

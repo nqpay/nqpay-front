@@ -2,7 +2,8 @@
   <div class="fixed inset-0 flex flex-col bg-[#1C1C1E] text-white px-8 overflow-hidden"> 
     <div class="bg-[#1C1C1E] h-screen flex flex-col">
      <div class="flex justify-between items-center py-8 text-white">
-      <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" />
+      <div class="w-7"></div>
+      <!-- <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" /> -->
       <a class="text-xl font-semibold">Historial de Pedidos</a>
       <div class="h-7 w-7"></div>
       </div>

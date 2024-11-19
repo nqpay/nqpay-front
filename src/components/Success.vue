@@ -14,6 +14,7 @@
           <p v-else>Entregado</p>
         </div>
       </div>
+      <div class="pt-1"></div>
       <p class="mt-2" v-if="order.order_status == 'PAID'">Acercate a la barra a retirar tu pedido</p>
       <p class="mt-2" v-else>Este pedido ya ha sido entregado</p>
       <div class="justify-center pb-40 flex h-full flex-col">
@@ -98,6 +99,7 @@ onMounted(async () => {
       })
       if (response.ok) {
         const data = await response.json()
+        console.log('ORDERRRR : ', data)
         order.value = data
         isLoading.value = false
       } else {

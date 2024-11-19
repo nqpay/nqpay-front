@@ -4,7 +4,7 @@
       <div class="w-full rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-gray-800 border-gray-700">
         <div class="p-6 space-y-2">
           <h1 class="text-xl font-bold leading-tight tracking-tight md:text-2xl text-white">¿Sos mayor de edad?</h1>
-          <h2 class="text-gray-400 pb-4">Para continuar, necesitamos verificar tu edad.<br/>Ingresá tus datos por única vez:</h2>
+          <h2 class="text-gray-400 pb-2">Para continuar, debes completar tus datos por única vez.</h2>
 
           <form class="space-y-4 md:space-y-6" v-on:submit.prevent="updateProfile">
             <div>
@@ -50,12 +50,12 @@
                 @input="handleDniInput"
               />
             </div>
-
+            <div></div>
             <button
               type="submit"
               class="w-full text-white bg-[#BE38F3] focus:ring-4 focus:outline-none focus:ring-[#BE38F3] font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             >
-              Confirmar
+              Continuar
             </button>
 
             <!-- <p v-if="!signUpViewShow" class="text-sm font-light text-gray-400">

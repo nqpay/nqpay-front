@@ -4,17 +4,20 @@
       <img src="/logo.png" alt="Vue logo" class="h-20" />
     </div>
     <div class="h-5"></div>
-    <h1 class="text-3xl font-semibold mt-4">Vamos a escabiarrr</h1>
+    <h1 class="text-3xl font-semibold mt-4">1, 2, 3, probando...</h1>
     <div class="h-5"></div>
-    <div class="flex-1 relative">
+    <div class="flex relative mb-5">
       <img 
         src="/FondoCardMid.png" 
         alt="Vue logo" 
         class="rounded-lg w-full"
       />
     </div>
-    <div class="mb-10 h-14 rounded-lg bg-[#BE38F3] flex items-center justify-center">
+    <div class="mb-5 h-14 rounded-lg bg-[#BE38F3] flex items-center justify-center">
       <router-link to="/menu/NQ Fest" class="text-xl">Ir al menú de tragos</router-link>
+    </div>
+    <div class="mb-10 h-14 rounded-lg bg-[#BE38F3] flex items-center justify-center">
+      <router-link to="/menu/NQ Fest" class="text-xl">Ir a mis pedidos</router-link>
     </div>
     <NavBar currentView="Home" />
   </div>

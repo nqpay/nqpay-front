@@ -3,8 +3,9 @@
     <!-- Header (fixed at top) -->
     <div class="sticky top-0 bg-[#1C1C1E] p-8 z-10">
       <div class="flex justify-between items-center">
-        <img @click="goBack" src="/back.png" alt="Back" class="h-7" />
-        <a class="text-xl font-semibold">Mi carrito</a>
+        <div class="w-7"></div>
+        <!-- <img @click="goBack" src="/back.png" alt="Back" class="h-7" /> -->
+        <a class="text-xl font-semibold">Menú</a>
         <div class="relative" @click="goToCart">
           <img src="/cart.png" alt="Cart" class="h-7 w-8" />
           <template v-if="numberOfItems > 0">
