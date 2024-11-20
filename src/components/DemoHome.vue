@@ -17,7 +17,7 @@
       <router-link to="/menu/NQ Fest" class="text-xl">Ir al menú de tragos</router-link>
     </div>
     <div class="mb-10 h-14 rounded-lg bg-[#BE38F3] flex items-center justify-center">
-      <router-link to="/menu/NQ Fest" class="text-xl">Ir a mis pedidos</router-link>
+      <router-link to="/checkout" class="text-xl">Ir a mis pedidos</router-link>
     </div>
     <NavBar currentView="Home" />
   </div>
