@@ -39,8 +39,11 @@
           class="flex items-center justify-between gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2 px-2"
         >
           <div class="flex flex-col">
-            <p class="font-bold">Total de la orden</p>
-            <p class="">${{ order.total }}</p>
+            <div class="flex items-center gap-4">
+              <p class="font-bold">{{ order.ticket_code.substring(0,3) }}-{{ order.ticket_code.substring(3,6) }}</p>
+              <p class="font-thin text-sm">{{order.created_at.split('T')[0]}} {{order.created_at.split('T')[1].split(':')[0]}}:{{ order.created_at.split('T')[1].split(':')[1]}}</p>
+            </div>
+            <p class="">${{ order.total.toString().split(".")[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
           </div>
           <div class="flex flex-col h-full justify-center">
             <div 

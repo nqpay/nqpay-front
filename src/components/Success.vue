@@ -34,7 +34,8 @@
                 imgclass="img-qr"
               />
             </div>
-            <p class="pt-5">$ {{ order.total }}</p>
+            <p v-if="order.ticket_code" class="text-center font-bold text-xl pt-3">{{ order.ticket_code.substring(0,3) }}-{{ order.ticket_code.substring(3,6) }}</p>
+            <p class="pt-5">$ {{ order.total.toString().split(".")[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
             <div v-for="item in order.products">
               <p class="font-bold">{{ item.quantity }}x {{ item.name }}</p>
             </div>

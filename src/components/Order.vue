@@ -27,8 +27,8 @@
         <!-- Header -->
         <div class="mb-4">
           <div class="h-16"></div>
-          <h1 class="text-2xl font-bold">Orden</h1>
-          <p class="text-gray-400">{{ currentDate }}</p>
+          <h1 class="text-2xl font-bold">Orden {{ order.ticket_code.substring(0,3) }}-{{ order.ticket_code.substring(3,6) }}</h1>
+          <p class="text-gray-400">{{ order.created_at }}</p>
         </div>
 
         <!-- Item list -->
@@ -79,14 +79,6 @@ export default {
     const errorMessage = ref('')
     const showSuccess = ref(false)
 
-    const currentDate = computed(() => {
-      return new Date().toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-    })
-
     const buttonText = computed(() => {
       if (isDelivering.value) return 'Marcando como entregado...'
       if (order.value?.order_status === 'DELIVERED') return 'Pedido entregado'
@@ -99,6 +91,17 @@ export default {
         if (response.ok) {
           const data = await response.json()
           order.value = data
+          if (order.value.created_at) {
+            order.value.created_at = new Date(order.value.created_at).toLocaleDateString('es-ES', 
+              {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              }
+            )
+          }
         } else {
           errorMessage.value = 'Error al obtener el pedido. Por favor, intente nuevamente.'
         }
@@ -108,6 +111,7 @@ export default {
     }
 
     const checkAuth = async () => {
+      const auth0 = useAuth0()
       while (auth0.isLoading.value) {
         await new Promise((resolve) => setTimeout(resolve, 50))
       }
@@ -169,7 +173,6 @@ export default {
     return {
       isAuthenticated,
       order,
-      currentDate,
       isDelivering,
       errorMessage,
       showSuccess,
