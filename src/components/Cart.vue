@@ -83,7 +83,7 @@
     <div class=" bg-[#1C1C1E]">
       <!-- Tips section -->
       <div v-show="cartItems.length > 0" class="">
-        <p class="text-gray-300 mb-3">Rompete un extra para nosotros</p>
+        <p class="text-gray-300 mb-3">Apoyá a NQ con un extra</p>
         <div class="flex justify-between">
           <button 
             v-for="option in tipOptions" 
