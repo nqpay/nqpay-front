@@ -5,7 +5,7 @@
       <!-- <a class="text-xl font-semibold">{{ eventName.charAt(0).toUpperCase() + eventName.slice(1) }}</a> -->
       <img src="/cart.png" alt="Vue logo" class="h-7" @click="goToCart" />
     </div>
-    <div class="h-8"></div>
+    <!-- <div class="h-8"></div> -->
 
     <div class="bg-[#FBF2FF] rounded-2xl flex flex-col ">
       <div class="rounded-t-2xl overflow-hidden">
