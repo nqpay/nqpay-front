@@ -43,7 +43,10 @@
               <p class="font-bold">{{ order.ticket_code.substring(0,3) }}-{{ order.ticket_code.substring(3,6) }}</p>
               <p class="font-thin text-sm">{{order.created_at.split('T')[0]}} {{order.created_at.split('T')[1].split(':')[0]}}:{{ order.created_at.split('T')[1].split(':')[1]}}</p>
             </div>
-            <p class="">${{ order.total.toString().split(".")[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
+            <div class="flex items-center gap-2">
+              <p class="">${{ order.total.toString().split(".")[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
+              <p v-if="order.tip > 0" class="text-gray-400 text-sm">+${{order.tip}} ♥</p>
+            </div>
           </div>
           <div class="flex flex-col h-full justify-center">
             <div 

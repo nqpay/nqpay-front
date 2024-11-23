@@ -104,7 +104,7 @@
       <!-- Total section -->
       <div v-show="cartItems.length > 0" class="flex w-full text-md justify-between pt-4 pb-4">
         <div class="flex flex-col gap-2">
-          <p v-if="tipAmount > 0" class="text-gray-300">Tip:</p>
+          <p v-if="tipAmount > 0" class="text-gray-300">Extra:</p>
           <p class="text-white font-semibold">Total:</p>
         </div>
         <div class="flex flex-col gap-2 items-end">
