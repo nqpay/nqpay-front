@@ -1,6 +1,6 @@
 <template>
   <section class="bg-[#1C1C1E] w-screen h-screen flex items-center  overflow-hidden fixed">
-    <div v-show="imageLoaded"  class="flex flex-col  w-full px-10">
+    <div v-show="imageLoaded"  class="flex flex-col  w-full px-10 pb-10">
       <div class="p-6 space-y-2">
         <h1 class="pb-4 text-3xl text-center font-bold leading-tight tracking-tight md:text-2xl text-white">
           Pedís, pagás <br />y retirás en la barra
