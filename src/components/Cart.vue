@@ -11,7 +11,7 @@
     <div class="h-5"></div>
     
     <!-- Scrollable content -->
-    <div v-if="cartItems.length > 0" class="flex-1 overflow-hidden pb-40">
+    <div v-if="cartItems.length > 0" class="flex-1 overflow-hidden pb-5">
       <div class="h-full overflow-auto">
         <div class="flex flex-col gap-1">
           <TransitionGroup name="list">
@@ -55,7 +55,7 @@
     </div>
     
     <!-- Fixed bottom section -->
-    <div class="absolute bottom-0 left-0 right-0 bg-[#1C1C1E] px-4">
+    <!-- <div class="absolute bottom-0 left-0 right-0 bg-[#1C1C1E] px-4">
       <div v-show="cartItems.length > 0" class="flex w-full text-xl justify-between pt-4 pb-4">
         <p class="text-gray-300">Total:</p>
         <p class="font-semibold">
@@ -67,6 +67,73 @@
         :disabled="isLoading" 
         @click="askLink()" 
         v-if="cartTotal.value > 0" 
+        class="w-full bg-[#6DF338] text-black py-3 text-xl text-center rounded-xl mb-6"
+      >
+        <div v-if="isLoading" class="flex items-center justify-center">
+          <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Procesando...
+        </div>
+        <p v-else>Ir a pagar</p>
+      </button>
+    </div> -->
+    <!-- Fixed bottom section -->
+    <div class=" bg-[#1C1C1E]">
+      <!-- Tips section -->
+      <div v-show="cartItems.length > 0" class="mb-4">
+        <p class="text-gray-300 mb-3">¿Deseas agregar propina?</p>
+        <div class="grid grid-cols-4 gap-2">
+          <button 
+            v-for="option in tipOptions" 
+            :key="option.value"
+            @click="selectTip(option)"
+            :class="[
+              'py-2 rounded-xl text-center transition-colors',
+              selectedTip === option.value 
+                ? 'bg-[#BE38F3] text-white' 
+                : 'bg-[#FBF2FF] text-black'
+            ]"
+          >
+            {{ option.label }}
+          </button>
+        </div>
+        
+        <!-- Custom tip input -->
+        <div v-if="showCustomTip" class="mt-3">
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-black">$</span>
+            <input
+              v-model="customTipAmount"
+              type="number"
+              class="w-full bg-[#FBF2FF] text-black py-2 px-8 rounded-xl"
+              placeholder="Ingresa el monto"
+              @focus="handleInputFocus"
+              @blur="handleInputBlur"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Total section -->
+      <div v-show="cartItems.length > 0" class="flex w-full text-xl justify-between pt-4 pb-4">
+        <div class="flex flex-col gap-2">
+          <p class="text-gray-300">Subtotal:</p>
+          <p v-if="tipAmount > 0" class="text-gray-300">Propina:</p>
+          <p class="text-white font-semibold">Total:</p>
+        </div>
+        <div class="flex flex-col gap-2 items-end">
+          <p class="text-gray-300">$ {{ new Intl.NumberFormat('en-US').format(cartTotal.value) }}</p>
+          <p v-if="tipAmount > 0" class="text-gray-300">$ {{ new Intl.NumberFormat('en-US').format(tipAmount) }}</p>
+          <p class="font-semibold">$ {{ new Intl.NumberFormat('en-US').format(finalTotal) }}</p>
+        </div>
+      </div>
+      
+      <button 
+        :disabled="isLoading"
+        @click="askLink()"
+        v-if="cartTotal.value > 0"
         class="w-full bg-[#6DF338] text-black py-3 text-xl text-center rounded-xl mb-6"
       >
         <div v-if="isLoading" class="flex items-center justify-center">
@@ -90,6 +157,10 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { TransitionGroup } from 'vue'
 
 const isLoading = ref(false)
+const showCustomTip = ref(false)
+const customTipAmount = ref('')
+const selectedTip = ref(null)
+const tipAmount = ref(0)
 
 const auth = getAuth()
 const router = useRouter()
@@ -97,6 +168,43 @@ const cartStore = useCartStore()
 
 const cartItems = computed(() => cartStore.state.cartItems)
 const cartTotal = computed(() => cartStore.cartTotal)
+console.log('cartTotal: ', cartTotal.value.value)
+console.log('tipAmount: ', tipAmount.value)
+console.log('finalTotal: ', cartTotal.value.value + tipAmount.value)
+const finalTotal = computed(() => cartTotal.value.value + tipAmount.value)
+
+const tipOptions = [
+  { label: '10%', value: 0.1 },
+  { label: '15%', value: 0.15 },
+  { label: '20%', value: 0.2 },
+  { label: 'Otro', value: 'custom' }
+]
+
+function selectTip(option) {
+  console.log('option: ', option)
+  selectedTip.value = option.value
+  showCustomTip.value = option.value === 'custom'
+  
+  if (option.value !== 'custom') {
+    tipAmount.value = Math.round(cartTotal.value.value * option.value)
+    customTipAmount.value = ''
+  } else {
+    tipAmount.value = Number(customTipAmount.value) || 0
+  }
+}
+
+function handleInputFocus() {
+  // Add a class to the main container to push it up
+  document.querySelector('.fixed').classList.add('transform', 'translate-y-[-120px]')
+}
+
+function handleInputBlur() {
+  // Remove the class when input loses focus
+  document.querySelector('.fixed').classList.remove('transform', 'translate-y-[-120px]')
+  
+  // Update tip amount when custom value changes
+  tipAmount.value = Number(customTipAmount.value) || 0
+}
 
 function goBack() {
   router.back()
