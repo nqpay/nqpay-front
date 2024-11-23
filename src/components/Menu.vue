@@ -94,44 +94,54 @@ export default {
     }
 
     onMounted(async () => {
-      const auth = getAuth()
-      event.value = JSON.parse(localStorage.getItem('venue')) || {
-        'SK' : 'V#2a5e6d27-65a0-4984-a85d-ba1cc713de68',
-        'name': 'NQ Fest'
+  const auth = getAuth()
+  event.value = JSON.parse(localStorage.getItem('venue')) || {
+    'SK': 'V#2a5e6d27-65a0-4984-a85d-ba1cc713de68',
+    'name': 'NQ Fest'
+  }
+  if (!event.value) {
+    const response = await fetch(`https://api.nqpay.lat/venues/`)
+    const data = await response.json()
+    for (const venue of data) {
+      if (venue.name.toLowerCase() === route.params.event) {
+        event.value = venue
+        break
       }
-      if (!event.value) {
-        const response = await fetch(`https://api.nqpay.lat/venues/`)
-        const data = await response.json()
-        for (const venue of data) {
-          if (venue.name.toLowerCase() === route.params.event) {
-            event.value = venue
-            break
-          }
-        }
-      }
+    }
+  }
 
-      try {
-        // products.value = JSON.parse(localStorage.getItem('products'))
-        // if (!products.value) {
-        const idToken = await auth.currentUser.getIdToken()
-        const response = await fetch(`https://api.nqpay.lat/venues/NQ%20Fest/products`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        })
-        const data = await response.json()
-        products.value = data.products
-        // localStorage.setItem('products', JSON.stringify(data.products))
-        // }
-      } catch (error) {
-        console.error('Error fetching products:', error)
-      } finally {
-        isLoading.value = false
-      }
+  try {
+    const cachedProducts = localStorage.getItem('products')
+    const lastFetchTime = localStorage.getItem('lastProductsFetchTime')
+    const CACHE_DURATION = 5 * 60 * 1000 // 5 minutos
 
-      numberOfItems.value = cartStore.state.numberOfItems
-    })
+    // Usar caché si existe y no han pasado 5 minutos
+    if (cachedProducts && lastFetchTime && (Date.now() - parseInt(lastFetchTime)) < CACHE_DURATION) {
+      products.value = JSON.parse(cachedProducts)
+    } else {
+      // Si no hay caché o pasaron 5 minutos, hacer el request
+      const idToken = await auth.currentUser.getIdToken()
+      const response = await fetch(`https://api.nqpay.lat/venues/NQ%20Fest/products`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      })
+      const data = await response.json()
+      products.value = data.products
+      
+      // Guardar en caché con timestamp
+      localStorage.setItem('products', JSON.stringify(data.products))
+      localStorage.setItem('lastProductsFetchTime', Date.now().toString())
+    }
+  } catch (error) {
+    console.error('Error fetching products:', error)
+  } finally {
+    isLoading.value = false
+  }
+
+  numberOfItems.value = cartStore.state.numberOfItems
+  })
 
     return {
       route,
