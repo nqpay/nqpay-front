@@ -232,7 +232,6 @@ const askLink = async () => {
       ),
     })
     const data = await response.json()
-    console.log('data: ', cartItems.value)
     window.location.href = data.Message
   } catch (error) {
     console.error('Error al procesar el pago:', error)
