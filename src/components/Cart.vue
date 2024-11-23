@@ -20,10 +20,10 @@
                 <img :src="item.image_url" :alt="item.name" class="h-16 w-16 flex-shrink-0 rounded-xl object-cover" />
                 <div class="flex flex-col justify-between h-full py-1 min-w-0 flex-1">
                   <div class="flex flex-col">
-                    <h1 class="text-black text-lg font-semibold truncate">{{ item.name }}</h1>
+                    <h1 class="text-black text-md font-semibold truncate">{{ item.name }}</h1>
                     <p class="text-gray-500 text-xs truncate">{{item.description}}</p>
                   </div>
-                  <h2 class="text-black text-lg font-semibold">$ {{ item.price }}</h2>
+                  <h2 class="text-black text-md font-semibold">$ {{ item.price }}</h2>
                 </div>
                 <div class="flex items-center flex-shrink-0">
                   <div v-if="item.quantity > 1" @click="decreaseQuantity(item)" class="rounded-full bg-[#BE38F3] h-6 w-6 flex items-center justify-center">
