@@ -82,7 +82,7 @@
     <!-- Fixed bottom section -->
     <div class=" bg-[#1C1C1E]">
       <!-- Tips section -->
-      <div v-show="cartItems.length > 0" class="mb-4">
+      <div v-show="cartItems.length > 0" class="">
         <p class="text-gray-300 mb-3">¿Deseas agregar propina?</p>
         <div class="grid grid-cols-4 gap-2">
           <button 
@@ -98,21 +98,6 @@
           >
             {{ option.label }}
           </button>
-        </div>
-        
-        <!-- Custom tip input -->
-        <div v-if="showCustomTip" class="mt-3">
-          <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-black">$</span>
-            <input
-              v-model="customTipAmount"
-              type="number"
-              class="w-full bg-[#FBF2FF] text-black py-2 px-8 rounded-xl"
-              placeholder="Ingresa el monto"
-              @focus="handleInputFocus"
-              @blur="handleInputBlur"
-            />
-          </div>
         </div>
       </div>
 
@@ -154,11 +139,10 @@ import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cartStore'
 import { computed, ref } from 'vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { TransitionGroup } from 'vue'
+import { TransitionGroup, watch } from 'vue'
 
 const isLoading = ref(false)
-const showCustomTip = ref(false)
-const customTipAmount = ref('')
+
 const selectedTip = ref(null)
 const tipAmount = ref(0)
 
@@ -168,42 +152,30 @@ const cartStore = useCartStore()
 
 const cartItems = computed(() => cartStore.state.cartItems)
 const cartTotal = computed(() => cartStore.cartTotal)
-console.log('cartTotal: ', cartTotal.value.value)
-console.log('tipAmount: ', tipAmount.value)
-console.log('finalTotal: ', cartTotal.value.value + tipAmount.value)
 const finalTotal = computed(() => cartTotal.value.value + tipAmount.value)
 
 const tipOptions = [
+  { label: '5%', value: 0.05 },
   { label: '10%', value: 0.1 },
   { label: '15%', value: 0.15 },
   { label: '20%', value: 0.2 },
-  { label: 'Otro', value: 'custom' }
 ]
 
-function selectTip(option) {
-  console.log('option: ', option)
-  selectedTip.value = option.value
-  showCustomTip.value = option.value === 'custom'
-  
-  if (option.value !== 'custom') {
-    tipAmount.value = Math.round(cartTotal.value.value * option.value)
-    customTipAmount.value = ''
-  } else {
-    tipAmount.value = Number(customTipAmount.value) || 0
+watch(() => cartTotal.value.value, (newTotal) => {
+  if (selectedTip.value !== null) {
+    tipAmount.value = Math.round(newTotal * selectedTip.value)
   }
-}
+})
 
-function handleInputFocus() {
-  // Add a class to the main container to push it up
-  document.querySelector('.fixed').classList.add('transform', 'translate-y-[-120px]')
-}
-
-function handleInputBlur() {
-  // Remove the class when input loses focus
-  document.querySelector('.fixed').classList.remove('transform', 'translate-y-[-120px]')
-  
-  // Update tip amount when custom value changes
-  tipAmount.value = Number(customTipAmount.value) || 0
+function selectTip(option) {
+  if (selectedTip.value === option.value) {
+    selectedTip.value = null
+    tipAmount.value = 0
+  } else {
+    // Si es una opción diferente, la seleccionamos normalmente
+    selectedTip.value = option.value
+    tipAmount.value = Math.round(cartTotal.value.value * option.value)
+  }
 }
 
 function goBack() {
