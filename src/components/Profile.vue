@@ -12,7 +12,7 @@
       <p class="text-white font-regular">Gracias por formar parte de NQ</p>
       <div class="flex flex-col gap-4 mt-10">
         <button class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Términos y Condiciones</button>
-        <button @click="handleSignOut" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Cerrar Sesión</button>
+        <button @click="handleSignOut" class="border border-[#BE38F3] w-full text-white rounded-lg p-3">Cerrar Sesión</button>
       </div>
       <div class="flex-1"></div>
     </div>
