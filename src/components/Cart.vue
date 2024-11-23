@@ -83,17 +83,17 @@
     <div class=" bg-[#1C1C1E]">
       <!-- Tips section -->
       <div v-show="cartItems.length > 0" class="">
-        <p class="text-gray-300 mb-3">¿Deseas agregar propina?</p>
-        <div class="grid grid-cols-4 gap-2">
+        <p class="text-gray-300 mb-3">Rompete un extra para nosotros</p>
+        <div class="flex justify-between">
           <button 
             v-for="option in tipOptions" 
             :key="option.value"
             @click="selectTip(option)"
             :class="[
-              'py-2 rounded-xl text-center transition-colors',
+              'py-2 w-20 text-xs rounded-xl text-center transition-colors',
               selectedTip === option.value 
-                ? 'bg-[#BE38F3] text-white' 
-                : 'bg-[#FBF2FF] text-black'
+                ? 'bg-[#1C1C1E] border  border-[#BE38F3] text-white' 
+                : 'bg-[#1C1C1E] border  border-white text-white'
             ]"
           >
             {{ option.label }}
@@ -102,14 +102,12 @@
       </div>
 
       <!-- Total section -->
-      <div v-show="cartItems.length > 0" class="flex w-full text-xl justify-between pt-4 pb-4">
+      <div v-show="cartItems.length > 0" class="flex w-full text-md justify-between pt-4 pb-4">
         <div class="flex flex-col gap-2">
-          <p class="text-gray-300">Subtotal:</p>
-          <p v-if="tipAmount > 0" class="text-gray-300">Propina:</p>
+          <p v-if="tipAmount > 0" class="text-gray-300">Tip:</p>
           <p class="text-white font-semibold">Total:</p>
         </div>
         <div class="flex flex-col gap-2 items-end">
-          <p class="text-gray-300">$ {{ new Intl.NumberFormat('en-US').format(cartTotal.value) }}</p>
           <p v-if="tipAmount > 0" class="text-gray-300">$ {{ new Intl.NumberFormat('en-US').format(tipAmount) }}</p>
           <p class="font-semibold">$ {{ new Intl.NumberFormat('en-US').format(finalTotal) }}</p>
         </div>
