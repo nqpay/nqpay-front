@@ -90,23 +90,37 @@ export default {
         const response = await fetch(`https://api.nqpay.lat/orders/${orderId}/products`)
         if (response.ok) {
           const data = await response.json()
-          order.value = data
-          if (order.value.created_at) {
-            order.value.created_at = new Date(order.value.created_at).toLocaleDateString('es-ES', 
-              {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              }
-            )
+          
+          // Validar campos requeridos
+          if (!data.created_at || !data.ticket_code || !data.products || !Array.isArray(data.products) || data.products.length === 0) {
+            router.push({
+              path: '/scanner',
+              query: { error: 'Pedido inválido o incompleto' }
+            })
+            return
           }
+          
+          // Si los datos son válidos, continuar con el procesamiento normal
+          data.created_at = new Date(data.created_at).toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+          
+          order.value = data
         } else {
-          errorMessage.value = 'Error al obtener el pedido. Por favor, intente nuevamente.'
+          router.push({
+            path: '/scanner',
+            query: { error: 'Error al obtener el pedido' }
+          })
         }
       } catch (error) {
-        errorMessage.value = 'Error en la conexión. Por favor, verifique su conexión a internet.'
+        router.push({
+          path: '/scanner',
+          query: { error: 'Error de conexión' }
+        })
       }
     }
 
@@ -126,7 +140,6 @@ export default {
 
     const markAsDelivered = async () => {
       if (!order.value || isDelivering.value || order.value.order_status === 'DELIVERED') return
-
       isDelivering.value = true
       errorMessage.value = ''
       
@@ -155,7 +168,7 @@ export default {
           errorMessage.value = errorData.detail || 'Error al marcar como entregado. Por favor, intente nuevamente.'
         }
       } catch (error) {
-        errorMessage.value = 'Error en la conexión. Por favor, verifique su conexión a internet.'
+        errorMessage.value = 'Este pedido ya fue entregado con anterioridad.'
       } finally {
         isDelivering.value = false
       }
