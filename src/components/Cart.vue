@@ -1,12 +1,12 @@
 <template>
-  <div class="fixed inset-0 flex flex-col bg-[#1C1C1E] text-white px-4 overflow-hidden">
+  <div class="fixed inset-0 flex flex-col bg-[#1C1C1E] text-white px-8 overflow-hidden">
     <!-- Header section -->
-    <div class="flex justify-between items-center px-4 py-8">
+    <div class="flex justify-between items-center py-8">
       <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" />
       <a class="text-xl font-semibold">Mi carrito</a>
       <div class="h-7 w-8"></div>
     </div>
-    <p class="px-4">Al finalizar tu compra encontrarás un QR que te permitirá retirar el pedido en su totalidad.</p>
+    <p class="">Al finalizar tu compra encontrarás un QR que te permitirá retirar el pedido en su totalidad.</p>
     <!-- <h1 class="px-4 text-2xl font-semibold">Tu Pedido</h1> -->
     <div class="h-5"></div>
     
@@ -16,29 +16,29 @@
         <div class="flex flex-col gap-1">
           <TransitionGroup name="list">
             <div v-for="item in cartItems" :key="item.name" class="w-full flex flex-col flex-none transform transition-all duration-300">
-              <div class="flex items-center gap-4 bg-[#FBF2FF] border rounded-2xl p-2">
-                <img :src="item.image_url" :alt="item.name" class="h-24 w-24 flex-shrink-0 rounded-xl object-cover" />
-                <div class="flex flex-col justify-between h-full my-2 min-w-0 flex-1">
+              <div class="flex items-center gap-4 bg-[#FBF2FF] border rounded-2xl px-2">
+                <img :src="item.image_url" :alt="item.name" class="h-16 w-16 flex-shrink-0 rounded-xl object-cover" />
+                <div class="flex flex-col justify-between h-full py-1 min-w-0 flex-1">
                   <div class="flex flex-col">
-                    <h1 class="text-black text-xl font-semibold truncate">{{ item.name }}</h1>
-                    <p class="text-black text-xs truncate">{{item.description}}</p>
+                    <h1 class="text-black text-lg font-semibold truncate">{{ item.name }}</h1>
+                    <p class="text-gray-500 text-xs truncate">{{item.description}}</p>
                   </div>
                   <h2 class="text-black text-lg font-semibold">$ {{ item.price }}</h2>
                 </div>
                 <div class="flex items-center flex-shrink-0">
-                  <div v-if="item.quantity > 1" @click="decreaseQuantity(item)" class="rounded-full bg-[#BE38F3] h-8 w-8 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+                  <div v-if="item.quantity > 1" @click="decreaseQuantity(item)" class="rounded-full bg-[#BE38F3] h-6 w-6 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
                       <path d="M19 13H5v-2h14v2z" fill="currentColor" />
                     </svg>
                   </div>
-                  <div v-else @click="removeFromCart(item)" class="rounded-full bg-[#BE38F3] h-8 w-8 flex items-center justify-center">
-                    <img src="/bin.png" alt="Vue logo" class="h-4" />
+                  <div v-else @click="removeFromCart(item)" class="rounded-full bg-[#BE38F3] h-6 w-6 flex items-center justify-center">
+                    <img src="/bin.png" alt="Vue logo" class="h-3" />
                   </div>
                   <div class="w-10 h-10 flex font-semibold text-xl items-center justify-center text-black">
                     {{ item.quantity }}
                   </div>
-                  <div @click="increaseQuantity(item)" class="rounded-full bg-[#BE38F3] h-8 w-8 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+                  <div @click="increaseQuantity(item)" class="rounded-full bg-[#BE38F3] h-6 w-6 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
                       <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6v-2z" fill="currentColor" />
                     </svg>
                   </div>
