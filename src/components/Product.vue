@@ -2,10 +2,15 @@
   <div class="h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20">
     <div class="sticky top-0 flex bg-[#1C1C1E] pb-8 z-10 justify-between items-center">
       <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" />
-      <!-- <a class="text-xl font-semibold">{{ eventName.charAt(0).toUpperCase() + eventName.slice(1) }}</a> -->
-      <img src="/cart.png" alt="Vue logo" class="h-7" @click="goToCart" />
+      <div class="relative" @click="goToCart">
+        <img src="/cart.png" alt="Vue logo" class="h-7" />
+        <template v-if="numberOfItems > 0">
+          <div class="absolute top-0 right-0 bg-[#6DF338] text-[#1C1C1E] rounded-full w-5 h-5 flex items-center justify-center text-xs">
+            {{ numberOfItems }}
+          </div>
+        </template>
+      </div>
     </div>
-    <!-- <div class="h-8"></div> -->
 
     <div class="bg-[#FBF2FF] rounded-2xl flex flex-col ">
       <div class="rounded-t-2xl overflow-hidden">
@@ -49,7 +54,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '../stores/productStore'
 import { useCartStore } from '../stores/cartStore'
 import NavBar from './NavBar.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -58,6 +63,11 @@ const cartStore = useCartStore()
 const eventName = route.params.event
 const quantity = ref(1)
 const product = productStore.getSelectedProduct()
+const numberOfItems = ref(0)
+
+onMounted(() => {
+  numberOfItems.value = cartStore.state.numberOfItems
+})
 
 function goBack() {
   router.back()
@@ -72,6 +82,7 @@ function minusQuantity() {
     quantity.value--
   }
 }
+
 function plusQuantity() {
   quantity.value++
 }
