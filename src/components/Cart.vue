@@ -225,11 +225,14 @@ const askLink = async () => {
         'Authorization': `Bearer ${idToken}`,
       },
       body: JSON.stringify(
-        cartItems.value
+        {
+          'products': cartItems.value,
+          'tip': tipAmount.value
+        }
       ),
     })
     const data = await response.json()
-
+    console.log('data: ', cartItems.value)
     window.location.href = data.Message
   } catch (error) {
     console.error('Error al procesar el pago:', error)
