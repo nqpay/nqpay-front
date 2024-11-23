@@ -10,7 +10,6 @@
         </svg>
       </button>
     </div>
-
     <!-- Back button -->
     <div class="absolute top-4 left-4 z-10">
       <button 
@@ -33,7 +32,6 @@
         </svg>
       </button>
     </div>
-
     <!-- Main content -->
     <div class="flex-1 flex justify-center items-center">
       <template v-if="isAuthenticated">
@@ -47,7 +45,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import { useAuth0 } from '@auth0/auth0-vue'
@@ -73,19 +70,47 @@ export default {
       while (auth0.isLoading.value) {
         await new Promise((resolve) => setTimeout(resolve, 50))
       }
-
       isAuthenticated.value = auth0.isAuthenticated.value
-
       if (!isAuthenticated.value) {
         console.log('Usuario no autenticado. Redirigiendo al login...')
         auth0.loginWithRedirect()
       }
     }
 
+    // Función para validar UUID
+    const isValidUUID = (str) => {
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      return uuidRegex.test(str)
+    }
+
     const onDetect = (result) => {
-      const id = result[0].rawValue
-      console.log('Detected ID:', id)
-      this.$router.push(`/order/${id}`)
+      try {
+        const detectedValue = result[0]?.rawValue
+
+        // Verificar si hay un valor detectado
+        if (!detectedValue) {
+          errorMessage.value = 'No se pudo leer el código QR'
+          return
+        }
+
+        // Limpiar el valor detectado de cualquier espacio en blanco
+        const cleanValue = detectedValue.trim()
+
+        // Validar que sea un UUID válido
+        if (!isValidUUID(cleanValue)) {
+          errorMessage.value = 'Código QR inválido. Por favor, escanee un código válido.'
+          console.error('QR inválido detectado:', cleanValue)
+          return
+        }
+
+        // Si todo está bien, redirigir a la página de la orden
+        console.log('UUID válido detectado:', cleanValue)
+        router.push(`/order/${cleanValue}`)
+
+      } catch (error) {
+        console.error('Error al procesar el código QR:', error)
+        errorMessage.value = 'Error al procesar el código QR. Por favor, intente nuevamente.'
+      }
     }
 
     const goBack = () => {
@@ -95,7 +120,6 @@ export default {
     onMounted(() => {
       checkAuth()
       // Verificar si hay un mensaje de error en la URL
-      console.log('route: ', route)
       if (route.query.error) {
         errorMessage.value = route.query.error
         // Limpiar el error de la URL
