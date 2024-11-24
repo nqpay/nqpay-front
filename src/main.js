@@ -7,6 +7,7 @@ import { initializeFaro } from '@grafana/faro-web-sdk'
 
 import App from './App.vue'
 import './style.css'
+import Thanks from './components/Thanks.vue'
 import DemoHome from './components/DemoHome.vue'
 import EventsList from './components/EventsList.vue'
 import Menu from './components/Menu.vue'
@@ -40,20 +41,21 @@ const getCurrentUser = () => {
 const router = new createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: DemoHome, meta: { requiresAuth: true } },
-    { path: '/admin', component: Admin },
-    { path: '/auth', component: Auth },
-    // { path: '/events', component: EventsList, meta: { requiresAuth: true } },
-    { path: '/menu/:event', component: Menu, meta: { requiresAuth: true } },
-    { path: '/menu/:event/:product', component: Product, meta: { requiresAuth: true } },
-    { path: '/cart', component: Cart, meta: { requiresAuth: true } },
-    { path: '/order/:id', component: Order }, // TODO: Protect route with Auth0
-    { path: '/scanner', component: Scanner }, // TODO: Protect route with Auth0
-    { path: '/checkout', component: Checkout, meta: { requiresAuth: true } },
-    { path: '/profile', component: Profile, meta: { requiresAuth: true } },
-    { path: '/success', component: Success, meta: { requiresAuth: true } },
-    { path: '/complete-profile', component: CompleteProfile, meta: { requiresAuth: true } },
-    { path: '/welcome', component: Welcome },
+    { path: '/', component: Thanks },
+    // { path: '/', component: DemoHome, meta: { requiresAuth: true } },
+    // { path: '/admin', component: Admin },
+    // { path: '/auth', component: Auth },
+    // // { path: '/events', component: EventsList, meta: { requiresAuth: true } },
+    // { path: '/menu/:event', component: Menu, meta: { requiresAuth: true } },
+    // { path: '/menu/:event/:product', component: Product, meta: { requiresAuth: true } },
+    // { path: '/cart', component: Cart, meta: { requiresAuth: true } },
+    // { path: '/order/:id', component: Order }, // TODO: Protect route with Auth0
+    // { path: '/scanner', component: Scanner }, // TODO: Protect route with Auth0
+    // { path: '/checkout', component: Checkout, meta: { requiresAuth: true } },
+    // { path: '/profile', component: Profile, meta: { requiresAuth: true } },
+    // { path: '/success', component: Success, meta: { requiresAuth: true } },
+    // { path: '/complete-profile', component: CompleteProfile, meta: { requiresAuth: true } },
+    // { path: '/welcome', component: Welcome },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
   scrollBehavior(to, from, savedPosition) {
