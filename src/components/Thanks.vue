@@ -14,15 +14,15 @@
       <div class="flex-1 flex items-center justify-center">
         <div class="flex flex-col items-center space-y-6 px-6">
           <h1 class="text-3xl text-center font-bold leading-tight tracking-tight text-white max-w-xl">
-            ¡Gracias a todos los que fueron parte de nuestra primera noche! 🎉
+            Gracias a todos por ser parte de nuestro primer test 💜
           </h1>
           
           <div class="text-white space-y-4 text-center max-w-md">
             <p class="text-xl">
-              Anoche fue increíble ver cómo usaron la app en NQ 💜
+              Estamos muy contentos con lo logrado hasta ahora y con cómo salió la NQ Fest!
             </p>
             <p class="text-lg">
-              Gracias por la buena onda, por la paciencia y por ayudarnos a mejorar. ¡Esto recién empieza! 🚀
+              Gracias por la buena onda, por la paciencia y por ayudarnos a mejorar. Esto recién empieza 👾
             </p>
           </div>
         </div>
