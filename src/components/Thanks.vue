@@ -1,7 +1,7 @@
 <template>
   <section class="bg-[#1C1C1E] w-screen h-screen flex flex-col overflow-hidden fixed">
-    <div v-show="imageLoaded" class="flex flex-col w-full h-full">
-      <div class="w-32 px-6 pt-6">
+    <div v-show="imageLoaded" class="flex flex-col w-full h-full px-6">
+      <div class="w-24 px-6 pt-6">
         <img 
           class="w-full object-cover" 
           :class="{ 'opacity-0': !imageLoaded }"
