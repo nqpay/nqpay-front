@@ -6,7 +6,7 @@
       <a class="text-xl font-semibold">Mi carrito</a>
       <div class="h-7 w-8"></div>
     </div>
-    <p class="">Al finalizar tu compra encontrarás un QR que te permitirá retirar el pedido en su totalidad.</p>
+    <p class="text-xs lg:text-lg">Al finalizar tu compra encontrarás un QR que te permitirá retirar el pedido en su totalidad.</p>
     <!-- <h1 class="px-4 text-2xl font-semibold">Tu Pedido</h1> -->
     <div class="h-5"></div>
     
@@ -16,9 +16,9 @@
         <div class="flex flex-col gap-1">
           <TransitionGroup name="list">
             <div v-for="item in cartItems" :key="item.name" class="w-full flex flex-col flex-none transform transition-all duration-300">
-              <div class="flex items-center gap-4 bg-[#FBF2FF] border rounded-2xl px-2">
+              <div class="flex items-center gap-4 bg-[#FBF2FF] border rounded-2xl pr-1 lg:px-2 lg:pr-2">
                 <img :src="item.image_url" :alt="item.name" class="h-16 w-16 flex-shrink-0 rounded-xl object-cover" />
-                <div class="flex flex-col justify-between h-full py-1 min-w-0 flex-1">
+                <div class="flex flex-col justify-between h-full lg:py-2 min-w-0 flex-1">
                   <div class="flex flex-col">
                     <h1 class="text-black text-md font-semibold truncate">{{ item.name }}</h1>
                     <p class="text-gray-500 text-xs truncate">{{item.description}}</p>
@@ -26,18 +26,18 @@
                   <h2 class="text-black text-md font-semibold">$ {{ item.price }}</h2>
                 </div>
                 <div class="flex items-center flex-shrink-0">
-                  <div v-if="item.quantity > 1" @click="decreaseQuantity(item)" class="rounded-full bg-[#BE38F3] h-6 w-6 flex items-center justify-center">
+                  <div v-if="item.quantity > 1" @click="decreaseQuantity(item)" class="rounded-full bg-[#BE38F3] lg:h-6 lg:w-6 w-4 h-4 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
                       <path d="M19 13H5v-2h14v2z" fill="currentColor" />
                     </svg>
                   </div>
-                  <div v-else @click="removeFromCart(item)" class="rounded-full bg-[#BE38F3] h-6 w-6 flex items-center justify-center">
+                  <div v-else @click="removeFromCart(item)" class="rounded-full bg-[#BE38F3] lg:h-6 lg:w-6 w-4 h-4 flex items-center justify-center">
                     <img src="/bin.png" alt="Vue logo" class="h-3" />
                   </div>
                   <div class="w-10 h-10 flex font-semibold text-xl items-center justify-center text-black">
                     {{ item.quantity }}
                   </div>
-                  <div @click="increaseQuantity(item)" class="rounded-full bg-[#BE38F3] h-6 w-6 flex items-center justify-center">
+                  <div @click="increaseQuantity(item)" class="rounded-full bg-[#BE38F3] lg:h-6 lg:w-6 w-4 h-4 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
                       <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6v-2z" fill="currentColor" />
                     </svg>
@@ -80,10 +80,10 @@
       </button>
     </div> -->
     <!-- Fixed bottom section -->
-    <div class=" bg-[#1C1C1E]">
+    <div class=" bg-[#1C1C1E] text-xs lg:text-lg">
       <!-- Tips section -->
       <div v-show="cartItems.length > 0" class="">
-        <p class="text-gray-300 mb-3">Apoyá a NQ con un extra</p>
+        <p class="text-gray-300 lg:mb-3 text-xs lg:text-lg">Apoyá a NQ con un extra</p>
         <div class="flex justify-between">
           <button 
             v-for="option in tipOptions" 
@@ -100,9 +100,8 @@
           </button>
         </div>
       </div>
-
       <!-- Total section -->
-      <div v-show="cartItems.length > 0" class="flex w-full text-md justify-between pt-4 pb-4">
+      <div v-show="cartItems.length > 0" class="flex w-full text-md justify-between pt-1 pb-1 lg:pt-4 lg:pb-4">
         <div class="flex flex-col gap-2">
           <p v-if="tipAmount > 0" class="text-gray-300">Extra:</p>
           <p class="text-white font-semibold">Total:</p>

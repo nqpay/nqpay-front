@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20">
+  <div class="min-h-screen flex flex-col bg-[#1C1C1E] text-white p-8 pb-20">
     <div class="sticky top-0 flex bg-[#1C1C1E] pb-8 z-10 justify-between items-center">
       <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" />
       <div class="relative" @click="goToCart">

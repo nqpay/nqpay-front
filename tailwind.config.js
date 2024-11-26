@@ -2,7 +2,11 @@
 export default {
   content: ['index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        'lg': '390px',    // iPhone SE
+      }
+    },
   },
   plugins: [],
 }
