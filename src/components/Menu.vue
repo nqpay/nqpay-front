@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col bg-[#1C1C1E] text-white relative">
     <!-- Header (fixed at top) -->
-    <div class="sticky top-0 bg-[#1C1C1E] p-8 z-10">
+    <div class="sticky top-0 bg-[#1C1C1E] py-4 px-4 lg:px-8 lg:py-8 z-10">
       <div class="flex justify-between items-center">
         <div class="w-7"></div>
         <!-- <img @click="goBack" src="/back.png" alt="Back" class="h-7" /> -->
@@ -16,7 +16,7 @@
     </div>
     
     <!-- Contenido principal scrolleable -->
-    <div class="flex-1 p-8 pt-0">
+    <div class="flex-1 p-4 lg:p-8 pt-0 mb-5 lg:mb-0">
       <!-- Product Grid -->
       <div class="grid grid-cols-2 gap-4" :class="numberOfItems > 0 ? 'pb-28' : 'pb-20'">
         <template v-if="isLoading">
@@ -45,7 +45,7 @@
     <!-- Botón de carrito (fixed at bottom) -->
     <div v-if="numberOfItems > 0" 
         @click="goToCart"
-        class="fixed bottom-10 left-8 right-8 mb-10 bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
+        class="fixed bottom-10 left-4 right-4 lg:left-8 lg:right-8 mb-10 bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
         Ir al carrito
     </div>
   </div>

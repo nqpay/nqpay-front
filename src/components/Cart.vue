@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed inset-0 flex flex-col bg-[#1C1C1E] text-white px-8 overflow-hidden">
+  <div class="fixed inset-0 flex flex-col bg-[#1C1C1E] text-white px-4 lg:px-8 overflow-hidden">
     <!-- Header section -->
     <div class="flex justify-between items-center py-8">
       <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" />
@@ -90,7 +90,7 @@
             :key="option.value"
             @click="selectTip(option)"
             :class="[
-              'py-2 w-20 text-xs rounded-xl text-center transition-colors',
+              'py-1 lg:py-2 w-20 text-xs rounded-xl text-center transition-colors',
               selectedTip === option.value 
                 ? 'bg-[#1C1C1E] border  border-[#BE38F3] text-white' 
                 : 'bg-[#1C1C1E] border  border-white text-white'
@@ -102,13 +102,13 @@
       </div>
       <!-- Total section -->
       <div v-show="cartItems.length > 0" class="flex w-full text-md justify-between pt-1 pb-1 lg:pt-4 lg:pb-4">
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col lg:gap-2">
           <p v-if="tipAmount > 0" class="text-gray-300">Extra:</p>
-          <p class="text-white font-semibold">Total:</p>
+          <p class="text-white font-semibold text-lg">Total:</p>
         </div>
-        <div class="flex flex-col gap-2 items-end">
+        <div class="flex flex-col lg:gap-2 items-end">
           <p v-if="tipAmount > 0" class="text-gray-300">$ {{ new Intl.NumberFormat('en-US').format(tipAmount) }}</p>
-          <p class="font-semibold">$ {{ new Intl.NumberFormat('en-US').format(finalTotal) }}</p>
+          <p class="font-semibold text-lg">$ {{ new Intl.NumberFormat('en-US').format(finalTotal) }}</p>
         </div>
       </div>
       
@@ -116,7 +116,7 @@
         :disabled="isLoading"
         @click="askLink()"
         v-if="cartTotal.value > 0"
-        class="w-full bg-[#6DF338] text-black py-3 text-xl text-center rounded-xl mb-6"
+        class="w-full bg-[#6DF338] text-black py-1 lg:py-3 text-lg lg:text-xl text-center rounded-xl mb-6"
       >
         <div v-if="isLoading" class="flex items-center justify-center">
           <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">

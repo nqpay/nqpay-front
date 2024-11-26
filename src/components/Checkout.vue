@@ -1,7 +1,7 @@
 <template>
-  <div class="fixed inset-0 flex flex-col bg-[#1C1C1E] text-white px-8 overflow-hidden"> 
+  <div class="fixed inset-0 flex flex-col bg-[#1C1C1E] text-white px-4 lg:px-8 overflow-hidden"> 
     <div class="bg-[#1C1C1E] h-screen flex flex-col">
-     <div class="flex justify-between items-center py-8 text-white">
+     <div class="flex justify-between items-center py-4 lg:py-8 text-white">
       <div class="w-7"></div>
       <!-- <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" /> -->
       <a class="text-xl font-semibold">Historial de Pedidos</a>
@@ -36,16 +36,16 @@
           v-for="order in orders" 
           :key="order.id" 
           @click="navigateToOrder(order)"
-          class="flex items-center justify-between gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2 px-2"
+          class="flex items-center justify-between gap-4 bg-white bg-opacity-15 text-white rounded-lg p-2 px-2 text-xs lg:text-lg"
         >
           <div class="flex flex-col">
-            <div class="flex items-center gap-4">
-              <p class="font-bold">{{ order.ticket_code.substring(0,3) }}-{{ order.ticket_code.substring(3,6) }}</p>
-              <p class="font-thin text-sm">{{order.created_at.split('T')[0]}} {{order.created_at.split('T')[1].split(':')[0]}}:{{ order.created_at.split('T')[1].split(':')[1]}}</p>
+            <div class="flex items-center gap-2 lg:gap-4">
+              <p class="font-bold min-w-max">{{ order.ticket_code.substring(0,3) }}-{{ order.ticket_code.substring(3,6) }}</p>
+              <p class="min-w-max font-thin lg:text-sm">{{order.created_at.split('T')[0]}} {{order.created_at.split('T')[1].split(':')[0]}}:{{ order.created_at.split('T')[1].split(':')[1]}}</p>
             </div>
             <div class="flex items-center gap-2">
               <p class="">${{ order.total.toString().split(".")[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
-              <p v-if="order.tip > 0" class="text-gray-400 text-sm">+${{order.tip}} ♥</p>
+              <p v-if="order.tip > 0" class="text-gray-400 lg:text-sm">+${{order.tip}} ♥</p>
             </div>
           </div>
           <div class="flex flex-col h-full justify-center">
