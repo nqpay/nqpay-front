@@ -84,8 +84,10 @@ const route = useRoute()
 const cartStore = useCartStore()
 
 onMounted(async () => {
-  let ws = new WebSocket('wss://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/');
-    
+  const auth = getAuth()
+  const idToken = await auth.currentUser.getIdToken()
+  const ws = new WebSocket(`wss://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/?token=${idToken}`);
+
   ws.onopen = () => {
     console.log('Conectado al WebSocket');
   };
@@ -114,8 +116,6 @@ onMounted(async () => {
   const order_id = route.query.external_reference
   if (order_id) {
     try {
-      const auth = getAuth()
-      const idToken = await auth.currentUser.getIdToken()
       const response = await fetch(`https://api.nqpay.lat/orders/${order_id}/products`, {
         method: 'GET',
         headers: {
