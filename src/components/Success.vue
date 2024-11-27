@@ -84,6 +84,30 @@ const route = useRoute()
 const cartStore = useCartStore()
 
 onMounted(async () => {
+  let ws = new WebSocket('wss://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/');
+    
+  ws.onopen = () => {
+    console.log('Conectado al WebSocket');
+  };
+
+  ws.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      console.log('Recibido update de orden:', data);
+      if (data.orderId === route.query.external_reference) {
+        console.log('Esta orden ha sido actualizada a:', data.status);
+        // Opcional: actualizar el estado de la orden de manera segura
+        if (order.value) {
+          order.value.order_status = data.status;
+        }
+      }
+    } catch (err) {
+      console.error('Error procesando mensaje:', err);
+    }
+  };
+
+  // TODO: disconnect via front or back
+
   if (route.query.preference_id != null & route.query.payment_id != null) {
     cartStore.clearCart()
   }
