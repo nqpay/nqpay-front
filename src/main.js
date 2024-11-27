@@ -124,7 +124,7 @@ app.use(
     domain: 'dev-d0y1bpajet18zump.us.auth0.com',
     clientId: 'mWH9lOF0Jaonbh60Mt7TTSQpafGeBP14',
     authorizationParams: {
-      redirect_uri: 'https://pay.nqpay.lat/admin',
+      redirect_uri: window.location.pathname + '/admin',
       audience: 'https://api.nqpay.lat'
     },
   })
