@@ -4,6 +4,7 @@
       <h1 class="text-white font-medium text-xl">Hola {{ user?.name }}!</h1>
       <div class="h-20"></div>
       <button @click="openScanner" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Escanear nuevo código QR</button>
+      <button @click="navigateToOrders" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Historial de escaneos</button>
       <button @click="handleLogout" class="bg-[#BE38F3] mt-5 w-full text-white rounded-lg p-3">Cerrar Sesión</button>
     </template>
     <template v-else-if="isLoading">
@@ -60,6 +61,10 @@ export default {
       }
     }
 
+    const navigateToOrders = () => {
+      router.push('/orders-delivered')
+    }
+
     const handleLogin = () => {
       auth0.loginWithRedirect({
         appState: { targetUrl: window.location.pathname }
@@ -89,6 +94,7 @@ export default {
       openScanner,
       handleLogin,
       handleLogout,
+      navigateToOrders,
     }
   },
 }

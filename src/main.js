@@ -20,6 +20,7 @@ import Checkout from './components/Checkout.vue'
 import Success from './components/Success.vue'
 import Scanner from './components/Scanner.vue'
 import Order from './components/Order.vue'
+import OrdersDelivered from './components/OrdersDelivered.vue'
 import CompleteProfile from './components/CompleteProfile.vue'
 import Welcome from './components/Welcome.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
@@ -41,21 +42,20 @@ const getCurrentUser = () => {
 const router = new createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: Thanks },
-    // { path: '/', component: DemoHome, meta: { requiresAuth: true } },
-    // { path: '/admin', component: Admin },
-    // { path: '/auth', component: Auth },
-    // // { path: '/events', component: EventsList, meta: { requiresAuth: true } },
-    // { path: '/menu/:event', component: Menu, meta: { requiresAuth: true } },
-    // { path: '/menu/:event/:product', component: Product, meta: { requiresAuth: true } },
-    // { path: '/cart', component: Cart, meta: { requiresAuth: true } },
-    // { path: '/order/:id', component: Order }, // TODO: Protect route with Auth0
-    // { path: '/scanner', component: Scanner }, // TODO: Protect route with Auth0
-    // { path: '/checkout', component: Checkout, meta: { requiresAuth: true } },
-    // { path: '/profile', component: Profile, meta: { requiresAuth: true } },
-    // { path: '/success', component: Success, meta: { requiresAuth: true } },
-    // { path: '/complete-profile', component: CompleteProfile, meta: { requiresAuth: true } },
-    // { path: '/welcome', component: Welcome },
+    { path: '/', component: DemoHome, meta: { requiresAuth: true } },
+    { path: '/admin', component: Admin },
+    { path: '/auth', component: Auth },
+    { path: '/menu/:event', component: Menu, meta: { requiresAuth: true } },
+    { path: '/menu/:event/:product', component: Product, meta: { requiresAuth: true } },
+    { path: '/cart', component: Cart, meta: { requiresAuth: true } },
+    { path: '/orders-delivered', component: OrdersDelivered }, // TODO: Protect route with Auth0
+    { path: '/order/:id', component: Order }, // TODO: Protect route with Auth0
+    { path: '/scanner', component: Scanner }, // TODO: Protect route with Auth0
+    { path: '/checkout', component: Checkout, meta: { requiresAuth: true } },
+    { path: '/profile', component: Profile, meta: { requiresAuth: true } },
+    { path: '/success', component: Success, meta: { requiresAuth: true } },
+    { path: '/complete-profile', component: CompleteProfile, meta: { requiresAuth: true } },
+    { path: '/welcome', component: Welcome },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
   scrollBehavior(to, from, savedPosition) {
