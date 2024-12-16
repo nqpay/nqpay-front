@@ -35,8 +35,8 @@ jobs:
       - name: Deploy to AWS S3 (Dev)
         if: github.ref == 'refs/heads/dev'
         run: |
-          aws s3 sync dist s3://pay-nqpay-front-dev --delete
+          aws s3 sync dist s3://paydev.nqpay.lat --delete
       - name: Deploy to AWS S3 (Main)
         if: github.ref == 'refs/heads/main'
         run: |
-          aws s3 sync dist s3://pay-nqpay-front-prod --delete
+          aws s3 sync dist s3://payprod.nqpay.lat --delete
