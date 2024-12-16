@@ -4,8 +4,8 @@
       <h1 class="text-white font-medium text-xl">Hola {{ user?.name }}!</h1>
       <div class="h-20"></div>
       <button @click="openScanner" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Escanear nuevo código QR</button>
-      <button @click="navigateToOrders" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Historial de escaneos</button>
-      <button @click="handleLogout" class="bg-[#BE38F3] mt-5 w-full text-white rounded-lg p-3">Cerrar Sesión</button>
+      <button @click="navigateToOrders" class="border border-[#BE38F3] w-full text-white rounded-lg p-3 mt-5">Historial de escaneos</button>
+      <button @click="handleLogout" class="bg-[#BE38F3] mt-auto w-full text-white rounded-lg p-3">Cerrar Sesión</button>
     </template>
     <template v-else-if="isLoading">
       <!-- Skeleton loader -->

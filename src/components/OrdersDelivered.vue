@@ -2,13 +2,13 @@
   <div class="h-screen flex flex-col bg-[#1C1C1E] text-white px-4 lg:px-8 ">
     <div class="bg-[#1C1C1E] h-screen flex flex-col">
       <div class="flex justify-between items-center py-4 lg:py-8 text-white">
-        <div class="w-7"></div>
-        <a class="text-xl font-semibold">Historiala de Pedidos</a>
+        <img @click="goBack" src="/back.png" alt="Vue logo" class="h-7" />
+        <a class="text-xl font-semibold">Historial de Escaneos</a>
         <div class="h-7 w-7"></div>
       </div>
       
       <p class="text-white font-regular pb-10">
-        Acá vas a encontrar todas las compras que hiciste y tus códigos QR para retirar tus tragos.
+        Acá vas a encontrar todas las ordenes que escanearon.
       </p>
 
       <!-- Loading state -->
@@ -49,7 +49,6 @@
         </div>
       </div>
 
-      <NavBar currentView="Checkout" />
     </div>
   </div>
 </template>
@@ -69,6 +68,10 @@ export default {
     const router = useRouter()
     const orders = ref([])
     const isLoading = ref(true)
+
+    function goBack() {
+      router.replace('/admin')
+    }
 
     const fetchOrders = async () => {
       try {
@@ -111,7 +114,8 @@ export default {
       isAuthenticated,
       orders,
       isLoading,
-      navigateToOrder
+      navigateToOrder,
+      goBack,
     }
   }
 }
