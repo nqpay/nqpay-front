@@ -82,6 +82,45 @@ const order = ref(null)
 const router = useRouter()
 const route = useRoute()
 const cartStore = useCartStore()
+const websocket = ref(null)
+
+async function connectWebSocket() {
+  try {
+    // Get Firebase ID token
+    const auth = getAuth()
+    const idToken = await auth.currentUser.getIdToken()
+
+    // Construct WebSocket URL with token
+    const wsUrl = `https://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/?token=${idToken}`
+    
+    websocket.value = new WebSocket(wsUrl)
+
+    websocket.value.onopen = () => {
+      console.log('WebSocket connection established')
+    }
+
+    websocket.value.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+        if (data.orderId && order.value.id === data.orderId && data.status === 'DELIVERED') {
+          order.value.order_status = 'DELIVERED'
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error)
+      }
+    }
+
+    websocket.value.onerror = (error) => {
+      console.error('WebSocket error:', error)
+    }
+
+    websocket.value.onclose = () => {
+      console.log('WebSocket connection closed')
+    }
+  } catch (error) {
+    console.error('Error setting up WebSocket:', error)
+  }
+}
 
 onMounted(async () => {
   if (route.query.preference_id != null & route.query.payment_id != null) {
@@ -103,6 +142,8 @@ onMounted(async () => {
         console.log('ORDERRRR : ', data)
         order.value = data
         isLoading.value = false
+        order.value.id = order_id
+        await connectWebSocket()
       } else {
         console.error('Error al obtener el pedido:', response.statusText)
       }
