@@ -9,7 +9,7 @@
     <p class="">Al finalizar tu compra encontrarás un QR que te permitirá retirar el pedido en su totalidad.</p>
     <!-- <h1 class="px-4 text-2xl font-semibold">Tu Pedido</h1> -->
     <div class="h-5"></div>
-    
+
     <!-- Scrollable content -->
     <div v-if="cartItems.length > 0" class="flex-1 overflow-hidden pb-5">
       <div class="h-full overflow-auto">
@@ -21,7 +21,7 @@
                 <div class="flex flex-col justify-between h-full py-1 min-w-0 flex-1">
                   <div class="flex flex-col">
                     <h1 class="text-black text-md font-semibold truncate">{{ item.name }}</h1>
-                    <p class="text-gray-500 text-xs truncate">{{item.description}}</p>
+                    <p class="text-gray-500 text-xs truncate">{{ item.description }}</p>
                   </div>
                   <h2 class="text-black text-md font-semibold">$ {{ item.price }}</h2>
                 </div>
@@ -53,7 +53,7 @@
     <div v-else class="flex-1 flex flex-col items-center justify-center">
       <p class="text-xl">Tu carrito está vacío.</p>
     </div>
-    
+
     <!-- Fixed bottom section -->
     <!-- <div class="absolute bottom-0 left-0 right-0 bg-[#1C1C1E] px-4">
       <div v-show="cartItems.length > 0" class="flex w-full text-xl justify-between pt-4 pb-4">
@@ -80,20 +80,18 @@
       </button>
     </div> -->
     <!-- Fixed bottom section -->
-    <div class=" bg-[#1C1C1E]">
+    <div class="bg-[#1C1C1E]">
       <!-- Tips section -->
       <div v-show="cartItems.length > 0" class="">
         <p class="text-gray-300 mb-3">Apoyá a NQ con un extra</p>
         <div class="flex justify-between">
-          <button 
-            v-for="option in tipOptions" 
+          <button
+            v-for="option in tipOptions"
             :key="option.value"
             @click="selectTip(option)"
             :class="[
               'py-2 w-20 text-xs rounded-xl text-center transition-colors',
-              selectedTip === option.value 
-                ? 'bg-[#1C1C1E] border  border-[#BE38F3] text-white' 
-                : 'bg-[#1C1C1E] border  border-white text-white'
+              selectedTip === option.value ? 'bg-[#1C1C1E] border  border-[#BE38F3] text-white' : 'bg-[#1C1C1E] border  border-white text-white',
             ]"
           >
             {{ option.label }}
@@ -112,13 +110,8 @@
           <p class="font-semibold">$ {{ new Intl.NumberFormat('en-US').format(finalTotal) }}</p>
         </div>
       </div>
-      
-      <button 
-        :disabled="isLoading"
-        @click="askLink()"
-        v-if="cartTotal.value > 0"
-        class="w-full bg-[#6DF338] text-black py-3 text-xl text-center rounded-xl mb-6"
-      >
+
+      <button :disabled="isLoading" @click="askLink()" v-if="cartTotal.value > 0" class="w-full bg-[#6DF338] text-black py-3 text-xl text-center rounded-xl mb-6">
         <div v-if="isLoading" class="flex items-center justify-center">
           <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -159,11 +152,14 @@ const tipOptions = [
   { label: '20%', value: 0.2 },
 ]
 
-watch(() => cartTotal.value.value, (newTotal) => {
-  if (selectedTip.value !== null) {
-    tipAmount.value = Math.round(newTotal * selectedTip.value)
+watch(
+  () => cartTotal.value.value,
+  (newTotal) => {
+    if (selectedTip.value !== null) {
+      tipAmount.value = Math.round(newTotal * selectedTip.value)
+    }
   }
-})
+)
 
 function selectTip(option) {
   if (selectedTip.value === option.value) {
@@ -218,18 +214,17 @@ const askLink = async () => {
     }
 
     const idToken = await user.getIdToken()
-    const response = await fetch('https://api.nqpay.lat/venue/NQ%20Fest/order', {
+    const venueName = window.location.hostname.split('.')[0]
+    const response = await fetch(`https://api.nqpay.lat/venue/${venueName}/order`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${idToken}`,
       },
-      body: JSON.stringify(
-        {
-          'products': cartItems.value,
-          'tip': tipAmount.value
-        }
-      ),
+      body: JSON.stringify({
+        products: cartItems.value,
+        tip: tipAmount.value,
+      }),
     })
     const data = await response.json()
     window.location.href = data.Message

@@ -9,7 +9,7 @@
           <span v-else class="text-sm text-gray-500">Home</span>
         </div>
       </router-link>
-      <router-link to="/menu/NQ Fest" class="flex items-center justify-center">
+      <router-link :to="`/menu/${venueName}`" class="flex items-center justify-center">
         <div @click="changeView('Events')" class="inline-flex flex-col items-center justify-center">
           <img v-if="currentView == 'Events'" src="/eventos_icon.png" alt="Vue logo" class="h-7 mb-1" />
           <img v-else src="/eventos_icon_deselected.png" alt="Vue logo" class="h-7 mb-1" />
@@ -37,8 +37,13 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-
+<script>
+export default {
+  computed: {
+    venueName() {
+      return window.location.hostname.split('.')[0]
+    },
+  },
+}
 const props = defineProps(['currentView'])
 </script>

@@ -14,7 +14,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Contenido principal scrolleable -->
     <div class="flex-1 p-8 pt-0">
       <!-- Product Grid -->
@@ -43,11 +43,7 @@
     </div>
 
     <!-- Botón de carrito (fixed at bottom) -->
-    <div v-if="numberOfItems > 0" 
-        @click="goToCart"
-        class="fixed bottom-10 left-8 right-8 mb-10 bg-[#BE38F3] py-3 text-xl text-center rounded-xl">
-        Ir al carrito
-    </div>
+    <div v-if="numberOfItems > 0" @click="goToCart" class="fixed bottom-10 left-8 right-8 mb-10 bg-[#BE38F3] py-3 text-xl text-center rounded-xl">Ir al carrito</div>
   </div>
 
   <NavBar currentView="Events" />
@@ -70,7 +66,7 @@ export default {
     const route = useRoute()
     const router = useRouter()
     const products = ref([])
-    const event = ref({})
+    const venueName = ref('')
     const numberOfItems = ref(0)
     const isLoading = ref(true)
     const productStore = useProductStore()
@@ -78,7 +74,7 @@ export default {
 
     const navigateToProduct = (item) => {
       productStore.setSelectedProduct(item)
-      router.push(`/menu/${event.value.name}/${item.name.toLowerCase()}`)
+      router.push(`/menu/${venueName.value}/${item.name.toLowerCase()}`)
     }
 
     const goBack = () => {
@@ -94,60 +90,46 @@ export default {
     }
 
     onMounted(async () => {
-  const auth = getAuth()
-  event.value = JSON.parse(localStorage.getItem('venue')) || {
-    'SK': 'V#2a5e6d27-65a0-4984-a85d-ba1cc713de68',
-    'name': 'NQ Fest'
-  }
-  if (!event.value) {
-    const response = await fetch(`https://api.nqpay.lat/venues/`)
-    const data = await response.json()
-    for (const venue of data) {
-      if (venue.name.toLowerCase() === route.params.event) {
-        event.value = venue
-        break
+      const auth = getAuth()
+      try {
+        venueName.value = window.location.hostname.split('.')[0]
+        const cachedProducts = localStorage.getItem('products')
+        const lastFetchTime = localStorage.getItem('lastProductsFetchTime')
+        const CACHE_DURATION = 5 * 60 * 1000 // 5 minutos
+
+        // Usar caché si existe y no han pasado 5 minutos
+        if (cachedProducts && lastFetchTime && Date.now() - parseInt(lastFetchTime) < CACHE_DURATION) {
+          products.value = JSON.parse(cachedProducts)
+        } else {
+          // Si no hay caché o pasaron 5 minutos, hacer el request
+          const idToken = await auth.currentUser.getIdToken()
+          const response = await fetch(`https://api.nqpay.lat/venues/${venueName}/products`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          })
+          const data = await response.json()
+          products.value = data.products
+
+          // Guardar en caché con timestamp
+          localStorage.setItem('products', JSON.stringify(data.products))
+          localStorage.setItem('lastProductsFetchTime', Date.now().toString())
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      } finally {
+        isLoading.value = false
       }
-    }
-  }
 
-  try {
-    const cachedProducts = localStorage.getItem('products')
-    const lastFetchTime = localStorage.getItem('lastProductsFetchTime')
-    const CACHE_DURATION = 5 * 60 * 1000 // 5 minutos
-
-    // Usar caché si existe y no han pasado 5 minutos
-    if (cachedProducts && lastFetchTime && (Date.now() - parseInt(lastFetchTime)) < CACHE_DURATION) {
-      products.value = JSON.parse(cachedProducts)
-    } else {
-      // Si no hay caché o pasaron 5 minutos, hacer el request
-      const idToken = await auth.currentUser.getIdToken()
-      const response = await fetch(`https://api.nqpay.lat/venues/NQ%20Fest/products`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      })
-      const data = await response.json()
-      products.value = data.products
-      
-      // Guardar en caché con timestamp
-      localStorage.setItem('products', JSON.stringify(data.products))
-      localStorage.setItem('lastProductsFetchTime', Date.now().toString())
-    }
-  } catch (error) {
-    console.error('Error fetching products:', error)
-  } finally {
-    isLoading.value = false
-  }
-
-  numberOfItems.value = cartStore.state.numberOfItems
-  })
+      numberOfItems.value = cartStore.state.numberOfItems
+    })
 
     return {
       route,
       router,
       products,
-      event,
+      venueName,
       numberOfItems,
       isLoading,
       productStore,
@@ -167,11 +149,12 @@ export default {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
-    opacity: .5;
+    opacity: 0.5;
   }
 }
 </style>
