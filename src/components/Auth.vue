@@ -287,7 +287,7 @@ export default {
 
     venueName.value = window.location.hostname.split('.')[0]
     const actionCodeSettings = {
-      url: `https://${venueName}.nqpay.lat/auth?email=${encodeURIComponent(email.value)}&intendedRoute=${encodeURIComponent(localStorage.getItem('intendedRoute'))}`,
+      url: `https://${venueName.value}.nqpay.lat/auth?email=${encodeURIComponent(email.value)}&intendedRoute=${encodeURIComponent(localStorage.getItem('intendedRoute'))}`,
       handleCodeInApp: true,
     }
 

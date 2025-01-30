@@ -103,7 +103,7 @@ export default {
         } else {
           // Si no hay caché o pasaron 5 minutos, hacer el request
           const idToken = await auth.currentUser.getIdToken()
-          const response = await fetch(`https://api.nqpay.lat/venues/${venueName}/products`, {
+          const response = await fetch(`https://api.nqpay.lat/venues/${venueName.value}/products`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${idToken}`,
