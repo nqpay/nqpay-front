@@ -38,14 +38,17 @@
 </template>
 
 <script>
-import { defineProps } from 'vue'
-
 export default {
+  props: {
+    currentView: {
+      type: String,
+      required: true,
+    },
+  },
   computed: {
     venueName() {
       return window.location.hostname.split('.')[0]
     },
   },
 }
-const props = defineProps(['currentView'])
 </script>
