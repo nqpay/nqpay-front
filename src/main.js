@@ -127,7 +127,7 @@ app.use(
     authorizationParams: {
       redirect_uri: window.location.origin + '/admin',
       audience: 'https://api.nqpay.lat',
-      organization: 'nq',
+      organization: 'org_jPlHFPOtQ9xDz5jC',
     },
   })
 )
