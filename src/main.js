@@ -63,7 +63,7 @@ const router = new createRouter({
     if (savedPosition) {
       return savedPosition
     }
-    
+
     // Si hay un hash en la URL (para anclas)
     if (to.hash) {
       return {
@@ -71,14 +71,14 @@ const router = new createRouter({
         behavior: 'smooth',
       }
     }
-    
+
     // En cualquier otro caso (navegación normal entre rutas)
     return {
       top: 0,
       left: 0,
-      behavior: 'instant' // 'instant' para que sea inmediato, 'smooth' si quieres que sea suave
+      behavior: 'instant', // 'instant' para que sea inmediato, 'smooth' si quieres que sea suave
     }
-  }
+  },
 })
 
 router.beforeEach(async (to, from, next) => {
@@ -126,7 +126,8 @@ app.use(
     clientId: 'mWH9lOF0Jaonbh60Mt7TTSQpafGeBP14',
     authorizationParams: {
       redirect_uri: window.location.origin + '/admin',
-      audience: 'https://api.nqpay.lat'
+      audience: 'https://api.nqpay.lat',
+      organization: 'nq',
     },
   })
 )
