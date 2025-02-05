@@ -85,7 +85,11 @@ export default {
 
     const fetchOrder = async (orderId) => {
       try {
-        const response = await fetch(`https://api.nqpay.lat/venues/${venueName}/orders/${orderId}/products`)
+        let venueName = window.location.hostname.split('.')[0]
+        if (window.location.hostname === 'localhost') {
+          venueName = 'nq'
+        }
+        const response = await fetch(`https://api.nqpay.lat/venue/${venueName}/order/${orderId}/products`)
         if (response.ok) {
           const data = await response.json()
 
@@ -143,7 +147,11 @@ export default {
 
       try {
         const token = await getAccessTokenSilently()
-        const response = await fetch(`https://api.nqpay.lat/orders/${route.params.id}/deliver`, {
+        let venueName = window.location.hostname.split('.')[0]
+        if (window.location.hostname === 'localhost') {
+          venueName = 'nq'
+        }
+        const response = await fetch(`https://api.nqpay.lat/venue/${venueName}/order/${route.params.id}/deliver`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

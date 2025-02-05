@@ -34,8 +34,17 @@
                 imgclass="img-qr"
               />
             </div>
-            <p v-if="order.ticket_code" class="text-center font-bold text-xl pt-3">{{ order.ticket_code.substring(0,3) }}-{{ order.ticket_code.substring(3,6) }}</p>
-            <p class="pt-5">$ {{ order.total.toString().split(".")[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
+            <p v-if="order.ticket_code" class="text-center font-bold text-xl pt-3">{{ order.ticket_code.substring(0, 3) }}-{{ order.ticket_code.substring(3, 6) }}</p>
+            <p class="pt-5">
+              $
+              {{
+                order.total
+                  .toString()
+                  .split('.')[0]
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+              }}
+            </p>
             <div v-for="item in order.products">
               <p class="font-bold">{{ item.quantity }}x {{ item.name }}</p>
             </div>
@@ -92,7 +101,7 @@ async function connectWebSocket() {
 
     // Construct WebSocket URL with token
     const wsUrl = `https://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/?token=${idToken}`
-    
+
     websocket.value = new WebSocket(wsUrl)
 
     websocket.value.onopen = () => {
@@ -123,7 +132,7 @@ async function connectWebSocket() {
 }
 
 onMounted(async () => {
-  if (route.query.preference_id != null & route.query.payment_id != null) {
+  if ((route.query.preference_id != null) & (route.query.payment_id != null)) {
     cartStore.clearCart()
   }
   const order_id = route.query.external_reference
@@ -131,7 +140,11 @@ onMounted(async () => {
     try {
       const auth = getAuth()
       const idToken = await auth.currentUser.getIdToken()
-      const response = await fetch(`https://api.nqpay.lat/orders/${order_id}/products`, {
+      let venueName = window.location.hostname.split('.')[0]
+      if (window.location.hostname === 'localhost') {
+        venueName = 'nq'
+      }
+      const response = await fetch(`https://api.nqpay.lat/venue/${venueName}/order/${order_id}/products`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${idToken}`,

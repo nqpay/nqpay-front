@@ -93,6 +93,9 @@ export default {
       const auth = getAuth()
       try {
         venueName.value = window.location.hostname.split('.')[0]
+        if (window.location.hostname === 'localhost') {
+          venueName.value = 'nq'
+        }
         const cachedProducts = localStorage.getItem('products')
         const lastFetchTime = localStorage.getItem('lastProductsFetchTime')
         const CACHE_DURATION = 5 * 60 * 1000 // 5 minutos

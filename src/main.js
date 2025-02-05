@@ -120,6 +120,10 @@ const grafanaConfig = {
 initializeFaro(grafanaConfig)
 initializeApp(firebaseConfig)
 
+let venueName = window.location.hostname.split('.')[0]
+if (window.location.hostname === 'localhost') {
+  venueName = 'nq'
+}
 app.use(
   createAuth0({
     domain: 'dev-d0y1bpajet18zump.us.auth0.com',
@@ -127,7 +131,7 @@ app.use(
     authorizationParams: {
       redirect_uri: window.location.origin + '/admin',
       audience: 'https://api.nqpay.lat',
-      organization: 'org_jPlHFPOtQ9xDz5jC',
+      organization: venueName,
     },
   })
 )
