@@ -218,7 +218,7 @@ const askLink = async () => {
     if (window.location.hostname === 'localhost') {
       venueName = 'nq'
     }
-    const response = await fetch(`https://api.nqpay.lat/venue/${venueName}/order`, {
+    const response = await fetch(`https://api.nqpay.lat/venues/${venueName}/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
