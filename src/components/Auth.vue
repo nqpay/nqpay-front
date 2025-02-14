@@ -329,7 +329,12 @@ export default {
           },
         })
         const data = await response.json()
+        var phone = ''
+        if (data.Phone) {
+          phone = data.Phone
+        }
         localStorage.setItem('name', data.Name)
+        localStorage.setItem('phone', phone)
         return data.Status
       } catch (error) {
         console.error('Error al verificar el perfil del usuario:', error)
@@ -356,7 +361,12 @@ export default {
       isLoading.value = true
       try {
         const provider = new GoogleAuthProvider()
-        await signInWithPopup(getAuth(), provider)
+        // provider.addScope('https://www.googleapis.com/auth/user.birthday.read')
+        // provider.addScope('https://www.googleapis.com/auth/user.phonenumbers.read')
+        const result = await signInWithPopup(getAuth(), provider)
+        const credential = GoogleAuthProvider.credentialFromResult(result)
+        const accessToken = credential.accessToken
+        // console.log('Google Access Token:', accessToken) access token from google to hit Google's People API
       } catch (error) {
         console.error('Error al iniciar sesión con Google:', error)
         isLoading.value = false

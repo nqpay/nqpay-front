@@ -9,7 +9,6 @@
     <p class="">Al finalizar tu compra encontrarás un QR que te permitirá retirar el pedido en su totalidad.</p>
     <!-- <h1 class="px-4 text-2xl font-semibold">Tu Pedido</h1> -->
     <div class="h-5"></div>
-
     <!-- Scrollable content -->
     <div v-if="cartItems.length > 0" class="flex-1 overflow-hidden pb-5">
       <div class="h-full overflow-auto">
@@ -52,6 +51,48 @@
     </div>
     <div v-else class="flex-1 flex flex-col items-center justify-center">
       <p class="text-xl">Tu carrito está vacío.</p>
+    </div>
+
+    <div v-show="showPhoneModal" class="fixed inset-0 bg-black/70 flex items-center justify-center px-10" @click="this.showPhoneModal.value = false">
+      <div class="bg-[#2F2E2F] w-full max-w-md rounded-xl p-6" @click="this.showPhoneModal.value = false">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-4">
+          <p class="text-white text-md">Para continuar con tu compra necesitamos tu celular</p>
+          <button @click="this.showPhoneModal.value = false" class="text-white hover:text-gray-300">✕</button>
+        </div>
+
+        <!-- Phone Input Section -->
+        <div class="flex gap-2 mb-6">
+          <!-- Country Code Select (disabled) -->
+          <div class="flex-none w-20">
+            <div class="h-12 px-3 bg-[#1C1C1E] rounded-lg flex items-center text-white border border-gray-600">
+              <span>🇦🇷 +54</span>
+            </div>
+          </div>
+
+          <!-- Phone Input -->
+          <input
+            v-model="phoneNumber"
+            type="tel"
+            placeholder="Ingresa tu celular"
+            class="flex-1 h-12 px-4 bg-[#1C1C1E] rounded-lg text-white border border-gray-600 focus:border-[#BE38F3] focus:outline-none"
+            maxlength="10"
+            @input="validatePhoneNumber"
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          @click="submitPhone"
+          :disabled="!isValidPhone"
+          :class="[
+            'w-full py-3 rounded-xl text-center text-lg transition-colors',
+            isValidPhone ? 'bg-[#6DF338] text-black hover:bg-[#5ED32E]' : 'bg-gray-600 text-gray-400 cursor-not-allowed',
+          ]"
+        >
+          Continuar
+        </button>
+      </div>
     </div>
 
     <!-- Fixed bottom section -->
@@ -132,8 +173,9 @@ import { computed, ref } from 'vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { TransitionGroup, watch } from 'vue'
 
+const phoneNumber = ref('')
 const isLoading = ref(false)
-
+const showPhoneModal = ref(false)
 const selectedTip = ref(null)
 const tipAmount = ref(0)
 
@@ -151,6 +193,59 @@ const tipOptions = [
   { label: '15%', value: 0.15 },
   { label: '20%', value: 0.2 },
 ]
+
+const isValidPhone = computed(() => phoneNumber.value.length === 10)
+
+const validatePhoneNumber = () => {
+  // Only allow numbers
+  phoneNumber.value = phoneNumber.value.replace(/[^0-9]/g, '')
+}
+
+const submitPhone = async () => {
+  if (!isValidPhone.value) return
+
+  const user = await new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        unsubscribe()
+        resolve(user)
+      },
+      (error) => {
+        unsubscribe()
+        reject(error)
+      }
+    )
+  })
+
+  if (!user) {
+    router.push('/auth')
+    return
+  }
+
+  try {
+    const idToken = await user.getIdToken()
+    // Here you can also make the API call if needed
+    const response = await fetch('https://api.nqpay.lat/me', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({
+        phone: `54${phoneNumber.value}`,
+      }),
+    })
+
+    if (response.ok) {
+      localStorage.setItem('phone', phoneNumber.value)
+      // Close the modal
+      showPhoneModal.value = false
+    }
+  } catch (error) {
+    console.error('Error saving phone number:', error)
+  }
+}
 
 watch(
   () => cartTotal.value.value,
@@ -190,6 +285,10 @@ function removeFromCart(product) {
 
 const askLink = async () => {
   if (isLoading.value) return
+  if (!localStorage.getItem('phone')) {
+    showPhoneModal.value = true
+    return
+  }
 
   isLoading.value = true
 
