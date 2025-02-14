@@ -9,25 +9,37 @@
       <div class="h-10"></div>
       <div class="flex justify-between">
         <p class="text-2xl font-bold">Tu Pedido</p>
-        <div class="rounded-lg px-2 py-1 items-center flex" :class="order.order_status == 'PAID' ? 'bg-[#8419C5]' : 'bg-green-500'">
-          <p v-if="order.order_status == 'PAID'">Ir a Retirar</p>
-          <p v-else>Entregado</p>
+        <div
+          class="rounded-lg px-2 py-1 items-center flex"
+          :class="{
+            'bg-[#8419C5]': order.order_status === 'PAID',
+            'bg-blue-500': order.order_status === 'NOTIFIED',
+            'bg-green-500': order.order_status === 'DELIVERED',
+          }"
+        >
+          <p v-if="order.order_status == 'PAID'">En Preparación</p>
+          <p v-else-if="order.order_status == 'NOTIFIED'">Ir a Retirar</p>
+          <p v-else-if="order.order_status == 'DELIVERED'">Entregado</p>
         </div>
       </div>
       <div class="pt-1"></div>
-      <p class="mt-2" v-if="order.order_status == 'PAID'">Acercate a la barra a retirar tu pedido</p>
-      <p class="mt-2" v-else>Este pedido ya ha sido entregado</p>
+      <p class="mt-2" v-if="order.order_status == 'PAID'">
+        Tu pedido fue recibido y esta preparandose en la barra, te notificaremos por whatsapp y SMS cuando este listo para retirar.
+      </p>
+      <p class="mt-2" v-else-if="order.order_status == 'NOTIFIED'">Acercate a la barra a retirar tu pedido</p>
+      <p class="mt-2" v-else-if="order.order_status == 'DELIVERED'">Este pedido ya ha sido entregado</p>
       <div class="justify-center pb-40 flex h-full flex-col">
         <div class="flex w-full flex-col">
           <div class="self-center">
-            <p class="text-2xl font-medium pb-5">Código QR para retiro</p>
-            <div class="rounded-2xl p-2 bg-[#D2D2D2]">
+            <p v-if="order.order_status == 'PAID'" class="text-2xl font-medium pb-5 text-center">Obtendras un código QR para retiro cuando el pedido este listo!</p>
+            <p v-if="order.order_status == 'NOTIFIED' || order.order_status == 'DELIVERED'" class="text-2xl font-medium pb-5">Código QR para retiro</p>
+            <div v-if="order.order_status == 'NOTIFIED' || order.order_status == 'DELIVERED'" class="rounded-2xl p-2 bg-white">
               <QRCodeVue3
-                v-if="route.query.external_reference"
+                v-if="route.query.external_reference && (order.order_status == 'NOTIFIED' || order.order_status == 'DELIVERED')"
                 :value="route.query.external_reference"
                 :qrOptions="{ typeNumber: 0, mode: 'Byte', errorCorrectionLevel: 'L' }"
                 :dotsOptions="{ type: 'square', color: '#000' }"
-                :backgroundOptions="{ color: '#D2D2D2' }"
+                :backgroundOptions="{ color: '#ffffff' }"
                 :cornersSquareOptions="{ type: 'square', color: '#000000' }"
                 :cornersDotOptions="{ type: undefined, color: '#000000' }"
                 fileExt="png"
@@ -152,7 +164,6 @@ onMounted(async () => {
       })
       if (response.ok) {
         const data = await response.json()
-        console.log('ORDERRRR : ', data)
         order.value = data
         isLoading.value = false
         order.value.id = order_id

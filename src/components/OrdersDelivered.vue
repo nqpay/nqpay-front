@@ -75,7 +75,7 @@
             <div v-for="item in order.products" :key="item.name" class="flex items-center gap-2">
               <img :src="item.image_url" alt="item.name" class="w-12 h-12 rounded-lg object-cover" />
               <div>
-                <p class="font-medium">{{ item.name }}</p>
+                <p class="font-medium">{{ item.quantity }}x {{ item.name }}</p>
                 <p class="text-gray-600 text-xs">{{ item.description }}</p>
               </div>
             </div>

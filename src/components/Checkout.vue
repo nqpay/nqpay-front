@@ -57,9 +57,17 @@
             </div>
           </div>
           <div class="flex flex-col h-full justify-center">
-            <div class="justify-center rounded-lg px-2 py-1 items-center flex" :class="order.status == 'PAID' ? 'bg-[#8419C5]' : 'bg-green-500'">
-              <p v-if="order.status == 'PAID'">Ir a Retirar</p>
-              <p v-else>Entregado</p>
+            <div
+              class="justify-center rounded-lg px-2 py-1 items-center flex"
+              :class="{
+                'bg-[#8419C5]': order.status === 'PAID',
+                'bg-blue-500': order.status === 'NOTIFIED',
+                'bg-green-500': order.status === 'DELIVERED',
+              }"
+            >
+              <p v-if="order.status == 'PAID'">En Preparación</p>
+              <p v-else-if="order.status == 'NOTIFIED'">Ir a Retirar</p>
+              <p v-else-if="order.status == 'DELIVERED'">Entregado</p>
             </div>
           </div>
         </div>

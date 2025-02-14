@@ -1,5 +1,28 @@
 <template>
   <section class="bg-[#1C1C1E] w-screen h-screen justify-center flex items-center">
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="transform -translate-y-8 opacity-0"
+      enter-to-class="transform translate-y-0 opacity-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="transform translate-y-0 opacity-100"
+      leave-to-class="transform -translate-y-8 opacity-0"
+    >
+      <div v-if="showError" class="fixed top-4 right-4 left-4 z-50 flex items-center justify-between p-4 rounded-lg bg-red-500 text-white shadow-lg md:max-w-md md:mx-auto">
+        <div class="flex items-center">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ errorMessage }}</span>
+        </div>
+        <button @click="$emit('close')" class="text-white hover:text-gray-200 ml-4">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </Transition>
+
     <div class="flex flex-col items-center justify-center py-8 w-full px-10">
       <div class="w-full rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-gray-800 border-gray-700">
         <div class="p-6 space-y-2">
@@ -80,6 +103,17 @@ import { getAuth } from 'firebase/auth'
 
 export default {
   name: 'Auth',
+  setup() {
+    const router = useRouter()
+    const showError = ref(false)
+    const errorMessage = ref('')
+
+    return {
+      showError,
+      errorMessage,
+      router,
+    }
+  },
   data() {
     return {
       name: '',
@@ -92,86 +126,91 @@ export default {
     }
   },
   methods: {
+    closeError() {
+      this.showError = false
+      this.errorMessage = ''
+    },
     handleDniInput(event) {
       // Solo permitimos números
-      this.dni = event.target.value.replace(/\D/g, '');
+      this.dni = event.target.value.replace(/\D/g, '')
     },
     handleBirthdateInput(event) {
-      this.birthdateError = ''; // Limpiar error previo
-      let value = event.target.value.replace(/\D/g, ''); // Solo permitimos números
-      let original = this.displayBirthdate;
-      
+      this.birthdateError = '' // Limpiar error previo
+      let value = event.target.value.replace(/\D/g, '') // Solo permitimos números
+      let original = this.displayBirthdate
+
       // Si están borrando, permitimos borrar libremente
       if (original.length > event.target.value.length) {
-        this.displayBirthdate = event.target.value.replace(/\//g, '');
-        this.birthdate = this.displayBirthdate;
-        return;
+        this.displayBirthdate = event.target.value.replace(/\//g, '')
+        this.birthdate = this.displayBirthdate
+        return
       }
 
       // Formateo para dd/mm/yyyy
       if (value.length >= 1) {
-        const firstDigit = parseInt(value[0]);
+        const firstDigit = parseInt(value[0])
         if (firstDigit > 3) {
-          value = '0' + firstDigit + value.substring(1);
+          value = '0' + firstDigit + value.substring(1)
         }
       }
 
       if (value.length >= 2) {
-        const day = parseInt(value.substring(0, 2));
+        const day = parseInt(value.substring(0, 2))
         if (day > 31) {
-          value = '31' + value.substring(2);
-          this.birthdateError = 'El día no puede ser mayor a 31';
+          value = '31' + value.substring(2)
+          this.birthdateError = 'El día no puede ser mayor a 31'
         } else if (day === 0) {
-          value = '01' + value.substring(2);
-          this.birthdateError = 'El día no puede ser 0';
+          value = '01' + value.substring(2)
+          this.birthdateError = 'El día no puede ser 0'
         }
-      }
-      
-      if (value.length >= 4) {
-        const month = parseInt(value.substring(2, 4));
-        if (month > 12) {
-          value = value.substring(0, 2);
-          this.birthdateError = 'El mes no puede ser mayor a 12';
-          // Removemos los dígitos del mes inválido
-        } else if (month === 0) {
-          value = value.substring(0, 2) + '01';
-          this.birthdateError = 'El mes no puede ser 0';
-        }
-      }
-      
-      // Formato visual con barras
-      let formattedValue = value;
-      if (value.length > 4) {
-        formattedValue = value.substring(0, 2) + '/' + value.substring(2, 4) + '/' + value.substring(4);
-      } else if (value.length > 2) {
-        formattedValue = value.substring(0, 2) + '/' + value.substring(2);
       }
 
-      this.displayBirthdate = formattedValue;
-      this.birthdate = formattedValue;
+      if (value.length >= 4) {
+        const month = parseInt(value.substring(2, 4))
+        if (month > 12) {
+          value = value.substring(0, 2)
+          this.birthdateError = 'El mes no puede ser mayor a 12'
+          // Removemos los dígitos del mes inválido
+        } else if (month === 0) {
+          value = value.substring(0, 2) + '01'
+          this.birthdateError = 'El mes no puede ser 0'
+        }
+      }
+
+      // Formato visual con barras
+      let formattedValue = value
+      if (value.length > 4) {
+        formattedValue = value.substring(0, 2) + '/' + value.substring(2, 4) + '/' + value.substring(4)
+      } else if (value.length > 2) {
+        formattedValue = value.substring(0, 2) + '/' + value.substring(2)
+      }
+
+      this.displayBirthdate = formattedValue
+      this.birthdate = formattedValue
     },
 
     async updateProfile() {
-      // Validar la fecha antes de enviar
-      if (!this.birthdate.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-        this.birthdateError = 'Por favor, completa la fecha en formato dd/mm/yyyy';
-        return;
-      }
-
-      const [day, month, year] = this.birthdate.split('/');
-      const birthDate = new Date(year, month - 1, day);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      
-      // Verificar si es mayor de edad (18 años)
-      if (age < 18) {
-        this.birthdateError = 'Debes ser mayor de 18 años para continuar.';
-        return;
-      }
       try {
+        // Validate birthdate
+        if (!this.birthdate.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+          this.birthdateError = 'Por favor, completa la fecha en formato dd/mm/yyyy'
+          return
+        }
+
+        const [day, month, year] = this.birthdate.split('/')
+        const birthDate = new Date(year, month - 1, day)
+        const today = new Date()
+        const age = today.getFullYear() - birthDate.getFullYear()
+
+        if (age < 18) {
+          this.birthdateError = 'Debes ser mayor de 18 años para continuar.'
+          return
+        }
+
         const auth = getAuth()
         const idToken = await auth.currentUser.getIdToken()
-        const result = await fetch('https://api.nqpay.lat/me', {
+
+        const response = await fetch('https://api.nqpay.lat/me', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -183,21 +222,30 @@ export default {
             birthdate: this.birthdate,
           }),
         })
-        let intendedRoute = localStorage.getItem('intendedRoute')
-        //extract the intended route from the url params
-        const url = new URL(window.location.href)
-        const intendedRouteParam = url.searchParams.get('intendedRoute')
-        if (intendedRouteParam) {
-          intendedRoute = intendedRouteParam
+
+        const data = await response.json()
+        if (response.ok && data.Message) {
+          this.errorMessage = data.Message || 'Ha ocurrido un error al procesar tu solicitud'
+          this.showError = true
+          setTimeout(() => {
+            this.showError = false
+            this.errorMessage = ''
+          }, 5000) // Hide error after 5 seconds
+          return
         }
 
-        if (intendedRoute) {
-          this.$router.push(intendedRoute)
-        } else {
-          this.$router.push('/')
-        }
+        // Handle successful response
+        const intendedRoute = localStorage.getItem('intendedRoute') || new URL(window.location.href).searchParams.get('intendedRoute') || '/'
+
+        this.router.push(intendedRoute)
       } catch (error) {
-        console.error('Error al enviar el enlace de inicio de sesión:', error)
+        console.error('Error al procesar la solicitud:', error)
+        this.errorMessage = 'Ha ocurrido un error inesperado. Por favor, intenta nuevamente.'
+        this.showError = true
+        setTimeout(() => {
+          this.showError = false
+          this.errorMessage = ''
+        }, 5000)
       }
     },
   },
