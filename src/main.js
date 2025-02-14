@@ -43,12 +43,12 @@ const router = new createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: DemoHome, meta: { requiresAuth: true } },
-    { path: '/admin', component: Admin },
+    { path: '/admin/profile', component: Admin },
     { path: '/auth', component: Auth },
     { path: '/menu/:event', component: Menu, meta: { requiresAuth: true } },
     { path: '/menu/:event/:product', component: Product, meta: { requiresAuth: true } },
     { path: '/cart', component: Cart, meta: { requiresAuth: true } },
-    { path: '/orders-delivered', component: OrdersDelivered }, // TODO: Protect route with Auth0
+    { path: '/admin', component: OrdersDelivered }, // TODO: Protect route with Auth0
     { path: '/order/:id', component: Order }, // TODO: Protect route with Auth0
     { path: '/scanner', component: Scanner }, // TODO: Protect route with Auth0
     { path: '/checkout', component: Checkout, meta: { requiresAuth: true } },

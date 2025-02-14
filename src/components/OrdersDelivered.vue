@@ -2,7 +2,7 @@
   <div class="bg-[#1E1E1E] min-h-screen p-4 text-white gap-1 flex flex-col pt-10">
     <div class="flex justify-between">
       <h1 class="text-2xl">Ordenes</h1>
-      <button v-on:click="fetchOrders">
+      <button v-if="isAuthenticated" v-on:click="fetchOrders">
         <svg
           fill="#ffffff"
           version="1.1"
@@ -42,61 +42,88 @@
     </div>
 
     <div class="mt-2 flex gap-2">
-      <button
-        v-on:click="this.view = 'recent'"
-        :class="this.view == 'recent' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'"
-        class="px-4 py-2 rounded-full"
-      >
+      <button v-on:click="view = 'recent'" :class="view == 'recent' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'" class="px-4 py-2 rounded-full">
         📜 Recientes
       </button>
       <button
-        v-on:click="this.view = 'delivered'"
-        :class="this.view == 'delivered' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'"
+        v-on:click="view = 'delivered'"
+        :class="view == 'delivered' ? 'bg-white text-black' : 'bg-transparent text-white border border-white'"
         class="border border-white px-4 py-2 rounded-full"
       >
         📑 Entregadas
       </button>
     </div>
 
-    <div class="mt-4 space-y-4 pb-20">
-      <!-- <OrderCard v-for="order in orders" :key="order.id" :order="order" /> -->
-      <div v-if="this.view == 'recent'" v-for="order in this.recentOrders">
-        <div class="bg-[#F7F3FA] text-black p-4 rounded-xl shadow-lg">
+    <div v-if="isAuthenticated" class="mt-4 space-y-4 pb-20">
+      <!-- Recent Orders View -->
+      <div v-if="view == 'recent'">
+        <div v-if="isLoading" v-for="i in 3" :key="'skeleton-recent-' + i" class="mb-2 bg-[#2A2A2A] text-black p-4 rounded-xl shadow-lg animate-pulse">
           <div class="flex justify-between items-center">
             <div>
-              <h2 class="font-semibold">Orden #{{ order.ticket_code }}</h2>
-              <p class="text-gray-600 text-sm">{{ order.created_at }}</p>
+              <div class="h-5 w-32 bg-gray-600 rounded mb-2"></div>
+              <div class="h-3 w-24 bg-gray-700 rounded"></div>
             </div>
-            <button v-if="order.status == 'PAID'" v-on:click="notify(order.id)" class="bg-[#1E1E1E] text-white px-5 py-2 text-xs rounded-full">Notificar</button>
-            <button v-if="order.status == 'NOTIFIED'" class="bg-white text-black border border-black px-5 py-2 text-xs rounded-full">Notificado</button>
+            <div class="h-8 w-20 bg-gray-600 rounded-full"></div>
           </div>
 
           <div class="mt-4 grid grid-cols-2 gap-2">
-            <div v-for="item in order.products" :key="item.name" class="flex items-center gap-2">
-              <img :src="item.image_url" alt="item.name" class="w-12 h-12 rounded-lg object-cover" />
+            <div v-for="j in 2" :key="'item-recent-' + i + '-' + j" class="flex items-center gap-2">
+              <div class="w-12 h-12 rounded-lg bg-gray-700"></div>
               <div>
-                <p class="font-medium">{{ item.quantity }}x {{ item.name }}</p>
-                <p class="text-gray-600 text-xs">{{ item.description }}</p>
+                <div class="h-4 w-20 bg-gray-600 rounded mb-1"></div>
+                <div class="h-3 w-24 bg-gray-700 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="recentOrders.length === 0" class="text-center py-8">
+          <p class="text-gray-400">No hay órdenes recientes</p>
+        </div>
+        <div v-else v-for="order in recentOrders" :key="order.id" class="mb-2">
+          <div class="bg-[#F7F3FA] text-black p-4 rounded-xl shadow-lg">
+            <div class="flex justify-between items-center">
+              <div>
+                <h2 class="font-semibold">Orden #{{ order.ticket_code }}</h2>
+                <p class="text-gray-600 text-sm">{{ order.created_at }}</p>
+              </div>
+              <button v-if="order.status == 'PAID'" v-on:click="notify(order.id)" class="bg-[#1E1E1E] text-white px-5 py-2 text-xs rounded-full">Notificar</button>
+              <button v-if="order.status == 'NOTIFIED'" class="bg-white text-black border border-black px-5 py-2 text-xs rounded-full">Notificado</button>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-2">
+              <div v-for="item in order.products" :key="item.name" class="flex items-center gap-2">
+                <img :src="item.image_url" alt="item.name" class="w-12 h-12 rounded-lg object-cover" />
+                <div>
+                  <p class="font-medium">{{ item.quantity }}x {{ item.name }}</p>
+                  <p class="text-gray-600 text-xs">{{ item.description }}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div v-if="this.view == 'delivered'" v-for="order in this.deliveredOrders">
-        <div class="bg-[#F7F3FA] text-black p-4 rounded-xl shadow-lg">
-          <div class="flex justify-between items-center">
-            <div>
-              <h2 class="font-semibold">Orden #{{ order.ticket_code }}</h2>
-              <p class="text-gray-600 text-sm">{{ order.created_at }}</p>
-            </div>
-          </div>
 
-          <div class="mt-4 grid grid-cols-2 gap-2">
-            <div v-for="item in order.products" :key="item.name" class="flex items-center gap-2">
-              <img :src="item.image_url" alt="item.name" class="w-12 h-12 rounded-lg object-cover" />
+      <!-- Delivered Orders View -->
+      <div v-if="view == 'delivered'">
+        <div v-if="deliveredOrders.length === 0" class="text-center py-8">
+          <p class="text-gray-400">No hay órdenes entregadas</p>
+        </div>
+        <div v-else v-for="order in deliveredOrders" :key="order.id" class="mb-2">
+          <div class="bg-[#F7F3FA] text-black p-4 rounded-xl shadow-lg">
+            <div class="flex justify-between items-center">
               <div>
-                <p class="font-medium">{{ item.name }}</p>
-                <p class="text-gray-600 text-xs">{{ item.description }}</p>
+                <h2 class="font-semibold">Orden #{{ order.ticket_code }}</h2>
+                <p class="text-gray-600 text-sm">{{ order.created_at }}</p>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-2">
+              <div v-for="item in order.products" :key="item.name" class="flex items-center gap-2">
+                <img :src="item.image_url" alt="item.name" class="w-12 h-12 rounded-lg object-cover" />
+                <div>
+                  <p class="font-medium">{{ item.name }}</p>
+                  <p class="text-gray-600 text-xs">{{ item.description }}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -104,32 +131,38 @@
       </div>
     </div>
 
+    <!-- Login View (Only shown when not authenticated and not loading) -->
+    <div v-if="!isAuthenticated && !isLoading" class="flex justify-center items-center min-h-screen bg-[#1E1E1E] p-4 absolute inset-0">
+      <div class="text-center w-full max-w-md">
+        <h2 class="text-white font-medium text-xl mb-4">Bienvenido</h2>
+        <button @click="handleLogin" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Iniciar Sesión</button>
+      </div>
+    </div>
+
     <!-- Barra de navegación -->
-    <AdminNavBar />
+    <AdminNavBar v-if="isAuthenticated" :active-page="'orders'" />
   </div>
 </template>
 
 <script>
 import { useAuth0 } from '@auth0/auth0-vue'
 import AdminNavBar from './AdminNavBar.vue'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 
 export default {
   components: { AdminNavBar },
   setup() {
-    const { isAuthenticated, getAccessTokenSilently, loginWithRedirect } = useAuth0()
+    const { isAuthenticated, getAccessTokenSilently, loginWithRedirect, isLoading: auth0IsLoading } = useAuth0()
     const recentOrders = ref([])
     const deliveredOrders = ref([])
-    const orders = ref([])
-    const isLoading = ref(true)
     const view = ref('recent')
+    const isLoading = ref(true)
 
     const fetchOrders = async () => {
+      isLoading.value = true
       try {
-        if (!isAuthenticated.value) {
-          await loginWithRedirect()
-          return
-        }
+        if (!isAuthenticated.value) return
+
         let venueName = window.location.hostname.split('.')[0]
         if (window.location.hostname === 'localhost') {
           venueName = 'nq'
@@ -143,26 +176,19 @@ export default {
           },
         })
 
-        recentOrders.value = []
-        deliveredOrders.value = []
-
         if (response.ok) {
           const data = await response.json()
-          for (let order of data.orders) {
-            if (order.status != 'DELIVERED') {
-              recentOrders.value.push(order)
-            } else {
-              deliveredOrders.value.push(order)
-            }
-          }
-          orders.value = data.orders || []
+          recentOrders.value = data.orders.filter((order) => order.status !== 'DELIVERED') || []
+          deliveredOrders.value = data.orders.filter((order) => order.status === 'DELIVERED') || []
         } else {
           console.error('Failed to fetch orders')
-          orders.value = []
+          recentOrders.value = []
+          deliveredOrders.value = []
         }
       } catch (error) {
         console.error('Error fetching orders:', error)
-        orders.value = []
+        recentOrders.value = []
+        deliveredOrders.value = []
       } finally {
         isLoading.value = false
       }
@@ -170,21 +196,16 @@ export default {
 
     const notify = async (orderID) => {
       try {
-        if (!isAuthenticated.value) {
-          await loginWithRedirect()
-          return
-        }
+        if (!isAuthenticated.value) return
 
         let venueName = window.location.hostname.split('.')[0]
         if (window.location.hostname === 'localhost') {
           venueName = 'nq'
         }
 
-        const token = await getAccessTokenSilently()
         const response = await fetch(`https://api.nqpay.lat/orders/notifications`, {
           method: 'POST',
           headers: {
-            // 'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -196,7 +217,6 @@ export default {
 
         if (response.ok) {
           console.log('Notification sent successfully')
-          // Actualizar el estado de la orden en recentOrders
           const orderIndex = recentOrders.value.findIndex((order) => order.id === orderID)
           if (orderIndex !== -1) {
             recentOrders.value[orderIndex] = {
@@ -212,20 +232,51 @@ export default {
       }
     }
 
-    onMounted(fetchOrders)
+    const handleLogin = () => {
+      loginWithRedirect({
+        appState: { targetUrl: window.location.pathname },
+      })
+    }
+
+    onMounted(async () => {
+      // Wait for Auth0 to initialize before proceeding
+      while (auth0IsLoading.value) {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+      }
+
+      if (isAuthenticated.value) {
+        await fetchOrders()
+      } else {
+        isLoading.value = false
+      }
+    })
 
     return {
       isAuthenticated,
-      orders,
       recentOrders,
       deliveredOrders,
       isLoading,
       view,
       fetchOrders,
       notify,
+      handleLogin,
     }
   },
 }
 </script>
 
-<style scoped></style>
+<style>
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+</style>
