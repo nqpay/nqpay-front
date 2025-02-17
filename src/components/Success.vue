@@ -12,30 +12,48 @@
         <div
           class="rounded-lg px-2 py-1 items-center flex"
           :class="{
+            'bg-yellow-500': order.order_status === 'CREATED',
             'bg-[#8419C5]': order.order_status === 'PAID',
             'bg-blue-500': order.order_status === 'NOTIFIED',
             'bg-green-500': order.order_status === 'DELIVERED',
           }"
         >
-          <p v-if="order.order_status == 'PAID'">En Preparación</p>
-          <p v-else-if="order.order_status == 'NOTIFIED'">Ir a Retirar</p>
-          <p v-else-if="order.order_status == 'DELIVERED'">Entregado</p>
+          <p v-if="order.order_status === 'CREATED'">Procesando Pago</p>
+          <p v-else-if="order.order_status === 'PAID'">En Preparación</p>
+          <p v-else-if="order.order_status === 'NOTIFIED'">Ir a Retirar</p>
+          <p v-else-if="order.order_status === 'DELIVERED'">Entregado</p>
         </div>
       </div>
       <div class="pt-1"></div>
-      <p class="mt-2" v-if="order.order_status == 'PAID'">
+
+      <!-- Status messages -->
+      <div v-if="order.order_status === 'CREATED'" class="mt-2 space-y-4">
+        <p class="text-yellow-400 font-medium">Estamos procesando tu pago con Mercado Pago</p>
+        <p>Tu orden será confirmada en breve. Por favor, no cierres esta ventana mientras procesamos tu pago.</p>
+        <p>El código QR para retirar tu orden, aparecerá aquí una vez que tu trago este listo para retirar!</p>
+        <p class="text-sm text-gray-400">Este proceso puede tomar unos segundos. La página se actualizará automáticamente cuando tu pago sea confirmado.</p>
+        <div class="flex items-center justify-center pt-20">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400"></div>
+        </div>
+      </div>
+      <p class="mt-2" v-else-if="order.order_status === 'PAID'">
         Tu pedido fue recibido y esta preparandose en la barra, te notificaremos por whatsapp y SMS cuando este listo para retirar.
       </p>
-      <p class="mt-2" v-else-if="order.order_status == 'NOTIFIED'">Acercate a la barra a retirar tu pedido</p>
-      <p class="mt-2" v-else-if="order.order_status == 'DELIVERED'">Este pedido ya ha sido entregado</p>
+      <p class="mt-2" v-else-if="order.order_status === 'NOTIFIED'">Acercate a la barra a retirar tu pedido</p>
+      <p class="mt-2" v-else-if="order.order_status === 'DELIVERED'">Este pedido ya ha sido entregado</p>
+
       <div class="justify-center pb-40 flex h-full flex-col">
         <div class="flex w-full flex-col">
           <div class="self-center">
-            <p v-if="order.order_status == 'PAID'" class="text-2xl font-medium pb-5 text-center">Obtendras un código QR para retiro cuando el pedido este listo!</p>
-            <p v-if="order.order_status == 'NOTIFIED' || order.order_status == 'DELIVERED'" class="text-2xl font-medium pb-5">Código QR para retiro</p>
-            <div v-if="order.order_status == 'NOTIFIED' || order.order_status == 'DELIVERED'" class="rounded-2xl p-2 bg-white">
+            <!-- <p v-if="order.order_status === 'CREATED'" class="text-2xl font-medium pb-5 text-center">
+              El código QR para retirar tu orden, aparecerá aquí una vez que tu trago este listo para retirar!
+            </p> -->
+            <p v-if="order.order_status === 'PAID'" class="text-2xl font-medium pb-5 text-center">Obtendras un código QR para retiro cuando el pedido este listo!</p>
+            <p v-else-if="order.order_status === 'NOTIFIED' || order.order_status === 'DELIVERED'" class="text-2xl font-medium pb-5">Código QR para retiro</p>
+
+            <div v-if="order.order_status === 'NOTIFIED' || order.order_status === 'DELIVERED'" class="rounded-2xl p-2 bg-white">
               <QRCodeVue3
-                v-if="route.query.external_reference && (order.order_status == 'NOTIFIED' || order.order_status == 'DELIVERED')"
+                v-if="route.query.external_reference"
                 :value="route.query.external_reference"
                 :qrOptions="{ typeNumber: 0, mode: 'Byte', errorCorrectionLevel: 'L' }"
                 :dotsOptions="{ type: 'square', color: '#000' }"
@@ -46,10 +64,11 @@
                 imgclass="img-qr"
               />
             </div>
-            <p v-if="order.ticket_code" class="text-center font-bold text-xl pt-3">{{ order.ticket_code.substring(0, 3) }}-{{ order.ticket_code.substring(3, 6) }}</p>
-            <p class="pt-5">
-              $
-              {{
+            <p v-if="order.ticket_code && order.order_status != 'CREATED'" class="text-center font-bold text-xl pt-3">
+              {{ order.ticket_code.substring(0, 3) }}-{{ order.ticket_code.substring(3, 6) }}
+            </p>
+            <p v-if="order.order_status != 'CREATED'" class="pt-5">
+              ${{
                 order.total
                   .toString()
                   .split('.')[0]
@@ -57,7 +76,7 @@
                   .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
               }}
             </p>
-            <div v-for="item in order.products">
+            <div v-if="order.order_status != 'CREATED'" v-for="item in order.products">
               <p class="font-bold">{{ item.quantity }}x {{ item.name }}</p>
             </div>
           </div>
@@ -93,7 +112,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { getAuth } from 'firebase/auth'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 import { useCartStore } from '../stores/cartStore'
 import QRCodeVue3 from 'qrcode-vue3'
 import NavBar from './NavBar.vue'
@@ -104,14 +123,100 @@ const router = useRouter()
 const route = useRoute()
 const cartStore = useCartStore()
 const websocket = ref(null)
+const timeoutId = ref(null)
+const currentBackoff = ref(5000) // Empezamos con 5 segundos
+const maxBackoff = 60000 // Máximo 1 minuto
+const isPolling = ref(false)
+const lastPollTime = ref(0) // Nuevo: Guardamos el timestamp del último poll
+
+// Función para verificar si la pestaña está activa
+const isTabActive = () => !document.hidden
+
+async function pollOrderStatus() {
+  if (!isPolling.value || !isTabActive()) return
+
+  try {
+    lastPollTime.value = Date.now() // Guardamos el timestamp del poll actual
+
+    const auth = getAuth()
+    const idToken = await auth.currentUser.getIdToken()
+    let venueName = window.location.hostname.split('.')[0]
+    if (window.location.hostname === 'localhost') {
+      venueName = 'nq'
+    }
+
+    const response = await fetch(`https://api.nqpay.lat/venue/${venueName}/order/${route.query.external_reference}/products`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      order.value = data
+
+      if (data.order_status !== 'CREATED') {
+        stopPolling()
+        await connectWebSocket()
+        return
+      }
+
+      currentBackoff.value = Math.min(currentBackoff.value * 2, maxBackoff)
+
+      if (isPolling.value) {
+        timeoutId.value = setTimeout(pollOrderStatus, currentBackoff.value)
+      }
+    }
+  } catch (error) {
+    console.error('Error polling order status:', error)
+    currentBackoff.value = Math.min(currentBackoff.value * 2, maxBackoff)
+    if (isPolling.value) {
+      timeoutId.value = setTimeout(pollOrderStatus, currentBackoff.value)
+    }
+  }
+}
+
+function startPolling() {
+  if (isPolling.value) return // Evitar iniciar si ya está polling
+
+  const now = Date.now()
+  const timeSinceLastPoll = now - lastPollTime.value
+
+  if (timeSinceLastPoll < currentBackoff.value) {
+    // Si no ha pasado suficiente tiempo, esperamos la diferencia
+    const timeToWait = currentBackoff.value - timeSinceLastPoll
+    timeoutId.value = setTimeout(() => {
+      isPolling.value = true
+      pollOrderStatus()
+    }, timeToWait)
+  } else {
+    // Si ya pasó suficiente tiempo, hacemos poll inmediatamente
+    isPolling.value = true
+    pollOrderStatus()
+  }
+}
+
+function stopPolling() {
+  isPolling.value = false
+  if (timeoutId.value) {
+    clearTimeout(timeoutId.value)
+    timeoutId.value = null
+  }
+}
+
+function handleVisibilityChange() {
+  if (document.hidden) {
+    stopPolling()
+  } else if (order.value?.order_status === 'CREATED') {
+    startPolling() // Ahora respeta el tiempo transcurrido
+  }
+}
 
 async function connectWebSocket() {
   try {
-    // Get Firebase ID token
     const auth = getAuth()
     const idToken = await auth.currentUser.getIdToken()
-
-    // Construct WebSocket URL with token
     const wsUrl = `https://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/?token=${idToken}`
 
     websocket.value = new WebSocket(wsUrl)
@@ -147,6 +252,9 @@ onMounted(async () => {
   if ((route.query.preference_id != null) & (route.query.payment_id != null)) {
     cartStore.clearCart()
   }
+
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+
   const order_id = route.query.external_reference
   if (order_id) {
     try {
@@ -156,24 +264,40 @@ onMounted(async () => {
       if (window.location.hostname === 'localhost') {
         venueName = 'nq'
       }
+
       const response = await fetch(`https://api.nqpay.lat/venue/${venueName}/order/${order_id}/products`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${idToken}`,
         },
       })
+
       if (response.ok) {
         const data = await response.json()
         order.value = data
         isLoading.value = false
         order.value.id = order_id
-        await connectWebSocket()
+
+        if (data.order_status === 'CREATED' && isTabActive()) {
+          lastPollTime.value = Date.now() // Inicializamos el timestamp con la primera llamada
+          startPolling()
+        } else {
+          await connectWebSocket()
+        }
       } else {
         console.error('Error al obtener el pedido:', response.statusText)
       }
     } catch (error) {
       console.error('Error en la solicitud:', error.message)
     }
+  }
+})
+
+onUnmounted(() => {
+  stopPolling()
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  if (websocket.value) {
+    websocket.value.close()
   }
 })
 

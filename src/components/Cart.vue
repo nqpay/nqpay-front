@@ -241,6 +241,7 @@ const submitPhone = async () => {
       localStorage.setItem('phone', phoneNumber.value)
       // Close the modal
       showPhoneModal.value = false
+      askLink()
     }
   } catch (error) {
     console.error('Error saving phone number:', error)
