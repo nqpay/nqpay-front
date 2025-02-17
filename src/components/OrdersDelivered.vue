@@ -147,16 +147,21 @@
 <script>
 import { useAuth0 } from '@auth0/auth0-vue'
 import AdminNavBar from './AdminNavBar.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 export default {
   components: { AdminNavBar },
   setup() {
+    const websocket = ref(null)
     const { isAuthenticated, getAccessTokenSilently, loginWithRedirect, isLoading: auth0IsLoading } = useAuth0()
     const recentOrders = ref([])
     const deliveredOrders = ref([])
     const view = ref('recent')
     const isLoading = ref(true)
+    const reconnectAttempts = ref(0)
+    const maxReconnectAttempts = 5
+    const reconnectTimeout = ref(null)
+    const baseReconnectDelay = 1000 // 1 segundo inicial
 
     const fetchOrders = async () => {
       isLoading.value = true
@@ -238,6 +243,77 @@ export default {
       })
     }
 
+    async function connectWebSocket() {
+      try {
+        const token = await getAccessTokenSilently()
+        const wsUrl = `https://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/?token=${token}`
+
+        // Cerrar el websocket existente si hay uno
+        if (websocket.value && websocket.value.readyState !== WebSocket.CLOSED) {
+          websocket.value.close()
+        }
+
+        websocket.value = new WebSocket(wsUrl)
+
+        websocket.value.onopen = () => {
+          console.log('WebSocket connection established')
+          // Resetear el contador de intentos cuando se conecta exitosamente
+          reconnectAttempts.value = 0
+        }
+
+        websocket.value.onmessage = async (event) => {
+          try {
+            await fetchOrders()
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error)
+          }
+        }
+
+        websocket.value.onerror = (error) => {
+          console.error('WebSocket error:', error)
+        }
+
+        websocket.value.onclose = (event) => {
+          console.log('WebSocket connection closed', event)
+
+          // Implementar reconexión con backoff exponencial
+          if (reconnectAttempts.value < maxReconnectAttempts) {
+            const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts.value)
+            console.log(`Attempting to reconnect in ${delay}ms... (Attempt ${reconnectAttempts.value + 1}/${maxReconnectAttempts})`)
+
+            reconnectTimeout.value = setTimeout(async () => {
+              reconnectAttempts.value++
+              await connectWebSocket()
+            }, delay)
+          } else {
+            console.error('Max reconnection attempts reached. Please refresh the page.')
+          }
+        }
+      } catch (error) {
+        console.error('Error setting up WebSocket:', error)
+
+        // También intentar reconectar si falla la configuración inicial
+        if (reconnectAttempts.value < maxReconnectAttempts) {
+          const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts.value)
+          reconnectTimeout.value = setTimeout(async () => {
+            reconnectAttempts.value++
+            await connectWebSocket()
+          }, delay)
+        }
+      }
+    }
+
+    // Función para verificar y reconectar periódicamente si es necesario
+    const checkConnection = () => {
+      if (isAuthenticated.value && (!websocket.value || websocket.value.readyState === WebSocket.CLOSED || websocket.value.readyState === WebSocket.CLOSING)) {
+        console.log('WebSocket connection lost, attempting to reconnect...')
+        connectWebSocket()
+      }
+    }
+
+    // Configurar un intervalo para verificar la conexión
+    const connectionCheckInterval = ref(null)
+
     onMounted(async () => {
       // Wait for Auth0 to initialize before proceeding
       while (auth0IsLoading.value) {
@@ -246,8 +322,27 @@ export default {
 
       if (isAuthenticated.value) {
         await fetchOrders()
+        await connectWebSocket()
+
+        // Verificar la conexión cada 30 segundos
+        connectionCheckInterval.value = setInterval(checkConnection, 30000)
       } else {
         isLoading.value = false
+      }
+    })
+
+    // Limpiar intervalos y timeouts cuando el componente se desmonta
+    onBeforeUnmount(() => {
+      if (connectionCheckInterval.value) {
+        clearInterval(connectionCheckInterval.value)
+      }
+
+      if (reconnectTimeout.value) {
+        clearTimeout(reconnectTimeout.value)
+      }
+
+      if (websocket.value) {
+        websocket.value.close()
       }
     })
 
