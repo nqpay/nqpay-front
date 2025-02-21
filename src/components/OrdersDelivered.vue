@@ -81,14 +81,30 @@
         <div v-else-if="filteredRecentOrders.length === 0" class="text-center py-8">
           <p class="text-gray-400">No hay órdenes recientes que coincidan con la búsqueda</p>
         </div>
-        <div v-else v-for="order in filteredRecentOrders" :key="order.id" class="mb-2">
-          <div class="bg-[#F7F3FA] text-black p-4 rounded-xl shadow-lg">
+        <div v-else v-for="order in filteredRecentOrders" :key="order.id" class="mb-2 relative">
+          <div
+            class="bg-[#F7F3FA] text-black p-4 rounded-xl shadow-lg transition-all duration-1000"
+            :class="{
+              'translate-y-full opacity-0 z-10': notifyingOrders[order.id] && order.status === 'NOTIFIED',
+              'scale-95 bg-gray-500': notifyingOrders[order.id] && order.status !== 'NOTIFIED',
+            }"
+            :style="notifyingOrders[order.id] && order.status === 'NOTIFIED' ? 'position: absolute; width: 100%;' : ''"
+          >
             <div class="flex justify-between items-center">
               <div>
                 <h2 class="font-semibold">Orden #{{ order.ticket_code.slice(0, 3) }}-{{ order.ticket_code.slice(3, 6) }}</h2>
                 <p class="text-gray-600 text-sm">{{ formatRelativeTime(order.created_at) }}</p>
               </div>
-              <button v-if="order.status == 'PAID'" v-on:click="notify(order.id)" class="bg-[#1E1E1E] text-white px-5 py-2 text-xs rounded-full">Notificar</button>
+              <button
+                v-if="order.status == 'PAID'"
+                v-on:click="notify(order.id)"
+                class="bg-[#1E1E1E] text-white px-5 py-2 text-xs rounded-full transition-colors"
+                :disabled="notifyingOrders[order.id]"
+                :class="{ 'opacity-50 bg-gray-500': notifyingOrders[order.id] }"
+              >
+                <span v-if="notifyingOrders[order.id]">Notificando...</span>
+                <span v-else>Notificar</span>
+              </button>
               <button v-if="order.status == 'NOTIFIED'" class="bg-white text-black border border-black px-5 py-2 text-xs rounded-full">Notificado</button>
             </div>
 
@@ -169,6 +185,7 @@ export default {
     const filteredDeliveredOrders = ref([]) // Variable para almacenar órdenes entregadas filtradas
     const longPollingTimeout = ref(null)
     const isPolling = ref(false)
+    const notifyingOrders = ref({})
 
     // Long polling implementation
     const startLongPolling = async () => {
@@ -187,13 +204,37 @@ export default {
         if (response.ok) {
           const data = await response.json()
           if (data && data.Body) {
-            const orderData = JSON.parse(data.Body)
-            // Only add to recentOrders if it's not already there
-            if (!recentOrders.value.some((order) => order.id === orderData.id)) {
-              recentOrders.value.unshift(orderData)
-              // Update filtered orders
-              filterOrders()
-            }
+            data.Body.forEach((message) => {
+              if (message.Body) {
+                try {
+                  // Parse the Body string into an object
+                  const orderData = JSON.parse(message.Body)
+                  for (const product of orderData.products) {
+                    product.image_url = product.picture_url
+                  }
+
+                  // Check if this order already exists in recentOrders
+                  const orderExists = recentOrders.value.some((order) => order.id === orderData.id)
+                  if (!orderExists && orderData.status !== 'DELIVERED') {
+                    console.log('Adding new order:', orderData.id)
+                    recentOrders.value.unshift(orderData)
+                  }
+                } catch (parseError) {
+                  console.error('Error parsing order data:', parseError)
+                }
+              }
+            })
+            // const ordersDatas = JSON.parse(data)
+            // const orderData = ordersDatas.Body
+            // console.log('orderData: ', orderData)
+            // console.log('orderData.Body: ', orderData)
+            // // Only add to recentOrders if it's not already there
+            // if (!recentOrders.value.some((order) => order.id === orderData.id)) {
+            //   console.log('orderData: ', orderData.id)
+            //   recentOrders.value.unshift(orderData)
+            //   // Update filtered orders
+            filterOrders()
+            // }
           }
         }
       } catch (error) {
@@ -205,17 +246,40 @@ export default {
       }
     }
 
+    // const filterOrders = () => {
+    //   const query = searchQuery.value.toLowerCase().trim()
+
+    //   if (query === '') {
+    //     // Si no hay consulta, mostrar todas las órdenes
+    //     filteredRecentOrders.value = [...recentOrders.value]
+    //     filteredDeliveredOrders.value = [...deliveredOrders.value]
+    //   } else {
+    //     // Filtrar órdenes por código que contenga la consulta
+    //     filteredRecentOrders.value = recentOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query))
+    //     filteredDeliveredOrders.value = deliveredOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query))
+    //   }
+    // }
+
     const filterOrders = () => {
       const query = searchQuery.value.toLowerCase().trim()
 
+      const sortOrders = (orders) => {
+        return [...orders].sort((a, b) => {
+          // Sort by status first (NOTIFIED goes to the bottom)
+          if (a.status === 'NOTIFIED' && b.status !== 'NOTIFIED') return 1
+          if (a.status !== 'NOTIFIED' && b.status === 'NOTIFIED') return -1
+
+          // If status is the same, sort by creation date (newest first)
+          return new Date(b.created_at) - new Date(a.created_at)
+        })
+      }
+
       if (query === '') {
-        // Si no hay consulta, mostrar todas las órdenes
-        filteredRecentOrders.value = [...recentOrders.value]
-        filteredDeliveredOrders.value = [...deliveredOrders.value]
+        filteredRecentOrders.value = sortOrders(recentOrders.value)
+        filteredDeliveredOrders.value = sortOrders(deliveredOrders.value)
       } else {
-        // Filtrar órdenes por código que contenga la consulta
-        filteredRecentOrders.value = recentOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query))
-        filteredDeliveredOrders.value = deliveredOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query))
+        filteredRecentOrders.value = sortOrders(recentOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query)))
+        filteredDeliveredOrders.value = sortOrders(deliveredOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query)))
       }
     }
 
@@ -224,6 +288,7 @@ export default {
       const createdAt = new Date(timestamp)
       const diffInSeconds = Math.floor((now - createdAt) / 1000)
       const diffInMinutes = Math.floor(diffInSeconds / 60)
+      if (diffInMinutes < 1) diffInMinutes = 1
       const diffInHours = Math.floor(diffInMinutes / 60)
       const diffInDays = Math.floor(diffInHours / 24)
 
@@ -293,6 +358,9 @@ export default {
       try {
         if (!isAuthenticated.value) return
 
+        // Set notifying state
+        notifyingOrders.value[orderID] = true
+
         let venueName = window.location.hostname.split('.')[0]
         if (window.location.hostname === 'localhost') {
           venueName = 'nq'
@@ -314,16 +382,25 @@ export default {
           console.log('Notification sent successfully')
           const orderIndex = recentOrders.value.findIndex((order) => order.id === orderID)
           if (orderIndex !== -1) {
+            await new Promise((resolve) => setTimeout(resolve, 500))
+
             recentOrders.value[orderIndex] = {
               ...recentOrders.value[orderIndex],
               status: 'NOTIFIED',
             }
+
+            filterOrders()
           }
         } else {
           console.error('Failed to send notification')
         }
       } catch (error) {
         console.error('Error sending notification:', error)
+      } finally {
+        // Clear notifying state after a delay
+        setTimeout(() => {
+          notifyingOrders.value[orderID] = false
+        }, 500)
       }
     }
 
@@ -453,6 +530,7 @@ export default {
       view,
       fetchOrders,
       notify,
+      notifyingOrders,
       handleLogin,
       formatRelativeTime,
       searchQuery,
