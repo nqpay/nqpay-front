@@ -3,9 +3,12 @@
     <template v-if="isAuthenticated">
       <h1 class="text-white font-medium text-xl">Hola {{ user?.name }}!</h1>
       <div class="h-20"></div>
-      <button @click="openScanner" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Escanear nuevo código QR</button>
-      <button @click="navigateToOrders" class="border border-[#BE38F3] w-full text-white rounded-lg p-3 mt-5">Historial de escaneos</button>
-      <button @click="handleLogout" class="bg-[#BE38F3] mt-auto w-full text-white rounded-lg p-3">Cerrar Sesión</button>
+      <button @click="handleLogout" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Cerrar Sesión</button>
+      <!-- <button @click="openScanner" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Escanear nuevo código QR</button> -->
+      <!-- <button @click="navigateToOrders" class="border border-[#BE38F3] w-full text-white rounded-lg p-3 mt-5">Historial de escaneos</button> -->
+      <!-- <button @click="handleLogout" class="bg-[#BE38F3] mt-auto w-full text-white rounded-lg p-3">Cerrar Sesión</button> -->
+      <!-- Barra de navegación -->
+      <AdminNavBar v-if="isAuthenticated" :active-page="'profile'" />
     </template>
     <template v-else-if="isLoading">
       <!-- Skeleton loader -->
@@ -19,9 +22,7 @@
     <template v-else>
       <div class="text-center">
         <h2 class="text-white font-medium text-xl mb-4">Bienvenido</h2>
-        <button @click="handleLogin" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">
-          Iniciar Sesión
-        </button>
+        <button @click="handleLogin" class="bg-[#BE38F3] w-full text-white rounded-lg p-3">Iniciar Sesión</button>
       </div>
     </template>
   </div>
@@ -31,9 +32,11 @@
 import { useAuth0 } from '@auth0/auth0-vue'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import AdminNavBar from './AdminNavBar.vue'
 
 export default {
   name: 'Admin',
+  components: { AdminNavBar },
   setup() {
     const auth0 = useAuth0()
     const router = useRouter()
@@ -67,7 +70,7 @@ export default {
 
     const handleLogin = () => {
       auth0.loginWithRedirect({
-        appState: { targetUrl: window.location.pathname }
+        appState: { targetUrl: window.location.pathname },
       })
     }
 

@@ -35,6 +35,8 @@
         <input
           type="search"
           id="default-search"
+          v-model="searchQuery"
+          @input="filterOrders"
           class="block rounded-full w-full p-4 ps-14 text-md text-white placeholder:text-white bg-[#2F2E2F]"
           placeholder="Buscar por código"
         />
@@ -76,15 +78,15 @@
             </div>
           </div>
         </div>
-        <div v-else-if="recentOrders.length === 0" class="text-center py-8">
-          <p class="text-gray-400">No hay órdenes recientes</p>
+        <div v-else-if="filteredRecentOrders.length === 0" class="text-center py-8">
+          <p class="text-gray-400">No hay órdenes recientes que coincidan con la búsqueda</p>
         </div>
-        <div v-else v-for="order in recentOrders" :key="order.id" class="mb-2">
+        <div v-else v-for="order in filteredRecentOrders" :key="order.id" class="mb-2">
           <div class="bg-[#F7F3FA] text-black p-4 rounded-xl shadow-lg">
             <div class="flex justify-between items-center">
               <div>
-                <h2 class="font-semibold">Orden #{{ order.ticket_code }}</h2>
-                <p class="text-gray-600 text-sm">{{ order.created_at }}</p>
+                <h2 class="font-semibold">Orden #{{ order.ticket_code.slice(0, 3) }}-{{ order.ticket_code.slice(3, 6) }}</h2>
+                <p class="text-gray-600 text-sm">{{ formatRelativeTime(order.created_at) }}</p>
               </div>
               <button v-if="order.status == 'PAID'" v-on:click="notify(order.id)" class="bg-[#1E1E1E] text-white px-5 py-2 text-xs rounded-full">Notificar</button>
               <button v-if="order.status == 'NOTIFIED'" class="bg-white text-black border border-black px-5 py-2 text-xs rounded-full">Notificado</button>
@@ -105,15 +107,15 @@
 
       <!-- Delivered Orders View -->
       <div v-if="view == 'delivered'">
-        <div v-if="deliveredOrders.length === 0" class="text-center py-8">
-          <p class="text-gray-400">No hay órdenes entregadas</p>
+        <div v-if="filteredDeliveredOrders.length === 0" class="text-center py-8">
+          <p class="text-gray-400">No hay órdenes entregadas que coincidan con la búsqueda</p>
         </div>
-        <div v-else v-for="order in deliveredOrders" :key="order.id" class="mb-2">
+        <div v-else v-for="order in filteredDeliveredOrders" :key="order.id" class="mb-2">
           <div class="bg-[#F7F3FA] text-black p-4 rounded-xl shadow-lg">
             <div class="flex justify-between items-center">
               <div>
-                <h2 class="font-semibold">Orden #{{ order.ticket_code }}</h2>
-                <p class="text-gray-600 text-sm">{{ order.created_at }}</p>
+                <h2 class="font-semibold">Orden #{{ order.ticket_code.slice(0, 3) }}-{{ order.ticket_code.slice(3, 6) }}</h2>
+                <p class="text-gray-600 text-sm">{{ formatRelativeTime(order.created_at) }}</p>
               </div>
             </div>
 
@@ -121,7 +123,7 @@
               <div v-for="item in order.products" :key="item.name" class="flex items-center gap-2">
                 <img :src="item.image_url" alt="item.name" class="w-12 h-12 rounded-lg object-cover" />
                 <div>
-                  <p class="font-medium">{{ item.name }}</p>
+                  <p class="font-medium">{{ item.quantity }}x {{ item.name }}</p>
                   <p class="text-gray-600 text-xs">{{ item.description }}</p>
                 </div>
               </div>
@@ -152,7 +154,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 export default {
   components: { AdminNavBar },
   setup() {
-    const websocket = ref(null)
+    // const websocket = ref(null)
     const { isAuthenticated, getAccessTokenSilently, loginWithRedirect, isLoading: auth0IsLoading } = useAuth0()
     const recentOrders = ref([])
     const deliveredOrders = ref([])
@@ -162,6 +164,87 @@ export default {
     const maxReconnectAttempts = 5
     const reconnectTimeout = ref(null)
     const baseReconnectDelay = 1000 // 1 segundo inicial
+    const searchQuery = ref('') // Variable para almacenar la consulta de búsqueda
+    const filteredRecentOrders = ref([]) // Variable para almacenar órdenes recientes filtradas
+    const filteredDeliveredOrders = ref([]) // Variable para almacenar órdenes entregadas filtradas
+    const longPollingTimeout = ref(null)
+    const isPolling = ref(false)
+
+    // Long polling implementation
+    const startLongPolling = async () => {
+      if (!isAuthenticated.value || isPolling.value) return
+
+      isPolling.value = true
+      try {
+        const token = await getAccessTokenSilently()
+        const response = await fetch('https://api.nqpay.lat/get-orders-real-time', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          if (data && data.Body) {
+            const orderData = JSON.parse(data.Body)
+            // Only add to recentOrders if it's not already there
+            if (!recentOrders.value.some((order) => order.id === orderData.id)) {
+              recentOrders.value.unshift(orderData)
+              // Update filtered orders
+              filterOrders()
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Long polling error:', error)
+      } finally {
+        isPolling.value = false
+        // Continue polling after a short delay
+        longPollingTimeout.value = setTimeout(startLongPolling, 1000)
+      }
+    }
+
+    const filterOrders = () => {
+      const query = searchQuery.value.toLowerCase().trim()
+
+      if (query === '') {
+        // Si no hay consulta, mostrar todas las órdenes
+        filteredRecentOrders.value = [...recentOrders.value]
+        filteredDeliveredOrders.value = [...deliveredOrders.value]
+      } else {
+        // Filtrar órdenes por código que contenga la consulta
+        filteredRecentOrders.value = recentOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query))
+        filteredDeliveredOrders.value = deliveredOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query))
+      }
+    }
+
+    const formatRelativeTime = (timestamp) => {
+      const now = new Date()
+      const createdAt = new Date(timestamp)
+      const diffInSeconds = Math.floor((now - createdAt) / 1000)
+      const diffInMinutes = Math.floor(diffInSeconds / 60)
+      const diffInHours = Math.floor(diffInMinutes / 60)
+      const diffInDays = Math.floor(diffInHours / 24)
+
+      // Less than a minute: show seconds
+      if (diffInMinutes < 1) {
+        return `${diffInSeconds} segundo${diffInSeconds !== 1 ? 's' : ''}`
+      }
+
+      // Less than an hour: show minutes
+      if (diffInHours < 1) {
+        return `${diffInMinutes} minuto${diffInMinutes !== 1 ? 's' : ''}`
+      }
+
+      // Less than 24 hours: show time
+      if (diffInDays < 1) {
+        return createdAt.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+      }
+
+      // More than 24 hours: show days ago
+      return `${diffInDays} día${diffInDays !== 1 ? 's' : ''} atrás`
+    }
 
     const fetchOrders = async () => {
       isLoading.value = true
@@ -185,15 +268,22 @@ export default {
           const data = await response.json()
           recentOrders.value = data.orders.filter((order) => order.status !== 'DELIVERED') || []
           deliveredOrders.value = data.orders.filter((order) => order.status === 'DELIVERED') || []
+
+          // Aplicar filtro inicial después de cargar datos
+          filterOrders()
         } else {
           console.error('Failed to fetch orders')
           recentOrders.value = []
           deliveredOrders.value = []
+          filteredRecentOrders.value = []
+          filteredDeliveredOrders.value = []
         }
       } catch (error) {
         console.error('Error fetching orders:', error)
         recentOrders.value = []
         deliveredOrders.value = []
+        filteredRecentOrders.value = []
+        filteredDeliveredOrders.value = []
       } finally {
         isLoading.value = false
       }
@@ -243,73 +333,73 @@ export default {
       })
     }
 
-    async function connectWebSocket() {
-      try {
-        const token = await getAccessTokenSilently()
-        const wsUrl = `https://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/?token=${token}`
+    // async function connectWebSocket() {
+    //   try {
+    //     const token = await getAccessTokenSilently()
+    //     const wsUrl = `https://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/?token=${token}`
 
-        // Cerrar el websocket existente si hay uno
-        if (websocket.value && websocket.value.readyState !== WebSocket.CLOSED) {
-          websocket.value.close()
-        }
+    //     // Cerrar el websocket existente si hay uno
+    //     if (websocket.value && websocket.value.readyState !== WebSocket.CLOSED) {
+    //       websocket.value.close()
+    //     }
 
-        websocket.value = new WebSocket(wsUrl)
+    //     websocket.value = new WebSocket(wsUrl)
 
-        websocket.value.onopen = () => {
-          console.log('WebSocket connection established')
-          // Resetear el contador de intentos cuando se conecta exitosamente
-          reconnectAttempts.value = 0
-        }
+    //     websocket.value.onopen = () => {
+    //       console.log('WebSocket connection established')
+    //       // Resetear el contador de intentos cuando se conecta exitosamente
+    //       reconnectAttempts.value = 0
+    //     }
 
-        websocket.value.onmessage = async (event) => {
-          try {
-            await fetchOrders()
-          } catch (error) {
-            console.error('Error parsing WebSocket message:', error)
-          }
-        }
+    //     websocket.value.onmessage = async (event) => {
+    //       try {
+    //         await fetchOrders()
+    //       } catch (error) {
+    //         console.error('Error parsing WebSocket message:', error)
+    //       }
+    //     }
 
-        websocket.value.onerror = (error) => {
-          console.error('WebSocket error:', error)
-        }
+    //     websocket.value.onerror = (error) => {
+    //       console.error('WebSocket error:', error)
+    //     }
 
-        websocket.value.onclose = (event) => {
-          console.log('WebSocket connection closed', event)
+    //     websocket.value.onclose = (event) => {
+    //       console.log('WebSocket connection closed', event)
 
-          // Implementar reconexión con backoff exponencial
-          if (reconnectAttempts.value < maxReconnectAttempts) {
-            const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts.value)
-            console.log(`Attempting to reconnect in ${delay}ms... (Attempt ${reconnectAttempts.value + 1}/${maxReconnectAttempts})`)
+    //       // Implementar reconexión con backoff exponencial
+    //       if (reconnectAttempts.value < maxReconnectAttempts) {
+    //         const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts.value)
+    //         console.log(`Attempting to reconnect in ${delay}ms... (Attempt ${reconnectAttempts.value + 1}/${maxReconnectAttempts})`)
 
-            reconnectTimeout.value = setTimeout(async () => {
-              reconnectAttempts.value++
-              await connectWebSocket()
-            }, delay)
-          } else {
-            console.error('Max reconnection attempts reached. Please refresh the page.')
-          }
-        }
-      } catch (error) {
-        console.error('Error setting up WebSocket:', error)
+    //         reconnectTimeout.value = setTimeout(async () => {
+    //           reconnectAttempts.value++
+    //           await connectWebSocket()
+    //         }, delay)
+    //       } else {
+    //         console.error('Max reconnection attempts reached. Please refresh the page.')
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.error('Error setting up WebSocket:', error)
 
-        // También intentar reconectar si falla la configuración inicial
-        if (reconnectAttempts.value < maxReconnectAttempts) {
-          const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts.value)
-          reconnectTimeout.value = setTimeout(async () => {
-            reconnectAttempts.value++
-            await connectWebSocket()
-          }, delay)
-        }
-      }
-    }
+    //     // También intentar reconectar si falla la configuración inicial
+    //     if (reconnectAttempts.value < maxReconnectAttempts) {
+    //       const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts.value)
+    //       reconnectTimeout.value = setTimeout(async () => {
+    //         reconnectAttempts.value++
+    //         await connectWebSocket()
+    //       }, delay)
+    //     }
+    //   }
+    // }
 
     // Función para verificar y reconectar periódicamente si es necesario
-    const checkConnection = () => {
-      if (isAuthenticated.value && (!websocket.value || websocket.value.readyState === WebSocket.CLOSED || websocket.value.readyState === WebSocket.CLOSING)) {
-        console.log('WebSocket connection lost, attempting to reconnect...')
-        connectWebSocket()
-      }
-    }
+    // const checkConnection = () => {
+    //   if (isAuthenticated.value && (!websocket.value || websocket.value.readyState === WebSocket.CLOSED || websocket.value.readyState === WebSocket.CLOSING)) {
+    //     console.log('WebSocket connection lost, attempting to reconnect...')
+    //     connectWebSocket()
+    //   }
+    // }
 
     // Configurar un intervalo para verificar la conexión
     const connectionCheckInterval = ref(null)
@@ -322,39 +412,51 @@ export default {
 
       if (isAuthenticated.value) {
         await fetchOrders()
-        await connectWebSocket()
+        startLongPolling()
+        // await connectWebSocket()
 
         // Verificar la conexión cada 30 segundos
-        connectionCheckInterval.value = setInterval(checkConnection, 30000)
+        // connectionCheckInterval.value = setInterval(checkConnection, 30000)
       } else {
         isLoading.value = false
       }
     })
 
-    // Limpiar intervalos y timeouts cuando el componente se desmonta
     onBeforeUnmount(() => {
-      if (connectionCheckInterval.value) {
-        clearInterval(connectionCheckInterval.value)
-      }
-
-      if (reconnectTimeout.value) {
-        clearTimeout(reconnectTimeout.value)
-      }
-
-      if (websocket.value) {
-        websocket.value.close()
+      if (longPollingTimeout.value) {
+        clearTimeout(longPollingTimeout.value)
       }
     })
+
+    // Limpiar intervalos y timeouts cuando el componente se desmonta
+    // onBeforeUnmount(() => {
+    //   if (connectionCheckInterval.value) {
+    //     clearInterval(connectionCheckInterval.value)
+    //   }
+
+    //   if (reconnectTimeout.value) {
+    //     clearTimeout(reconnectTimeout.value)
+    //   }
+
+    //   if (websocket.value) {
+    //     websocket.value.close()
+    //   }
+    // })
 
     return {
       isAuthenticated,
       recentOrders,
       deliveredOrders,
+      filteredRecentOrders,
+      filteredDeliveredOrders,
       isLoading,
       view,
       fetchOrders,
       notify,
       handleLogin,
+      formatRelativeTime,
+      searchQuery,
+      filterOrders,
     }
   },
 }

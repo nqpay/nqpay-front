@@ -13,7 +13,6 @@ import EventsList from './components/EventsList.vue'
 import Menu from './components/Menu.vue'
 import Product from './components/Product.vue'
 import Cart from './components/Cart.vue'
-import Admin from './components/Admin.vue'
 import Profile from './components/Profile.vue'
 import Auth from './components/Auth.vue'
 import Checkout from './components/Checkout.vue'
@@ -24,6 +23,7 @@ import OrdersDelivered from './components/OrdersDelivered.vue'
 import CompleteProfile from './components/CompleteProfile.vue'
 import Welcome from './components/Welcome.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import AdminProfile from './components/AdminProfile.vue'
 
 const app = createApp(App)
 const getCurrentUser = () => {
@@ -43,7 +43,7 @@ const router = new createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: DemoHome, meta: { requiresAuth: true } },
-    { path: '/admin/profile', component: Admin },
+    { path: '/admin/profile', component: AdminProfile },
     { path: '/auth', component: Auth },
     { path: '/menu/:event', component: Menu, meta: { requiresAuth: true } },
     { path: '/menu/:event/:product', component: Product, meta: { requiresAuth: true } },

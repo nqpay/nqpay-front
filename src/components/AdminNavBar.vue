@@ -1,7 +1,7 @@
 <template>
   <div class="fixed bottom-0 left-0 right-0 bg-[#1E1E1E] pb-safe pb-5">
     <div class="grid h-16 grid-cols-5 mx-auto">
-      <button class="inline-flex flex-col items-center justify-center">
+      <button @click="navigate('')" class="inline-flex flex-col items-center justify-center">
         <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6">
           <path
             d="M22 6V8.42C22 10 21 11 19.42 11H16V4.01C16 2.9 16.91 2 18.02 2C19.11 2.01 20.11 2.45 20.83 3.17C21.55 3.9 22 4.9 22 6Z"
@@ -51,19 +51,25 @@
           </g>
         </svg>
       </button>
-      <button class="inline-flex flex-col items-center justify-center">
+      <button @click="navigate('profile')" class="inline-flex flex-col items-center justify-center">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
           <g id="SVGRepo_iconCarrier">
             <path
               d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
-              stroke="#7D7482"
+              :stroke="activePage === 'profile' ? '#ffffff' : '#7D7482'"
               stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"
             ></path>
-            <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="#7D7482" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path
+              d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
+              :stroke="activePage === 'profile' ? '#ffffff' : '#7D7482'"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
           </g>
         </svg>
       </button>
@@ -86,6 +92,9 @@ export default {
   methods: {
     openScanner() {
       this.router.push('/scanner')
+    },
+    navigate(route) {
+      this.router.push(`/admin/${route}`)
     },
   },
   props: {
