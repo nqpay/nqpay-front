@@ -54,6 +54,7 @@ const router = new createRouter({
     { path: '/checkout', component: Checkout, meta: { requiresAuth: true } },
     { path: '/profile', component: Profile, meta: { requiresAuth: true } },
     { path: '/success', component: Success, meta: { requiresAuth: true } },
+    { path: '/pending', component: Success, meta: { requiresAuth: true } },
     { path: '/complete-profile', component: CompleteProfile, meta: { requiresAuth: true } },
     { path: '/welcome', component: Welcome },
     { path: '/:pathMatch(.*)*', redirect: '/' },
