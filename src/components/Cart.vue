@@ -53,12 +53,12 @@
       <p class="text-xl">Tu carrito está vacío.</p>
     </div>
 
-    <div v-show="showPhoneModal" class="fixed inset-0 bg-black/70 flex items-center justify-center px-10" @click="this.showPhoneModal.value = false">
-      <div class="bg-[#2F2E2F] w-full max-w-md rounded-xl p-6" @click="this.showPhoneModal.value = false">
+    <div v-show="showPhoneModal" class="fixed inset-0 bg-black/70 flex items-center justify-center px-5" @click="this.showPhoneModal.value = false">
+      <div class="bg-[#2F2E2F] w-full rounded-xl p-6">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-4">
-          <p class="text-white text-md">Para continuar con tu compra necesitamos tu celular</p>
-          <button @click="this.showPhoneModal.value = false" class="text-white hover:text-gray-300">✕</button>
+        <div class="justify-between items-center mb-4 grid grid-cols-4">
+          <p class="text-white text-xs col-span-3">Dejanos tu numero para notificarte cuando tu orden este lista!</p>
+          <button @click="showPhoneModalSwitch()" class="text-white hover:text-gray-300 justify-self-end pr-1">✕</button>
         </div>
 
         <!-- Phone Input Section -->
@@ -66,7 +66,7 @@
           <!-- Country Code Select (disabled) -->
           <div class="flex-none w-20">
             <div class="h-12 px-3 bg-[#1C1C1E] rounded-lg flex items-center text-white border border-gray-600">
-              <span>🇦🇷 +54</span>
+              <span>🇦🇷<span></span>+54</span>
             </div>
           </div>
 
@@ -75,7 +75,7 @@
             v-model="phoneNumber"
             type="tel"
             placeholder="Ingresa tu celular"
-            class="flex-1 h-12 px-4 bg-[#1C1C1E] rounded-lg text-white border border-gray-600 focus:border-[#BE38F3] focus:outline-none"
+            class="flex-1 w-full h-12 px-4 bg-[#1C1C1E] rounded-lg text-white border border-gray-600 focus:border-[#BE38F3] focus:outline-none"
             maxlength="10"
             @input="validatePhoneNumber"
           />
@@ -193,6 +193,10 @@ const tipOptions = [
   { label: '15%', value: 0.15 },
   { label: '20%', value: 0.2 },
 ]
+
+const showPhoneModalSwitch = () => {
+  showPhoneModal.value = !showPhoneModal.value
+}
 
 const isValidPhone = computed(() => phoneNumber.value.length === 10)
 

@@ -12,4 +12,7 @@ export default defineConfig({
     // include all images in the assets folder, even if they are not referenced in the code
     assetsInclude: 'assets/**',
   },
+  server: {
+    allowedHosts: true,
+  },
 })

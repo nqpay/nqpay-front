@@ -8,10 +8,7 @@
         <div class="h-7 w-7"></div>
       </div>
       <p class="text-white font-regular pb-10">Acá vas a encontrar todas las compras que hiciste y tus códigos QR para retirar tus tragos.</p>
-      <!-- <div  class="mt-20 flex flex-col gap-4">
-        <h1 class="text-white font-semibold text-2xl">Historial de Pedidos</h1>
-        <div class="h-10"></div>
-      </div> -->
+
       <!-- Loading state -->
       <div v-if="isLoading" class="flex flex-col gap-4">
         <div v-for="n in 3" :key="n" class="flex items-center justify-between gap-4 bg-white bg-opacity-15 rounded-lg p-2 px-2">
@@ -29,7 +26,7 @@
       <p v-else-if="orders.length === 0" class="text-center text-gray-400">No hay ordenes creadas.</p>
 
       <!-- Orders list -->
-      <div v-else class="flex flex-col gap-4">
+      <div v-else class="flex flex-col gap-4 overflow-auto mb-40">
         <div
           v-for="order in orders"
           :key="order.id"
@@ -65,7 +62,7 @@
                 'bg-green-500': order.status === 'DELIVERED',
               }"
             >
-              <p v-if="order.status == 'PAID'">En Preparación</p>
+              <p class="text-sm" v-if="order.status == 'PAID'">En Preparación</p>
               <p v-else-if="order.status == 'NOTIFIED'">Ir a Retirar</p>
               <p v-else-if="order.status == 'DELIVERED'">Entregado</p>
             </div>
@@ -78,7 +75,7 @@
 </template>
 
 <script setup>
-import { getAuth } from 'firebase/auth'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import NavBar from './NavBar.vue'
@@ -86,6 +83,7 @@ import NavBar from './NavBar.vue'
 const orders = ref([])
 const isLoading = ref(true)
 const router = useRouter()
+const auth = getAuth()
 
 const navigateToOrder = (order) => {
   router.push({
@@ -96,24 +94,28 @@ const navigateToOrder = (order) => {
   })
 }
 
-function goBack() {
-  router.push('/')
-}
-
-onMounted(async () => {
+async function fetchOrders() {
   try {
-    const auth = getAuth()
-    const idToken = await auth.currentUser.getIdToken()
+    if (!auth.currentUser) {
+      console.log('No user is signed in')
+      isLoading.value = false
+      return
+    }
+
+    const idToken = await auth.currentUser.getIdToken(true) // Force token refresh
+
     let venueName = window.location.hostname.split('.')[0]
-    if (window.location.hostname === 'localhost') {
+    if (window.location.hostname === 'localhost' || window.location.hostname.includes('ngrok-free.app')) {
       venueName = 'nq'
     }
+
     const response = await fetch(`https://api.nqpay.lat/venues/${venueName}/orders`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${idToken}`,
       },
     })
+
     if (response.ok) {
       const data = await response.json()
       orders.value = data.orders
@@ -125,5 +127,24 @@ onMounted(async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+onMounted(() => {
+  isLoading.value = true
+
+  // Use onAuthStateChanged to wait for auth state to be fully initialized
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      fetchOrders()
+    } else {
+      console.log('Usuario no autenticado')
+      isLoading.value = false
+      router.push('/')
+      // Optionally redirect to login page
+    }
+  })
+
+  // Clean up the subscription when component is unmounted
+  return () => unsubscribe()
 })
 </script>
