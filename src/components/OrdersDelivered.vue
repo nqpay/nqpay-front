@@ -81,7 +81,7 @@
         <div v-else-if="filteredRecentOrders.length === 0" class="text-center py-8">
           <p class="text-gray-400">No hay órdenes recientes que coincidan con la búsqueda</p>
         </div>
-        <div v-else v-for="order in filteredRecentOrders" :key="order.id" class="mb-2 relative">
+        <div v-else v-for="order in filteredRecentOrders" :key="order.id + order.status" class="mb-2 relative">
           <div
             class="bg-[#F7F3FA] text-black p-4 rounded-xl shadow-lg transition-all duration-1000"
             :class="{
@@ -110,7 +110,7 @@
 
             <div class="mt-4 grid grid-cols-2 gap-2">
               <div v-for="item in order.products" :key="item.name" class="flex items-center gap-2">
-                <img :src="item.image_url" alt="item.name" class="w-12 h-12 rounded-lg object-cover" />
+                <img :src="item.image_url ? item.image_url : item.picture_url" alt="item.name" class="w-12 h-12 rounded-lg object-cover" />
                 <div>
                   <p class="font-medium">{{ item.quantity }}x {{ item.name }}</p>
                   <p class="text-gray-600 text-xs">{{ item.description }}</p>
@@ -166,6 +166,7 @@
 import { useAuth0 } from '@auth0/auth0-vue'
 import AdminNavBar from './AdminNavBar.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { debounce } from 'lodash-es'
 
 export default {
   components: { AdminNavBar },
@@ -177,9 +178,6 @@ export default {
     const view = ref('recent')
     const isLoading = ref(true)
     const reconnectAttempts = ref(0)
-    const maxReconnectAttempts = 5
-    const reconnectTimeout = ref(null)
-    const baseReconnectDelay = 1000 // 1 segundo inicial
     const searchQuery = ref('') // Variable para almacenar la consulta de búsqueda
     const filteredRecentOrders = ref([]) // Variable para almacenar órdenes recientes filtradas
     const filteredDeliveredOrders = ref([]) // Variable para almacenar órdenes entregadas filtradas
@@ -204,72 +202,62 @@ export default {
         if (response.ok) {
           const data = await response.json()
           if (data && data.Body) {
+            let needsUpdate = false
+
             data.Body.forEach((message) => {
               if (message.Body) {
                 try {
-                  // Parse the Body string into an object
                   const orderData = JSON.parse(message.Body)
-                  for (const product of orderData.products) {
-                    product.image_url = product.picture_url
-                  }
+                  console.log('oD: ', orderData)
+                  // Validar y formatear la orden
+                  if (!orderData.id || typeof orderData.ticket_code !== 'string' || !orderData.created_at) return
+                  orderData.created_at = new Date(orderData.created_at).toISOString()
 
-                  // Check if this order already exists in recentOrders
-                  const orderExists = recentOrders.value.some((order) => order.id === orderData.id)
-                  if (!orderExists && orderData.status !== 'DELIVERED') {
-                    console.log('Adding new order:', orderData.id)
+                  // Actualizar las órdenes existentes o agregar nuevas
+                  const existingIndex = recentOrders.value.findIndex((o) => o.id === orderData.id)
+                  if (existingIndex === -1) {
+                    // Nueva orden - agregar al principio del array
                     recentOrders.value.unshift(orderData)
+                    needsUpdate = true
+                  } else if (JSON.stringify(recentOrders.value[existingIndex]) !== JSON.stringify(orderData)) {
+                    // Actualizar orden existente
+                    recentOrders.value.splice(existingIndex, 1, orderData)
+                    needsUpdate = true
                   }
-                } catch (parseError) {
-                  console.error('Error parsing order data:', parseError)
+                } catch (error) {
+                  console.error('Error procesando orden:', error)
                 }
               }
             })
-            // const ordersDatas = JSON.parse(data)
-            // const orderData = ordersDatas.Body
-            // console.log('orderData: ', orderData)
-            // console.log('orderData.Body: ', orderData)
-            // // Only add to recentOrders if it's not already there
-            // if (!recentOrders.value.some((order) => order.id === orderData.id)) {
-            //   console.log('orderData: ', orderData.id)
-            //   recentOrders.value.unshift(orderData)
-            //   // Update filtered orders
-            filterOrders()
-            // }
+
+            if (needsUpdate) {
+              // Forzar actualización del DOM y filtrar
+              recentOrders.value = [...recentOrders.value]
+              filterOrders()
+            }
           }
         }
       } catch (error) {
         console.error('Long polling error:', error)
+        const delay = Math.min(5000, 1000 * Math.pow(2, reconnectAttempts.value))
+        reconnectAttempts.value++
+        setTimeout(startLongPolling, delay)
       } finally {
         isPolling.value = false
-        // Continue polling after a short delay
-        longPollingTimeout.value = setTimeout(startLongPolling, 1000)
+        if (reconnectAttempts.value > 0) reconnectAttempts.value = 0
+        longPollingTimeout.value = setTimeout(startLongPolling, 5000)
       }
     }
 
-    // const filterOrders = () => {
-    //   const query = searchQuery.value.toLowerCase().trim()
-
-    //   if (query === '') {
-    //     // Si no hay consulta, mostrar todas las órdenes
-    //     filteredRecentOrders.value = [...recentOrders.value]
-    //     filteredDeliveredOrders.value = [...deliveredOrders.value]
-    //   } else {
-    //     // Filtrar órdenes por código que contenga la consulta
-    //     filteredRecentOrders.value = recentOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query))
-    //     filteredDeliveredOrders.value = deliveredOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query))
-    //   }
-    // }
-
-    const filterOrders = () => {
+    const filterOrders = debounce(() => {
       const query = searchQuery.value.toLowerCase().trim()
 
       const sortOrders = (orders) => {
         return [...orders].sort((a, b) => {
-          // Sort by status first (NOTIFIED goes to the bottom)
+          // Primero ordenar por estado NOTIFIED
           if (a.status === 'NOTIFIED' && b.status !== 'NOTIFIED') return 1
           if (a.status !== 'NOTIFIED' && b.status === 'NOTIFIED') return -1
-
-          // If status is the same, sort by creation date (newest first)
+          // Luego por fecha más reciente
           return new Date(b.created_at) - new Date(a.created_at)
         })
       }
@@ -281,19 +269,24 @@ export default {
         filteredRecentOrders.value = sortOrders(recentOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query)))
         filteredDeliveredOrders.value = sortOrders(deliveredOrders.value.filter((order) => order.ticket_code.toLowerCase().includes(query)))
       }
-    }
+    }, 300)
 
     const formatRelativeTime = (timestamp) => {
+      if (!timestamp) return 'Reciente'
       const now = new Date()
       const createdAt = new Date(timestamp)
-      const diffInSeconds = Math.floor((now - createdAt) / 1000)
-      const diffInMinutes = Math.floor(diffInSeconds / 60)
+
+      if (isNaN(createdAt.getTime())) return 'Reciente'
+
+      let diffInSeconds = Math.floor((now - createdAt) / 1000)
+      let diffInMinutes = Math.floor(diffInSeconds / 60)
+
       if (diffInMinutes < 1) diffInMinutes = 1
       const diffInHours = Math.floor(diffInMinutes / 60)
       const diffInDays = Math.floor(diffInHours / 24)
 
       // Less than a minute: show seconds
-      if (diffInMinutes < 1) {
+      if (diffInSeconds < 60) {
         return `${diffInSeconds} segundo${diffInSeconds !== 1 ? 's' : ''}`
       }
 
@@ -410,77 +403,6 @@ export default {
       })
     }
 
-    // async function connectWebSocket() {
-    //   try {
-    //     const token = await getAccessTokenSilently()
-    //     const wsUrl = `https://jqxxikk287.execute-api.sa-east-1.amazonaws.com/prod/?token=${token}`
-
-    //     // Cerrar el websocket existente si hay uno
-    //     if (websocket.value && websocket.value.readyState !== WebSocket.CLOSED) {
-    //       websocket.value.close()
-    //     }
-
-    //     websocket.value = new WebSocket(wsUrl)
-
-    //     websocket.value.onopen = () => {
-    //       console.log('WebSocket connection established')
-    //       // Resetear el contador de intentos cuando se conecta exitosamente
-    //       reconnectAttempts.value = 0
-    //     }
-
-    //     websocket.value.onmessage = async (event) => {
-    //       try {
-    //         await fetchOrders()
-    //       } catch (error) {
-    //         console.error('Error parsing WebSocket message:', error)
-    //       }
-    //     }
-
-    //     websocket.value.onerror = (error) => {
-    //       console.error('WebSocket error:', error)
-    //     }
-
-    //     websocket.value.onclose = (event) => {
-    //       console.log('WebSocket connection closed', event)
-
-    //       // Implementar reconexión con backoff exponencial
-    //       if (reconnectAttempts.value < maxReconnectAttempts) {
-    //         const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts.value)
-    //         console.log(`Attempting to reconnect in ${delay}ms... (Attempt ${reconnectAttempts.value + 1}/${maxReconnectAttempts})`)
-
-    //         reconnectTimeout.value = setTimeout(async () => {
-    //           reconnectAttempts.value++
-    //           await connectWebSocket()
-    //         }, delay)
-    //       } else {
-    //         console.error('Max reconnection attempts reached. Please refresh the page.')
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.error('Error setting up WebSocket:', error)
-
-    //     // También intentar reconectar si falla la configuración inicial
-    //     if (reconnectAttempts.value < maxReconnectAttempts) {
-    //       const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts.value)
-    //       reconnectTimeout.value = setTimeout(async () => {
-    //         reconnectAttempts.value++
-    //         await connectWebSocket()
-    //       }, delay)
-    //     }
-    //   }
-    // }
-
-    // Función para verificar y reconectar periódicamente si es necesario
-    // const checkConnection = () => {
-    //   if (isAuthenticated.value && (!websocket.value || websocket.value.readyState === WebSocket.CLOSED || websocket.value.readyState === WebSocket.CLOSING)) {
-    //     console.log('WebSocket connection lost, attempting to reconnect...')
-    //     connectWebSocket()
-    //   }
-    // }
-
-    // Configurar un intervalo para verificar la conexión
-    const connectionCheckInterval = ref(null)
-
     onMounted(async () => {
       // Wait for Auth0 to initialize before proceeding
       while (auth0IsLoading.value) {
@@ -504,21 +426,6 @@ export default {
         clearTimeout(longPollingTimeout.value)
       }
     })
-
-    // Limpiar intervalos y timeouts cuando el componente se desmonta
-    // onBeforeUnmount(() => {
-    //   if (connectionCheckInterval.value) {
-    //     clearInterval(connectionCheckInterval.value)
-    //   }
-
-    //   if (reconnectTimeout.value) {
-    //     clearTimeout(reconnectTimeout.value)
-    //   }
-
-    //   if (websocket.value) {
-    //     websocket.value.close()
-    //   }
-    // })
 
     return {
       isAuthenticated,
