@@ -181,7 +181,7 @@ export default {
     }
 
     const goToScanner = () => {
-      router.push('/scanner')
+      router.replace('/admin')
     }
 
     onMounted(() => {
