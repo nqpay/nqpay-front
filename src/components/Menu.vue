@@ -93,6 +93,7 @@ export default {
       const auth = getAuth()
       try {
         venueName.value = window.location.hostname.split('.')[0]
+        console.log('window :', window.location.hostname)
         if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev' || window.location.hostname.includes('ngrok-free.app')) {
           venueName.value = 'nq'
         }
