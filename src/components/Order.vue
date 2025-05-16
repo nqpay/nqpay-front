@@ -1,64 +1,81 @@
 <template>
   <div v-if="isAuthenticated && order">
-    <div class="min-h-screen bg-black text-white p-8 flex flex-col">
-      <!-- Error Banner -->
-      <div v-if="errorMessage" class="fixed top-0 left-0 right-0 bg-red-500 text-white p-4 animate-fade-in-down z-50 flex justify-between items-center">
-        <span>{{ errorMessage }}</span>
-        <button @click="errorMessage = ''" class="text-white hover:text-gray-200">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+    <div class="min-h-screen bg-black text-white px-4 pt-6 pb-28 flex flex-col gap-6 relative">
+      <!-- Banners -->
+      <Transition name="fade">
+        <div v-if="errorMessage" class="fixed top-0 left-0 right-0 bg-red-500 text-white p-4 z-50 flex justify-between items-center">
+          <span class="text-sm">{{ errorMessage }}</span>
+          <button @click="errorMessage = ''">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </Transition>
+
+      <Transition name="fade">
+        <div v-if="showSuccess" class="fixed top-0 left-0 right-0 bg-green-500 text-white p-4 z-50 flex justify-between items-center">
+          <span class="text-sm">Pedido marcado como entregado exitosamente</span>
+          <button @click="showSuccess = false">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </Transition>
+
+      <!-- Cabecera -->
+      <div class="flex flex-col gap-1">
+        <button @click="goToScanner" class="w-max text-sm text-white opacity-70 flex items-center gap-2"><img src="/arrowleft.svg" alt="Volver" class="h-5 w-5" /> Volver</button>
+        <h1 class="text-xl font-bold">Orden {{ order.ticket_code.substring(0, 3) }}-{{ order.ticket_code.substring(3, 6) }}</h1>
+        <p class="text-gray-400 text-sm">{{ order.created_at }}</p>
+      </div>
+
+      <!-- Lista de productos -->
+      <div class="bg-white bg-opacity-10 rounded-lg p-4 flex flex-col gap-3">
+        <div v-for="item in order.products" :key="item.name" class="flex justify-between text-sm md:text-base">
+          <span>{{ item.name }}</span>
+          <span class="font-semibold">{{ item.quantity }}</span>
+        </div>
+      </div>
+
+      <!-- QR + precio -->
+      <div class="flex flex-col items-center gap-3">
+        <p class="font-semibold text-lg">Código QR para retiro</p>
+        <div class="rounded-2xl bg-white p-3 flex justify-center">
+          <QRCodeVue3
+            v-if="order.ticket_code"
+            :value="order.ticket_code"
+            :width="140"
+            :height="140"
+            :qrOptions="{ typeNumber: 0, mode: 'Byte', errorCorrectionLevel: 'L' }"
+            :dotsOptions="{ type: 'square', color: '#000' }"
+            :backgroundOptions="{ color: '#ffffff' }"
+            :cornersSquareOptions="{ type: 'square', color: '#000000' }"
+            :cornersDotOptions="{ type: undefined, color: '#000000' }"
+          />
+        </div>
+        <p class="text-lg font-bold">{{ order.ticket_code }}</p>
+        <p class="text-white text-sm">${{ order.total }}</p>
+      </div>
+
+      <!-- Botón fijo abajo -->
+      <div class="fixed bottom-0 left-0 right-0 px-4 py-3 bg-black z-40 flex gap-2">
+        <button @click="goToScanner" class="bg-white bg-opacity-10 text-white rounded-lg w-1/5 h-12">
+          <img src="/arrowleft.svg" class="mx-auto h-full w-5" />
+        </button>
+        <button
+          class="rounded-lg w-4/5 h-12 text-sm font-semibold text-white"
+          :class="order.order_status === 'DELIVERED' ? 'bg-red-500' : 'bg-green-500'"
+          :disabled="isDelivering || order.order_status === 'DELIVERED'"
+          @click="markAsDelivered"
+        >
+          {{ buttonText }}
         </button>
       </div>
-
-      <!-- Success Banner -->
-      <div v-if="showSuccess" class="fixed top-0 left-0 right-0 bg-green-500 text-white p-4 animate-fade-in-down z-50 flex justify-between items-center">
-        <span>Pedido marcado como entregado exitosamente</span>
-        <button @click="showSuccess = false" class="text-white hover:text-gray-200">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <div class="h-full flex flex-col">
-        <!-- Header -->
-        <div class="mb-4">
-          <div class="h-16"></div>
-          <h1 class="text-2xl font-bold">Orden {{ order.ticket_code.substring(0, 3) }}-{{ order.ticket_code.substring(3, 6) }}</h1>
-          <p class="text-gray-400">{{ order.created_at }}</p>
-        </div>
-
-        <!-- Item list -->
-        <div class="bg-white bg-opacity-10 rounded-lg p-4 flex-grow">
-          <div v-for="item in order.products" :key="item.name" class="flex justify-between mb-2 font-bold text-xl px-4">
-            <span>{{ item.name }}</span>
-            <span>{{ item.quantity }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delivery button -->
-    <div class="w-full flex fixed bottom-0 left-0 right-0 p-4 mb-20 font-bold text-xl text-black gap-2">
-      <button @click="goToScanner" class="bg-white bg-opacity-10 text-white rounded-lg h-14 w-2/12 items-center">
-        <img src="/arrowleft.svg" class="w-full p-5" />
-      </button>
-      <button
-        v-if="order"
-        class="py-3 px-4 rounded-lg text-center h-14 w-10/12 text-sm"
-        :class="{
-          'bg-red-500 text-white': order.order_status === 'DELIVERED',
-          'bg-green-500': order.order_status !== 'DELIVERED',
-        }"
-        @click="markAsDelivered"
-        :disabled="isDelivering || order.order_status === 'DELIVERED'"
-      >
-        {{ buttonText }}
-      </button>
     </div>
   </div>
-  <div v-else>Cargando datos...</div>
+  <div v-else class="text-white text-center py-10">Cargando datos...</div>
 </template>
 
 <script>
