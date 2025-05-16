@@ -310,7 +310,7 @@ export default {
         if (!isAuthenticated.value) return
 
         let venueName = window.location.hostname.split('.')[0]
-        if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev') {
+        if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev.nqpay.lat') {
           venueName = 'nq'
         }
 
@@ -355,7 +355,7 @@ export default {
         notifyingOrders.value[orderID] = true
 
         let venueName = window.location.hostname.split('.')[0]
-        if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev') {
+        if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev.nqpay.lat') {
           venueName = 'nq'
         }
 

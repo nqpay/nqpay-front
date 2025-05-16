@@ -122,7 +122,7 @@ initializeFaro(grafanaConfig)
 initializeApp(firebaseConfig)
 
 let venueName = window.location.hostname.split('.')[0]
-if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev') {
+if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev.nqpay.lat') {
   venueName = 'nq'
 }
 app.use(
