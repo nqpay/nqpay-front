@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthenticated && order">
-    <div class="min-h-screen bg-black text-white p-8 flex flex-col">
+    <div class="min-h-screen bg-black text-white px-4 py-6 sm:p-8 flex flex-col">
       <!-- Error Banner -->
       <div v-if="errorMessage" class="fixed top-0 left-0 right-0 bg-red-500 text-white p-4 animate-fade-in-down z-50 flex justify-between items-center">
         <span>{{ errorMessage }}</span>
@@ -25,13 +25,13 @@
         <!-- Header -->
         <div class="mb-4">
           <div class="h-16"></div>
-          <h1 class="text-2xl font-bold">Orden {{ order.ticket_code.substring(0, 3) }}-{{ order.ticket_code.substring(3, 6) }}</h1>
-          <p class="text-gray-400">{{ order.created_at }}</p>
+          <h1 class="text-xl sm:text-2xl font-bold break-words">Orden {{ order.ticket_code.substring(0, 3) }}-{{ order.ticket_code.substring(3, 6) }}</h1>
+          <p class="text-sm text-gray-400 break-words">{{ order.created_at }}</p>
         </div>
 
         <!-- Item list -->
         <div class="bg-white bg-opacity-10 rounded-lg p-4 flex-grow">
-          <div v-for="item in order.products" :key="item.name" class="flex justify-between mb-2 font-bold text-xl px-4">
+          <div v-for="item in order.products" :key="item.name" class="flex justify-between mb-2 font-bold text-base sm:text-xl px-2 sm:px-4 flex-wrap gap-1">
             <span>{{ item.name }}</span>
             <span>{{ item.quantity }}</span>
           </div>
@@ -40,13 +40,13 @@
     </div>
 
     <!-- Delivery button -->
-    <div class="w-full flex fixed bottom-0 left-0 right-0 p-4 mb-20 font-bold text-xl text-black gap-2">
-      <button @click="goToScanner" class="bg-white bg-opacity-10 text-white rounded-lg h-14 w-2/12 items-center">
+    <div class="w-full flex flex-col sm:flex-row fixed bottom-0 left-0 right-0 px-4 py-2 sm:p-4 mb-20 font-bold text-base text-black gap-2 bg-black z-40">
+      <button @click="goToScanner" class="bg-white bg-opacity-10 text-white rounded-lg h-12 sm:h-14 w-full sm:w-2/12 flex items-center justify-center">
         <img src="/arrowleft.svg" class="w-full p-5" />
       </button>
       <button
         v-if="order"
-        class="py-3 px-4 rounded-lg text-center h-14 w-10/12 text-sm"
+        class="py-3 px-4 rounded-lg text-center h-12 sm:h-14 w-full sm:w-10/12 text-sm"
         :class="{
           'bg-red-500 text-white': order.order_status === 'DELIVERED',
           'bg-green-500': order.order_status !== 'DELIVERED',
