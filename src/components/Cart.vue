@@ -319,7 +319,7 @@ const askLink = async () => {
 
     const idToken = await user.getIdToken()
     let venueName = window.location.hostname.split('.')[0]
-    if (window.location.hostname === 'localhost') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev.nqpay.lat') {
       venueName = 'nq'
     }
     const response = await fetch(`https://api.nqpay.lat/venues/${venueName}/orders`, {

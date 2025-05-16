@@ -43,15 +43,15 @@
       <p class="mt-2" v-else-if="order.order_status === 'DELIVERED'">Este pedido ya ha sido entregado</p>
 
       <div class="justify-center pb-40 flex h-full flex-col">
-        <div class="flex w-full flex-col">
-          <div class="self-center">
+        <div class="flex w-full flex-col items-center justify-center">
+          <div class="self-center flex flex-col items-center">
             <!-- <p v-if="order.order_status === 'CREATED'" class="text-2xl font-medium pb-5 text-center">
               El código QR para retirar tu orden, aparecerá aquí una vez que tu trago este listo para retirar!
             </p> -->
             <p v-if="order.order_status === 'PAID'" class="text-2xl font-medium pb-5 text-center">Obtendras un código QR para retiro cuando el pedido este listo!</p>
             <p v-else-if="order.order_status === 'NOTIFIED' || order.order_status === 'DELIVERED'" class="text-2xl font-medium pb-5">Código QR para retiro</p>
 
-            <div v-if="order.order_status === 'NOTIFIED' || order.order_status === 'DELIVERED'" class="rounded-2xl p-2 bg-white">
+            <div v-if="order.order_status === 'NOTIFIED' || order.order_status === 'DELIVERED'" class="rounded-2xl p-2 bg-white w-fit">
               <QRCodeVue3
                 v-if="route.query.external_reference"
                 :value="route.query.external_reference"
@@ -60,24 +60,28 @@
                 :backgroundOptions="{ color: '#ffffff' }"
                 :cornersSquareOptions="{ type: 'square', color: '#000000' }"
                 :cornersDotOptions="{ type: undefined, color: '#000000' }"
+                :width="250"
+                :height="250"
                 fileExt="png"
                 imgclass="img-qr"
               />
             </div>
-            <p v-if="order.ticket_code && order.order_status != 'CREATED'" class="text-center font-bold text-xl pt-3">
-              {{ order.ticket_code.substring(0, 3) }}-{{ order.ticket_code.substring(3, 6) }}
-            </p>
-            <p v-if="order.order_status != 'CREATED'" class="pt-5">
-              ${{
-                order.total
-                  .toString()
-                  .split('.')[0]
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-              }}
-            </p>
-            <div v-if="order.order_status != 'CREATED'" v-for="item in order.products">
-              <p class="font-bold">{{ item.quantity }}x {{ item.name }}</p>
+            <div class="flex flex-col">
+              <p v-if="order.ticket_code && order.order_status != 'CREATED'" class="text-center font-bold text-xl pt-3">
+                {{ order.ticket_code.substring(0, 3) }}-{{ order.ticket_code.substring(3, 6) }}
+              </p>
+              <p v-if="order.order_status != 'CREATED'" class="pt-5">
+                ${{
+                  order.total
+                    .toString()
+                    .split('.')[0]
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                }}
+              </p>
+              <div v-if="order.order_status != 'CREATED'" v-for="item in order.products">
+                <p class="font-bold">{{ item.quantity }}x {{ item.name }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -141,7 +145,7 @@ async function pollOrderStatus() {
     const auth = getAuth()
     const idToken = await auth.currentUser.getIdToken()
     let venueName = window.location.hostname.split('.')[0]
-    if (window.location.hostname === 'localhost') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev.nqpay.lat') {
       venueName = 'nq'
     }
 
@@ -261,7 +265,7 @@ onMounted(async () => {
       const auth = getAuth()
       const idToken = await auth.currentUser.getIdToken()
       let venueName = window.location.hostname.split('.')[0]
-      if (window.location.hostname === 'localhost') {
+      if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev.nqpay.lat') {
         venueName = 'nq'
       }
 
