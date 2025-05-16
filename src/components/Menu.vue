@@ -93,7 +93,7 @@ export default {
       const auth = getAuth()
       try {
         venueName.value = window.location.hostname.split('.')[0]
-        if (window.location.hostname === 'localhost' || window.location.hostname.includes('ngrok-free.app')) {
+        if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev' || window.location.hostname.includes('ngrok-free.app')) {
           venueName.value = 'nq'
         }
         const cachedProducts = localStorage.getItem('products')

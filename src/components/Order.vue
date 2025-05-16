@@ -86,7 +86,7 @@ export default {
     const fetchOrder = async (orderId) => {
       try {
         let venueName = window.location.hostname.split('.')[0]
-        if (window.location.hostname === 'localhost') {
+        if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev') {
           venueName = 'nq'
         }
         const response = await fetch(`https://api.nqpay.lat/venue/${venueName}/order/${orderId}/products`)
@@ -148,7 +148,7 @@ export default {
       try {
         const token = await getAccessTokenSilently()
         let venueName = window.location.hostname.split('.')[0]
-        if (window.location.hostname === 'localhost') {
+        if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev') {
           venueName = 'nq'
         }
         const response = await fetch(`https://api.nqpay.lat/venue/${venueName}/order/${route.params.id}/deliver`, {

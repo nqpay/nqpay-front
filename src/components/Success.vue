@@ -145,7 +145,7 @@ async function pollOrderStatus() {
     const auth = getAuth()
     const idToken = await auth.currentUser.getIdToken()
     let venueName = window.location.hostname.split('.')[0]
-    if (window.location.hostname === 'localhost') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev') {
       venueName = 'nq'
     }
 
@@ -265,7 +265,7 @@ onMounted(async () => {
       const auth = getAuth()
       const idToken = await auth.currentUser.getIdToken()
       let venueName = window.location.hostname.split('.')[0]
-      if (window.location.hostname === 'localhost') {
+      if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev') {
         venueName = 'nq'
       }
 

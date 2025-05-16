@@ -105,7 +105,7 @@ async function fetchOrders() {
     const idToken = await auth.currentUser.getIdToken(true) // Force token refresh
 
     let venueName = window.location.hostname.split('.')[0]
-    if (window.location.hostname === 'localhost' || window.location.hostname.includes('ngrok-free.app')) {
+    if (window.location.hostname === 'localhost' || window.location.hostname === 'pay-dev' || window.location.hostname.includes('ngrok-free.app')) {
       venueName = 'nq'
     }
 
