@@ -38,24 +38,29 @@
         </div>
       </div>
     </div>
-
     <!-- Delivery button -->
-    <div class="w-full flex flex-col sm:flex-row fixed bottom-0 left-0 right-0 px-4 py-2 sm:p-4 mb-20 font-bold text-base text-black gap-2 bg-black z-40">
-      <button @click="goToScanner" class="bg-white bg-opacity-10 text-white rounded-lg h-12 sm:h-14 w-full sm:w-2/12 flex items-center justify-center">
-        <img src="/arrowleft.svg" class="w-full p-5" />
-      </button>
-      <button
-        v-if="order"
-        class="py-3 px-4 rounded-lg text-center h-12 sm:h-14 w-full sm:w-10/12 text-sm"
-        :class="{
-          'bg-red-500 text-white': order.order_status === 'DELIVERED',
-          'bg-green-500': order.order_status !== 'DELIVERED',
-        }"
-        @click="markAsDelivered"
-        :disabled="isDelivering || order.order_status === 'DELIVERED'"
-      >
-        {{ buttonText }}
-      </button>
+    <!-- Delivery button -->
+    <div class="w-full fixed bottom-0 left-0 right-0 px-4 py-2 sm:p-4 mb-20 font-bold text-base text-black bg-black z-40">
+      <div class="flex gap-2">
+        <!-- Botón flecha -->
+        <button @click="goToScanner" class="bg-white bg-opacity-10 rounded-lg h-12 sm:h-14 w-2/12 flex items-center justify-center">
+          <img src="/arrowleft.svg" class="h-5 w-5 sm:h-6 sm:w-6" />
+        </button>
+
+        <!-- Botón verde -->
+        <button
+          v-if="order"
+          class="py-3 px-4 rounded-lg text-center h-12 sm:h-14 w-10/12 text-sm"
+          :class="{
+            'bg-red-500 text-white': order.order_status === 'DELIVERED',
+            'bg-green-500': order.order_status !== 'DELIVERED',
+          }"
+          @click="markAsDelivered"
+          :disabled="isDelivering || order.order_status === 'DELIVERED'"
+        >
+          {{ buttonText }}
+        </button>
+      </div>
     </div>
   </div>
   <div v-else>Cargando datos...</div>
