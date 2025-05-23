@@ -162,6 +162,12 @@
         </div>
         <p v-else>Ir a pagar</p>
       </button>
+
+      <!-- Apple Pay Button -->
+      <!-- <div v-if="canUseApplePay">
+        APPLE PAY
+        <button id="apple-pay-button" class="apple-pay-button w-20 h-20 bg-red-300" @click="beginApplePay"></button>
+      </div> -->
     </div>
   </div>
 </template>
@@ -204,6 +210,70 @@ const validatePhoneNumber = () => {
   // Only allow numbers
   phoneNumber.value = phoneNumber.value.replace(/[^0-9]/g, '')
 }
+
+// Apple Pay BEGIN
+/* 
+APPLE PAY
+*/
+const canUseApplePay = window.ApplePaySession && ApplePaySession.canMakePayments()
+
+const beginApplePay = () => {
+  const paymentRequest = {
+    countryCode: 'US',
+    currencyCode: 'USD',
+    total: {
+      label: 'Tu Empresa',
+      amount: '10.00',
+    },
+    supportedNetworks: ['visa', 'masterCard', 'amex'],
+    merchantCapabilities: ['supports3DS'],
+  }
+
+  const session = new ApplePaySession(3, paymentRequest)
+
+  session.onvalidatemerchant = (event) => {
+    console.log('validatoinL: ', event.validationURL)
+    fetch('/validate-merchant', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ validationURL: event.validationURL }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        session.completeMerchantValidation(data)
+      })
+      .catch((err) => {
+        console.error('Error validando merchant:', err)
+        session.abort()
+      })
+  }
+
+  session.onpaymentauthorized = (event) => {
+    const payment = event.payment
+
+    fetch('/process-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: payment.token }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const status = data.success ? ApplePaySession.STATUS_SUCCESS : ApplePaySession.STATUS_FAILURE
+        session.completePayment(status)
+      })
+      .catch((err) => {
+        console.error('Error procesando pago:', err)
+        session.completePayment(ApplePaySession.STATUS_FAILURE)
+      })
+  }
+
+  session.begin()
+}
+// APPLE PAY END
 
 const submitPhone = async () => {
   if (!isValidPhone.value) return
