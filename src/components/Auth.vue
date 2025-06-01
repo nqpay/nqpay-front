@@ -364,6 +364,7 @@ export default {
         // provider.addScope('https://www.googleapis.com/auth/user.birthday.read')
         // provider.addScope('https://www.googleapis.com/auth/user.phonenumbers.read')
         const result = await signInWithPopup(getAuth(), provider)
+        localStorage.setItem('full_name', result?.user?.displayName)
         const credential = GoogleAuthProvider.credentialFromResult(result)
         const accessToken = credential.accessToken
         // console.log('Google Access Token:', accessToken) access token from google to hit Google's People API

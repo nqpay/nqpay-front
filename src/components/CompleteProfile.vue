@@ -116,7 +116,7 @@ export default {
   },
   data() {
     return {
-      name: '',
+      name: localStorage.getItem('full_name') || '',
       dni: '',
       birthdate: '',
       displayBirthdate: '',
